@@ -30,6 +30,8 @@ HT.Grid = function(/*double*/ width, /*double*/ height) {
 		    var hexId = this.GetHexId(row, col);
 			var h = new HT.Hexagon(hexId, x, y);
 			
+			
+			
 			var pathCoOrd = col;
 			if(HT.Hexagon.Static.ORIENTATION == HT.Hexagon.Orientation.Normal)
 				h.PathCoOrdX = col;//the column is the x coordinate of the hex, for the y coordinate we need to get more fancy
