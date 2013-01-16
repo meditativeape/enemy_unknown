@@ -39,8 +39,8 @@
 		ctx.lineWidth = 1;
 		ctx.strokeStyle = 'rgb(255, 165, 0)';
 		var boxSize = [Math.floor(this.width*this.canvas.width/mapSize[0]), Math.floor(this.height*this.canvas.height/mapSize[1])];
-		var boxPos = [Math.floor(camera.pos[0]*this.width/mapSize[0]), Math.floor(camera.pos[1]*this.height/mapSize[1])];
-		ctx.strokeRect(boxPos[0], boxPos[1], boxSize[0], boxSize[1]);
+		var boxPos = new Point(Math.floor(camera.pos.X*this.width/mapSize[0]), Math.floor(camera.pos.Y*this.height/mapSize[1]));
+		ctx.strokeRect(boxPos.X, boxPos.Y, boxSize[0], boxSize[1]);
 	};
 	
 	this.click = function(event){
