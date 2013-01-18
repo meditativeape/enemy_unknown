@@ -67,7 +67,7 @@ function animate(){
 function main(){
 	camera = new BuildCamera([img.width, img.height], 0, 0, 5);
 	minimap = new BuildMiniMap(camera, [img.width, img.height], 200);
-	hexgrid = new BuildMap(50,2.0,800,600,10);
+	hexgrid = new BuildMap(50,2.0,1500,1200,0);
 	document.addEventListener('keydown', function(event) {
 		if (event.keyCode == 37) { // left
 			camera.moveLeft();

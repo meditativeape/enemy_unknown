@@ -11,8 +11,8 @@ function BuildMap(/*double*/ side,/*double*/ratio,/*int*/ x, /*int*/y,/*double*/
 	this.matrix = [];
 	
 	var spec = findHexSpecs(side,ratio);
-	var xpos = offset+spec.width/2;
-	var ypos = y/2;
+	var xpos = offset;
+	var ypos = y/2-spec.height/2;
 	var matrixx = 0;
 	var matrixy = 0;
 	var rows = 0;
@@ -32,8 +32,8 @@ function BuildMap(/*double*/ side,/*double*/ratio,/*int*/ x, /*int*/y,/*double*/
 		}
 		matrixx = 0;
 		matrixy = matrixy + 1;
-		ypos = y/2 - spec.height/2*matrixy;
-		xpos = offset+spec.width/2 + (spec.width/2 + spec.side/2)*matrixy;
+		ypos = y/2 - spec.height/2*(matrixy+1);
+		xpos = offset+ (spec.width/2 + spec.side/2)*matrixy;
 	}
 	
 	this.toHex = function toHex(/*double*/ screenx,/*double*/screeny,/*Camera*/camera){
@@ -165,6 +165,7 @@ Hexagon.prototype.draw = function(/*Camera*/camera) {
 	var ctx = document.getElementById("gameCanvas").getContext('2d');
 	ctx.beginPath();
 	ctx.moveTo(this.Points[0].X-camera.pos.X, this.Points[0].Y-camera.pos.Y);
+	
 	for(var i = 1; i < this.Points.length; i++)
 	{
 		var p = this.Points[i];
