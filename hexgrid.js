@@ -202,7 +202,7 @@ Hexagon.prototype.draw = function(/*Camera*/camera) {
 	ctx.stroke();
 	if(this.piece!=null){
 		var midPoint = new Point(this.MidPoint.X-camera.pos.X,this.MidPoint.Y-camera.pos.Y);
-		piece.draw(,this.spec.height);
+		piece.draw(midPoint,this.spec.height);
 	}
 	
 };

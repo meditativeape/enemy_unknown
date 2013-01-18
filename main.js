@@ -24,6 +24,7 @@
 }() );
 
 var img;
+var unit_img;
 var camera;
 var minimap;
 var hexgrid;
@@ -48,12 +49,13 @@ var load_assets = function() {
 	
 	function isAppLoaded() {
 		files_loaded++;
-		if (files_loaded >= 1) {
+		if (files_loaded >= 2) {
 			main();
 		}
 	}
 	
 	img = load_image("http://1.bp.blogspot.com/-zTYKmcB26qQ/Ts1Tyf4wjeI/AAAAAAAABrg/15p7wQiAsxQ/s1600/universe.jpg");
+	unit_img = load_image("sprites\\unit_drop_2.png");
 };
 
 function animate(){
@@ -67,7 +69,8 @@ function animate(){
 function main(){
 	camera = new BuildCamera([img.width, img.height], 0, 0, 5);
 	minimap = new BuildMiniMap(camera, [img.width, img.height], 200);
-	hexgrid = new BuildMap(50,2.0,1500,1200,0);
+	hexgrid = new BuildMap(50,1.5,1500,1200,40);
+	hexgrid.matrix[0][0].piece = new Unit(0, 0, 0, new Coordinate(0, 0), 0, 0, unit_img);
 	document.addEventListener('keydown', function(event) {
 		if (event.keyCode == 37) { // left
 			camera.moveLeft();
