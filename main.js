@@ -69,7 +69,7 @@ function animate(){
 function main(){
 	camera = new BuildCamera([img.width, img.height], 0, 0, 5);
 	minimap = new BuildMiniMap(camera, [img.width, img.height], 200);
-	hexgrid = new BuildMap(50,1.5,1500,1200,40);
+	hexgrid = new BuildMap(40,2.0,1500,1200,40);
 	hexgrid.matrix[0][0].piece = new Unit(0, 0, 0, new Coordinate(0, 0), 0, 0, unit_img);
 	document.addEventListener('keydown', function(event) {
 		if (event.keyCode == 37) { // left
