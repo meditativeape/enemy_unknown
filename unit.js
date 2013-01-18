@@ -19,8 +19,8 @@ function Unit(/*int*/ team,/*int*/hp,/*int*/ type, /*Coordinate*/cord, /*int*/st
  * Unit Method: Draws this unit to the canvas
  * @this {Unit}
  */
-Unit.prototype.draw = function(/*Camera*/camera) {
-
-	//TODO
-	
+Unit.prototype.draw = function(/*Point*/p, /*int*/height) {
+	var ctx = document.getElementById('gameCanvas').getContext('2d');
+	ctx.drawImage(this.image, p.X - this.image.width/2, p.Y + height/4 - this.image.height, 
+		this.image.width, this.image.height);
 };

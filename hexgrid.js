@@ -195,7 +195,7 @@ Hexagon.prototype.draw = function(/*Camera*/camera) {
 	ctx.closePath();
 	ctx.stroke();
 	if(this.piece!=null){
-		piece.draw(this.MidPoint,this.spec.height);
+		this.piece.draw(this.MidPoint,this.spec.height);
 	}
 	
 };
