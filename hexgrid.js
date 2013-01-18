@@ -64,6 +64,23 @@ function BuildMap(/*double*/ side,/*double*/ratio,/*int*/ x, /*int*/y,/*double*/
 			}
 		}	
 	};
+	
+	this.move = function(/*Coordinate*/ origin, /*Coordinate*/dest) {
+		var toMove = this.matrix[origin.X][origin.Y].piece;
+		this.matrix[origin.X][origin.Y].piece = null;
+		this.matrix[dest.X][dest.Y].piece = toMove;
+	};
+	
+	this.checkSquare = function(/*Coordinate*/toCheck){
+		if(this.matrix[toCheck.X][toCheck.Y].piece == null){
+			return false;
+		}
+		else{
+			return true;
+		}
+	}
+	
+	//this.getMovable = function(/*Coordinate*/
 }
 
 
@@ -100,6 +117,7 @@ function Hexagon(id, mx,my,x, y,spec,piece) {
 	this.matrixx = mx;
 	this.matrixy = my;
 	this.Points = [];//Polygon Base
+	this.spec = spec;
 	var x1 = (spec.width - spec.side)/2;
 	var y1 = (spec.height / 2);
 	this.Points.push(new Point(x1 + x, y));
@@ -157,6 +175,8 @@ Hexagon.prototype.contains = function(/*Point*/ p) {
 	return isIn;
 };
 
+
+
 /**
  * Hexagon Method: Draws this Hexagon to the canvas
  * @this {Hexagon}
@@ -175,7 +195,7 @@ Hexagon.prototype.draw = function(/*Camera*/camera) {
 	ctx.closePath();
 	ctx.stroke();
 	if(this.piece!=null){
-		piece.draw(camera);
+		piece.draw(this.MidPoint,this.spec.height);
 	}
 	
 };
