@@ -95,7 +95,8 @@ function findHexSpecs(/*double*/side,/*double*/ratio){
 * Constructs a hexagon.
 * @constructor
 */
-function Hexagon(id, mx,my,x, y,spec) {
+function Hexagon(id, mx,my,x, y,spec,piece) {
+	this.piece = null;
 	this.matrixx = mx;
 	this.matrixy = my;
 	this.Points = [];//Polygon Base
@@ -173,5 +174,8 @@ Hexagon.prototype.draw = function(/*Camera*/camera) {
 	}
 	ctx.closePath();
 	ctx.stroke();
+	if(this.piece!=null){
+		piece.draw(camera);
+	}
 	
 };
