@@ -80,7 +80,13 @@ function BuildMap(/*double*/ side,/*double*/ratio,/*int*/ x, /*int*/y,/*double*/
 		}
 	}
 	
-	//this.getMovable = function(/*Coordinate*/
+	this.addUnit = function(/*Unit*/ toAdd, /*Coordinate*/dest){
+		this.matrix[dest.X][dest.Y].piece = toAdd;
+	}
+	
+	this.getMovable = function(/*Unit*/toMove){
+		//TODO
+	}
 }
 
 
@@ -195,7 +201,8 @@ Hexagon.prototype.draw = function(/*Camera*/camera) {
 	ctx.closePath();
 	ctx.stroke();
 	if(this.piece!=null){
-		piece.draw(this.MidPoint,this.spec.height);
+		var midPoint = new Point(this.MidPoint.X-camera.pos.X,this.MidPoint.Y-camera.pos.Y);
+		piece.draw(,this.spec.height);
 	}
 	
 };
