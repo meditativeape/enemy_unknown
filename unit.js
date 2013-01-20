@@ -8,6 +8,7 @@ function Unit(/*int*/ team,/*int*/hp,/*int*/ type, /*Coordinate*/cord, /*int*/st
 	this.team = team;
 	this.hp = hp;
 	this.type = type; //0. Wood 1. Water. 2.Earth. 3.Fire 4.Air undefined.Unknown
+	this.range = 5;//TODO
 	this.x = cord.X;
 	this.y = cord.Y;
 	this.status = stat;
@@ -35,14 +36,17 @@ Unit.prototype.gotHit = function(/*Unit*/enemy){
 	//Calculate type advantage
     var flag = (this.type-enemy.type)%5
 	//Enemy advantage
-    if (flag>2):
+    if (flag>2){
     	this.hp = this.hp  
 		enemy.hp = enemy.hp
+	}
 	//My advantage
-    elif (flag!=0):
+    else if (flag!=0){
         this.hp = this.hp
 		enemy.hp = enemy.hp
-    else:
+	}
+    else{
         this.hp = this.hp
 		enemy.hp = enemy.hp
+	}
 };

@@ -93,11 +93,8 @@ function main(){
 			var canvasX = event.pageX - canvas.offsetLeft;
 			var canvasY = event.pageY - canvas.offsetTop;
 			var coord = hexgrid.toHex(new Point(canvasX, canvasY), camera);
-			alert(coord);
 			if (coord) {
 				var hasUnit = hexgrid.checkSquare(coord);
-				alert(last_click_coord);
-				alert(hasUnit);
 				if (last_click_coord && !hasUnit) { // move a selected unit to an occupied coord
 					hexgrid.move(last_click_coord, coord);
 					last_click_coord = null;

@@ -37,8 +37,8 @@ function BuildMap(/*double*/ side,/*double*/ratio,/*int*/ x, /*int*/y,/*double*/
 	}
 	
 	this.toHex = function toHex(/*Point*/ p, /*Camera*/camera){
-		p.x += camera.x;
-		p.y += camera.y;
+		p.X += camera.x;
+		p.Y += camera.y;
 		for(var x in this.matrix){
 			for(var y in this.matrix[x]){
 				if (this.matrix[x][y].contains(p))
