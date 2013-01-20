@@ -39,7 +39,7 @@
 		ctx.lineWidth = 1;
 		ctx.strokeStyle = 'rgb(255, 165, 0)';
 		var boxSize = [Math.floor(this.width*this.canvas.width/mapSize[0]), Math.floor(this.height*this.canvas.height/mapSize[1])];
-		var boxPos = new Point(Math.floor(camera.pos.X*this.width/mapSize[0]), Math.floor(camera.pos.Y*this.height/mapSize[1]));
+		var boxPos = new Point(Math.floor(camera.x*this.width/mapSize[0]), Math.floor(camera.y*this.height/mapSize[1]));
 		ctx.strokeRect(boxPos.X, boxPos.Y, boxSize[0], boxSize[1]);
 	};
 	
@@ -49,7 +49,17 @@
 		if (x <= me.width && y <= me.height) {
 			var mapX = x/me.width*me.mapSize[0] - me.canvas.width/2;
 			var mapY = y/me.height*me.mapSize[1] - me.canvas.height/2;
-			me.camera.setPos(mapX, mapY);
+			me.camera.setPos(new Point(mapX, mapY));
+		}
+	};
+	
+	this.checkClick = function(event){
+		var x = event.pageX - me.canvas.offsetLeft;
+		var y = event.pageY - me.canvas.offsetTop;
+		if (x <= me.width && y <= me.height) {
+			return true;
+		} else {
+			return false;
 		}
 	};
 	

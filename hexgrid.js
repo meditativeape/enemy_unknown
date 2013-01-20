@@ -36,19 +36,21 @@ function BuildMap(/*double*/ side,/*double*/ratio,/*int*/ x, /*int*/y,/*double*/
 		xpos = offset+ (spec.width/2 + spec.side/2)*matrixy;
 	}
 	
-	this.toHex = function toHex(/*double*/ screenx,/*double*/screeny,/*Camera*/camera){
-		var mapPoint = Point(screenx+camera.pos.X,screeny+camera.pos.Y);
+	this.toHex = function toHex(/*Point*/ p, /*Camera*/camera){
+		p.x += camera.x;
+		p.y += camera.y;
 		for(var x in this.matrix){
 			for(var y in this.matrix[x]){
-				this.matrix[x][y].contains(mapPoint);
+				if (this.matrix[x][y].contains(p))
+					return new Coordinate(x,y);
 			}
 		}	
 		return null;
 	};
 	
-	this.toScreen = function toScreen(/*int*/ matrixx,/*int*/matrixy,/*Camera*/camera){
-		var mapPoint = this.matix[matrixx][matrixy].MidPoint;
-		return Point(mapPoint.X-camera.pos.X,mapPoint.Y-camera.pos.Y);
+	this.toScreen = function toScreen(/*Coordinate*/ coord,/*Camera*/camera){
+		var mapPoint = this.matix[coord.X][coord.Y].MidPoint;
+		return Point(mapPoint.X-camera.x,mapPoint.Y-camera.y);
 	};
 	
 	this.hexDist = function hexDist(/*Hexagon*/ h1, /*Hexagon*/ h2) {
@@ -191,17 +193,17 @@ Hexagon.prototype.draw = function(/*Camera*/camera) {
 
 	var ctx = document.getElementById("gameCanvas").getContext('2d');
 	ctx.beginPath();
-	ctx.moveTo(this.Points[0].X-camera.pos.X, this.Points[0].Y-camera.pos.Y);
+	ctx.moveTo(this.Points[0].X-camera.x, this.Points[0].Y-camera.y);
 	
 	for(var i = 1; i < this.Points.length; i++)
 	{
 		var p = this.Points[i];
-		ctx.lineTo(p.X-camera.pos.X, p.Y-camera.pos.Y);
+		ctx.lineTo(p.X-camera.x, p.Y-camera.y);
 	}
 	ctx.closePath();
 	ctx.stroke();
 	if(this.piece!=null){
-		var midPoint = new Point(this.MidPoint.X-camera.pos.X,this.MidPoint.Y-camera.pos.Y);
+		var midPoint = new Point(this.MidPoint.X-camera.x,this.MidPoint.Y-camera.y);
 		this.piece.draw(midPoint,this.spec.height);
 	}
 	

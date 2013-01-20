@@ -67,10 +67,11 @@ function animate(){
 }
 
 function main(){
-	camera = new BuildCamera([img.width, img.height], 0, 0, 5);
+	camera = new BuildCamera([img.width, img.height], new Point(0, 0), 5);
 	minimap = new BuildMiniMap(camera, [img.width, img.height], 200);
 	hexgrid = new BuildMap(40,2.0,1500,1200,40);
 	hexgrid.matrix[0][0].piece = new Unit(0, 0, 0, new Coordinate(0, 0), 0, 0, unit_img);
+	
 	document.addEventListener('keydown', function(event) {
 		if (event.keyCode == 37) { // left
 			camera.moveLeft();
@@ -82,7 +83,32 @@ function main(){
 			camera.moveDown();
 		}
 	});
-	document.addEventListener('click', minimap.click);
+	
+	var last_click_coord = null;
+	document.addEventListener('click', function(event) {
+		if (minimap.checkClick(event)) {
+			minimap.click(event); // pass to minimap
+		} else {
+			var canvas = document.getElementById("gameCanvas");
+			var canvasX = event.pageX - canvas.offsetLeft;
+			var canvasY = event.pageY - canvas.offsetTop;
+			var coord = hexgrid.toHex(new Point(canvasX, canvasY), camera);
+			alert(coord);
+			if (coord) {
+				var hasUnit = hexgrid.checkSquare(coord);
+				alert(last_click_coord);
+				alert(hasUnit);
+				if (last_click_coord && !hasUnit) { // move a selected unit to an occupied coord
+					hexgrid.move(last_click_coord, coord);
+					last_click_coord = null;
+				} else if (!last_click_coord && hasUnit) { // select a unit
+					last_click_coord = coord;
+				} else if (last_click_coord && hasUnit) { // cannot move a unit to an occupied coord
+					
+				}
+			}
+		}
+	});
 	
 	var canvas = document.getElementById('gameCanvas');
 	canvas.width = 800;
