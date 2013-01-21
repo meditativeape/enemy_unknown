@@ -37,16 +37,19 @@ Unit.prototype.gotHit = function(/*Unit*/enemy){
     var flag = (this.type-enemy.type)%5
 	//Enemy advantage
     if (flag>2){
-    	this.hp = this.hp  
-		enemy.hp = enemy.hp
+    	this.hp = this.hp - damage; 
+		enemy.hp = enemy.hp - floor(damage/2);
 	}
 	//My advantage
     else if (flag!=0){
-        this.hp = this.hp
-		enemy.hp = enemy.hp
+        this.hp = this.hp - floor(damage/2);
+		enemy.hp = enemy.hp - damage;
 	}
     else{
-        this.hp = this.hp
-		enemy.hp = enemy.hp
+        this.hp = this.hp - damage;
+		enemy.hp = enemy.hp - damage;
 	}
 };
+
+Unit.prototype.die = function(){
+}
