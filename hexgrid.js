@@ -57,7 +57,7 @@ function BuildMap(/*double*/ side,/*double*/ratio,/*int*/ x, /*int*/y,/*double*/
 	this.hexDist = function hexDist(/*Hexagon*/ h1, /*Hexagon*/ h2) {
 		var deltaX = h1.matrixx - h2.matrixx;
 		var deltaY = h1.matrixy - h2.matrixy;
-		return ((Math.abs(deltaX) + Math.abs(deltaY) + Math.abs(deltaX - deltaY)) / 2);		
+		return ((Math.abs(deltaX) + Math.abs(deltaY) + Math.abs(deltaX + deltaY)) / 2);		
 	};
 	
 	this.draw = function draw(/*Camera*/camera,/*ctx*/ctx){
