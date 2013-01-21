@@ -72,7 +72,7 @@ function main(){
 	hexgrid = new BuildMap(40,2.0,1500,1200,40);
 	hexgrid.matrix[0][0].piece = new Unit(0, 0, 0, new Coordinate(0, 0), 0, 0, unit_img);
 	
-	document.addEventListener('keydown', function(event) {
+	document.addEventListener('keydown', function(event) {  // key pressing event listener
 		if (event.keyCode == 37) { // left
 			camera.moveLeft();
 		} else if (event.keyCode == 39) { // right
@@ -85,7 +85,7 @@ function main(){
 	});
 	
 	var last_click_coord = null;
-	document.addEventListener('click', function(event) {
+	document.addEventListener('click', function(event) {  // left click event listener
 		if (minimap.checkClick(event)) {
 			minimap.click(event); // pass to minimap
 		} else {
@@ -94,16 +94,24 @@ function main(){
 			var canvasY = event.pageY - canvas.offsetTop;
 			var coord = hexgrid.toHex(new Point(canvasX, canvasY), camera);
 			if (coord) {
-				var hasUnit = hexgrid.checkSquare(coord);
-				if (last_click_coord && !hasUnit) { // move a selected unit to an occupied coord
+				var isReachable = hexgrid.isReachable(coord);
+				if (last_click_coord && isReachable) { // move a unit to a reachable coord
 					hexgrid.move(last_click_coord, coord);
 					last_click_coord = null;
-				} else if (!last_click_coord && hasUnit) { // select a unit
+				} else if (!last_click_coord) { // select a unit
 					last_click_coord = coord;
-				} else if (last_click_coord && hasUnit) { // cannot move a unit to an occupied coord
-					
+					hexgrid.markReachable(coord);
 				}
 			}
+		}
+	});
+	document.addEventListener('contextmenu', function(event) { // right click event listener
+		var canvas = document.getElementById("gameCanvas");
+		var canvasX = event.pageX - canvas.offsetLeft;
+		var canvasY = event.pageY - canvas.offsetTop;
+		if (canvasX <= canvas.width && canvasY <= canvas.height) {
+			event.preventDefault();
+			last_click_coord = null;
 		}
 	});
 	
