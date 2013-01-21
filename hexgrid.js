@@ -72,9 +72,7 @@ function BuildMap(/*double*/ side,/*double*/ratio,/*int*/ x, /*int*/y,/*double*/
 		var toMove = this.matrix[origin.X][origin.Y].piece;
 		this.matrix[origin.X][origin.Y].piece = null;
 		this.matrix[dest.X][dest.Y].piece = toMove;
-		for (var i in this.reachables)  // clear reachables
-			this.reachables[i].reachable = false;
-		this.reachables = [];
+		this.clearReachable();
 	};
 	
 	this.checkSquare = function(/*Coordinate*/toCheck){
@@ -102,6 +100,12 @@ function BuildMap(/*double*/ side,/*double*/ratio,/*int*/ x, /*int*/y,/*double*/
 				}
 			}
 		}
+	};
+	
+	this.clearReachable = function(){
+		for (var i in this.reachables)  // clear reachables
+				this.reachables[i].reachable = false;
+		this.reachables = [];
 	};
 	
 	this.isReachable = function(/*Coordinate*/coord){
