@@ -98,7 +98,7 @@ function main(){
 				if (last_click_coord && isReachable) { // move a unit to a reachable coord
 					hexgrid.move(last_click_coord, coord);
 					last_click_coord = null;
-				} else if (!last_click_coord) { // select a unit
+				} else if (!last_click_coord && hexgrid.checkSquare(coord)) { // select a unit
 					last_click_coord = coord;
 					hexgrid.markReachable(coord);
 				}
@@ -112,6 +112,7 @@ function main(){
 		if (canvasX <= canvas.width && canvasY <= canvas.height) {
 			event.preventDefault();
 			last_click_coord = null;
+			hexgrid.clearReachable();
 		}
 	});
 	
