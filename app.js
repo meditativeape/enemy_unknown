@@ -95,7 +95,7 @@
 
             //now we can find them a game to play with someone.
             //if no game exists with someone waiting, they create one and wait.
-        game_server.findGame(client);
+        game_server.findGame(client,0);
 
             //Useful to know when someone connects
         console.log('\t socket.io:: player ' + client.userid + ' connected');
