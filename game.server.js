@@ -37,16 +37,17 @@
 
 
         //Define some required functions
-    game_server.createGame = function(player) {
+    game_server.createGame = function(player,type) {
 
             //Create a new game instance
 		var thegame = new Object();
 		thegame.id = UUID(); //generate a new id for the game
 		thegame.players = new Array(); 
-		thegame.plaers[0] = player;//so we know who initiated the game
+		thegame.players[0] = player;//so we know who initiated the game
 		            //Create a new game core instance, this actually runs the
             //game code like collisions and such.
-        thegame.gamecore = new game_core( thegame,this );
+		thegame.type = type;
+        thegame.gamecore = new game_core( thegame,type,this );
 		
             //Store it in the list of game
         this.games[ thegame.id ] = thegame;
@@ -57,7 +58,7 @@
             //tell the player that they are now the host
             //s=server message, h=you are hosting
 
-        player.send('0 update 1');
+        player.send('0 join 1 '+ player.userid);
         console.log('server host at  ' + thegame.gamecore.local_time);
         player.game = thegame;
         
@@ -70,48 +71,23 @@
 	
 	
 	game_server.endGame = function(gameid){
+		for (person in this.games[gameid].players){
+			person.game = null;
+		}
         delete this.games[gameid];
         this.game_count--;
         this.log('game removed. there are now ' + this.game_count + ' games' );
 	}//game_server.endGame 
 	
 	
-        //we are requesting to kill a game in progress.TODO
+        //we are requesting to leave a game
     game_server.leaveGame = function(gameid, userid) {
 
         var thegame = this.games[gameid];
 
         if(thegame) {
-
-
-                //if the game has two players, the one is leaving
-            if(thegame.player_count > 1) {
-
-                    //send the players the message the game is ending
-                if(userid == thegame.player_host.userid) {
-
-                        //the host left, oh snap. Lets try join another game
-                    if(thegame.player_client) {
-                            //tell them the game is over
-                        thegame.player_client.send('s.e');
-                            //now look for/create a new game.
-                        this.findGame(thegame.player_client);
-                    }
-                    
-                } else {
-                        //the other player left, we were hosting
-                    if(thegame.player_host) {
-                            //tell the client the game is ended
-                        thegame.player_host.send('s.e');
-                            //i am no longer hosting, this game is going down
-                        thegame.player_host.hosting = false;
-                            //now look for/create a new game.
-                        this.findGame(thegame.player_host);
-                    }
-                }
-            }
-
-
+			thegame.left(userid);
+			userid.game = null;
         } else {
             this.log('that game was not found!');
         }
@@ -136,9 +112,11 @@
             for(var gameid in this.games) {
                     //only care about our own properties.
                 if(!this.games.hasOwnProperty(gameid)) continue;
+		
                     //get the game we are checking against
                 var game_instance = this.games[gameid];
-
+				if(game_instance.type != type) continue;
+			
                     //If the game is a player short
 				var player_count = game_instance.players.length;
                 if(player_count < needed) {
@@ -148,7 +126,7 @@
                         //increase the player count and store
                         //the player as the client of this game
                     game_instance.players[player_count] = player;
-
+					player.send('0 join ' + player_count + ' ' +player.userid)
                         //start running the game on the server,
                         //which will tell them to respawn/start
 					if(player_count == needed){
@@ -169,7 +147,7 @@
         } else { //if there are any games at all
 
                 //no games? create one!
-            this.createGame(player);
+            this.createGame(player,type);
         }
 
     }; //game_server.findGame
