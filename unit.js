@@ -4,14 +4,13 @@
 * Prototype for a unit
 * @constructor
 */
-function Unit(/*int*/ team,/*int*/hp,/*int*/ type, /*Coordinate*/cord, /*int*/stat, /*int*/ cooldown, /*image*/pic){
-	this.team = team;
+function Unit(/*int*/ myteam,/*int*/hp,/*int*/ type, /*Coordinate*/cord, /*int*/ cooldown, /*image*/pic){
+	this.team = myteam; //Starts from 0
 	this.hp = hp;
 	this.type = type; //0. Wood 1. Water. 2.Earth. 3.Fire 4.Air undefined.Unknown
-	this.range = 3;//TODO
+	this.range = 2;
 	this.x = cord.X;
 	this.y = cord.Y;
-	this.status = stat;
 	this.cooldown = cooldown;
 	this.image = pic;
 }

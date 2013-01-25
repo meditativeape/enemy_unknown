@@ -75,13 +75,11 @@ function BuildMap(/*double*/ side,/*double*/ratio,/*int*/ x, /*int*/y,/*double*/
 		this.clearReachable();
 	};
 	
-	this.checkSquare = function(/*Coordinate*/toCheck){
-		if(this.matrix[toCheck.X][toCheck.Y].piece == null){
-			return false;
-		}
-		else{
-			return true;
-		}
+
+	
+	this.getUnit = function(/*Coordinate*/toCheck){
+		return this.matrix[toCheck.X][toCheck.Y].piece;
+
 	};
 	
 	this.addUnit = function(/*Unit*/ toAdd, /*Coordinate*/dest){
@@ -89,7 +87,7 @@ function BuildMap(/*double*/ side,/*double*/ratio,/*int*/ x, /*int*/y,/*double*/
 	};
 	
 	this.markReachable = function(/*Coordinate*/coord){
-		if (this.checkSquare(coord)) { // this coordinate has a unit
+		if (this.getUnit(coord)) { // this coordinate has a unit
 			var selectedHex = this.matrix[coord.X][coord.Y];
 			for(var x in this.matrix){ // brute force!
 				for(var y in this.matrix[x]){
@@ -97,19 +95,30 @@ function BuildMap(/*double*/ side,/*double*/ratio,/*int*/ x, /*int*/y,/*double*/
 						this.matrix[x][y].reachable = true;
 						this.reachables.push(this.matrix[x][y]);
 					}
+					if (this.hexDist(selectedHex, this.matrix[x][y]) <= 1 && this.matrix[x][y].piece) { // in range and occupied by enemys
+						this.matrix[x][y].attackable = true;
+						this.reachables.push(this.matrix[x][y]);
+					}
 				}
 			}
 		}
 	};
 	
+	
+	
 	this.clearReachable = function(){
 		for (var i in this.reachables)  // clear reachables
 				this.reachables[i].reachable = false;
+				this.attackable[i].attackable = false;
 		this.reachables = [];
 	};
 	
 	this.isReachable = function(/*Coordinate*/coord){
 		return this.matrix[coord.X][coord.Y].reachable;
+	}
+	
+	this.isAttackable = function(/*Coordinate*/coord){
+		return this.matrix[coord.X][coord.Y].attackable;
 	}
 }
 
@@ -147,6 +156,7 @@ function Hexagon(id, mx,my,x, y,spec,piece) {
 	this.matrixx = mx;
 	this.matrixy = my;
 	this.reachable = false;
+	this.attackable = false;
 	this.Points = [];//Polygon Base
 	this.spec = spec;
 	var x1 = (spec.width - spec.side)/2;
