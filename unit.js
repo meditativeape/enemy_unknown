@@ -4,8 +4,9 @@
 * Prototype for a unit
 * @constructor
 */
-function Unit(/*int*/ myteam,/*int*/hp,/*int*/ type, /*Coordinate*/cord, /*int*/ cooldown, /*image*/pic){
-	this.team = myteam; //Starts from 0
+function Unit(/*int*/player,/*int*/ team,/*int*/hp,/*int*/ type, /*Coordinate*/cord, /*int*/ cooldown, /*image*/pic){
+	this.player = player; //Starts from 0
+	this.team = team; //Starts from 0
 	this.hp = hp;
 	this.type = type; //0. Wood 1. Water. 2.Earth. 3.Fire 4.Air undefined.Unknown
 	this.range = 2;
@@ -13,10 +14,6 @@ function Unit(/*int*/ myteam,/*int*/hp,/*int*/ type, /*Coordinate*/cord, /*int*/
 	this.y = cord.Y;
 	this.cooldown = cooldown;
 	this.image = pic;
-	
-	this.ally = function (/*unit*/ target){
-		return true;
-	}
 }
 
 /**
@@ -35,9 +32,9 @@ Unit.prototype.gotHit = function(/*Unit*/enemy){
 	//Earth beats fire and air
 	//Fire beats air and wood
 	//Air beats wood and water
-	var damgage = 10;
+	var damage = 100;
 	//Calculate type advantage
-    var flag = (this.type-enemy.type)%5
+    var flag = (this.type-enemy.type)%5;
 	//Enemy advantage
     if (flag>2){
     	this.hp = this.hp - damage; 

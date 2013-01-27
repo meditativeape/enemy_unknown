@@ -74,6 +74,16 @@ function BuildMap(/*double*/ side,/*double*/ratio,/*int*/ x, /*int*/y,/*double*/
 		this.matrix[dest.X][dest.Y].piece = toMove;
 	};
 	
+	this.attack = function(/*coordinate*/ attacker, /*coordinate*/gothit){
+		this.matrix[gothit.X][gothit.Y].piece.gotHit(this.matrix[attacker.X][attacker.Y].piece);
+		if(this.matrix[gothit.X][gothit.Y].piece.hp<=0){
+			this.matrix[gothit.X][gothit.Y].piece = null;
+		}
+		if(this.matrix[attacker.X][attacker.Y].piece.hp<=0){
+			this.matrix[attacker.X][attacker.Y].piece = null;
+		}
+	}
+	
 
 	
 	this.getUnit = function(/*Coordinate*/toCheck){
@@ -95,7 +105,7 @@ function BuildMap(/*double*/ side,/*double*/ratio,/*int*/ x, /*int*/y,/*double*/
 						this.reachables.push(this.matrix[x][y]);
 					}
 					if (this.hexDist(selectedHex, this.matrix[x][y]) <= 1 && this.matrix[x][y].piece && (selectedHex !=this.matrix[x][y])) { // in range and occupied by enemys
-						if(selectedHex.piece.ally(this.matrix[x][y].piece)){
+						if(selectedHex.piece.team!=this.matrix[x][y].piece.team){
 							this.matrix[x][y].attackable = true;
 							this.reachables.push(this.matrix[x][y]);
 						}
@@ -108,10 +118,11 @@ function BuildMap(/*double*/ side,/*double*/ratio,/*int*/ x, /*int*/y,/*double*/
 	
 	
 	this.clearReachable = function(){
-		for (var i in this.reachables)  // clear reachables
+		for (var i in this.reachables){  // clear reachables
 				var check = this.reachables[i];
 				check.reachable = false;
-				//check.attackable = false;
+				check.attackable = false;
+		}
 		this.reachables = [];
 	};
 	

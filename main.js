@@ -28,7 +28,7 @@ var unit_img;
 var camera;
 var minimap;
 var hexgrid;
-var team = 0;
+var player = 0;
 
 var load_assets = function() {
 
@@ -71,9 +71,10 @@ function main(){
 	camera = new BuildCamera([img.width, img.height], new Point(0, 0), 5);
 	minimap = new BuildMiniMap(camera, [img.width, img.height], 200);
 	hexgrid = new BuildMap(40,2.0,1500,1200,40);
-	hexgrid.matrix[0][0].piece = new Unit(0, 0, 0, new Coordinate(0, 0), 0, unit_img);
-	hexgrid.matrix[3][3].piece = new Unit(1, 0, 0, new Coordinate(3, 3), 0, unit_img);
-	hexgrid.matrix[1][0].piece = new Unit(0, 0, 0, new Coordinate(1, 0), 0, unit_img);
+	hexgrid.matrix[0][0].piece = new Unit(0,0, 1, 0, new Coordinate(0, 0), 0, unit_img);
+	hexgrid.matrix[3][3].piece = new Unit(1,1, 1, 0, new Coordinate(3, 3), 0, unit_img);
+	hexgrid.matrix[1][0].piece = new Unit(1,1, 1, 0, new Coordinate(1, 0), 0, unit_img);
+	hexgrid.matrix[2][0].piece = new Unit(2,0, 1, 0, new Coordinate(1, 0), 0, unit_img);
 	
 	document.addEventListener('keydown', function(event) {  // key pressing event listener
 		if (event.keyCode == 37) { // left
@@ -97,9 +98,9 @@ function main(){
 			var canvasY = event.pageY - canvas.offsetTop;
 			var coord = hexgrid.toHex(new Point(canvasX, canvasY), camera);
 			if (coord) {
-				var unitteam = -1;
+				var unitplayer = -1;
 				if(hexgrid.getUnit(coord)!=null){
-					unitteam = hexgrid.getUnit(coord).team;
+					unitplayer = hexgrid.getUnit(coord).player;
 				}
 				
 				var isReachable = hexgrid.isReachable(coord);
@@ -110,10 +111,10 @@ function main(){
 					hexgrid.clearReachable();
 				}
 			    else if (last_click_coord && isAttackable){
-					//TODO
+					hexgrid.attack(last_click_coord, coord)
 					last_click_coord = null;
 					hexgrid.clearReachable();
-				} else if (!last_click_coord && (unitteam == team)) { // select a unit
+				} else if (!last_click_coord && (unitplayer == player)) { // select a unit
 					last_click_coord = coord;
 					hexgrid.markReachable(coord);
 				}
