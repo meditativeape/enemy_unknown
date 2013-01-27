@@ -72,7 +72,6 @@ function BuildMap(/*double*/ side,/*double*/ratio,/*int*/ x, /*int*/y,/*double*/
 		var toMove = this.matrix[origin.X][origin.Y].piece;
 		this.matrix[origin.X][origin.Y].piece = null;
 		this.matrix[dest.X][dest.Y].piece = toMove;
-		this.clearReachable();
 	};
 	
 
@@ -95,9 +94,11 @@ function BuildMap(/*double*/ side,/*double*/ratio,/*int*/ x, /*int*/y,/*double*/
 						this.matrix[x][y].reachable = true;
 						this.reachables.push(this.matrix[x][y]);
 					}
-					if (this.hexDist(selectedHex, this.matrix[x][y]) <= 1 && this.matrix[x][y].piece) { // in range and occupied by enemys
-						this.matrix[x][y].attackable = true;
-						this.reachables.push(this.matrix[x][y]);
+					if (this.hexDist(selectedHex, this.matrix[x][y]) <= 1 && this.matrix[x][y].piece && (selectedHex !=this.matrix[x][y])) { // in range and occupied by enemys
+						if(selectedHex.piece.ally(this.matrix[x][y].piece)){
+							this.matrix[x][y].attackable = true;
+							this.reachables.push(this.matrix[x][y]);
+						}
 					}
 				}
 			}
@@ -108,8 +109,9 @@ function BuildMap(/*double*/ side,/*double*/ratio,/*int*/ x, /*int*/y,/*double*/
 	
 	this.clearReachable = function(){
 		for (var i in this.reachables)  // clear reachables
-				this.reachables[i].reachable = false;
-				this.attackable[i].attackable = false;
+				var check = this.reachables[i];
+				check.reachable = false;
+				//check.attackable = false;
 		this.reachables = [];
 	};
 	
@@ -245,6 +247,18 @@ Hexagon.prototype.draw = function(/*Camera*/camera) {
 			ctx.lineTo(p.X-camera.x, p.Y-camera.y);
 		}
 		ctx.fillStyle = 'rgba(238, 130, 238, 0.3)';
+		ctx.fill();
+	}
+	
+	else if (this.attackable) {
+		ctx.beginPath();
+		ctx.moveTo(this.Points[0].X-camera.x, this.Points[0].Y-camera.y);
+		for(var i = 1; i < this.Points.length; i++)
+		{
+			var p = this.Points[i];
+			ctx.lineTo(p.X-camera.x, p.Y-camera.y);
+		}
+		ctx.fillStyle = 'rgba(130, 238, 130, 0.3)';
 		ctx.fill();
 	}
 	

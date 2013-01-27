@@ -13,6 +13,10 @@ function Unit(/*int*/ myteam,/*int*/hp,/*int*/ type, /*Coordinate*/cord, /*int*/
 	this.y = cord.Y;
 	this.cooldown = cooldown;
 	this.image = pic;
+	
+	this.ally = function (/*unit*/ target){
+		return true;
+	}
 }
 
 /**

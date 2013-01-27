@@ -72,7 +72,8 @@ function main(){
 	minimap = new BuildMiniMap(camera, [img.width, img.height], 200);
 	hexgrid = new BuildMap(40,2.0,1500,1200,40);
 	hexgrid.matrix[0][0].piece = new Unit(0, 0, 0, new Coordinate(0, 0), 0, unit_img);
-	hexgrid.matrix[1][0].piece = new Unit(1, 0, 0, new Coordinate(1, 0), 0, unit_img);
+	hexgrid.matrix[3][3].piece = new Unit(1, 0, 0, new Coordinate(3, 3), 0, unit_img);
+	hexgrid.matrix[1][0].piece = new Unit(0, 0, 0, new Coordinate(1, 0), 0, unit_img);
 	
 	document.addEventListener('keydown', function(event) {  // key pressing event listener
 		if (event.keyCode == 37) { // left
@@ -102,9 +103,16 @@ function main(){
 				}
 				
 				var isReachable = hexgrid.isReachable(coord);
+				var isAttackable = hexgrid.isAttackable(coord);
 				if (last_click_coord && isReachable) { // move a unit to a reachable coord
 					hexgrid.move(last_click_coord, coord);
 					last_click_coord = null;
+					hexgrid.clearReachable();
+				}
+			    else if (last_click_coord && isAttackable){
+					//TODO
+					last_click_coord = null;
+					hexgrid.clearReachable();
 				} else if (!last_click_coord && (unitteam == team)) { // select a unit
 					last_click_coord = coord;
 					hexgrid.markReachable(coord);
