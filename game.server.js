@@ -15,8 +15,11 @@
         //are going to include some values to handle that.
     global.window = global.document = global;
 
-        //Import shared game library code.
-    require('./game.core.js');
+        //Import shared library and server-side game library code.
+	require('./helper.js');
+	require('./hexgrid.js');
+	require('./unit.js');
+	require('./game.core.server.js');
 
         //A simple wrapper for logging so we can toggle it,
         //and augment it for clarity.
