@@ -2,12 +2,18 @@
 	Server-side code.
 */
 
+var helper = require('./helper.js');
+var BuildMap = require('./hexgrid.js');
+var Unit = require('./unit.js');
+
 /* The game_core_server class */
 
-    var game_core_server = function(game_instance, type, server){
+    var game_core_server = module.exports = function(playerList, gameid, type, server){
 
-        // Store the instance, if any
-        this.instance = game_instance;
+        // Store the players
+        this.players = playerList;
+		// Store game's uuid
+		this.id = gameid;
 		// Store the type of the game. One of 0, 1, 2, 3.
 		this.type = type;
         // gameserver
@@ -68,26 +74,27 @@
 		
 		case 0:  // game control messages
 			switch (keywords[1]) {
-			case "join":  // a client joins the game
-				if (!this.started) {
-					this.instance.players.push(client);
-					if ((this.instance.players.length == 2 && this.type == 0)
-						|| (this.instance.players.length == 3 && this.type == 1)
-						|| (this.instance.players.length == 4 && this.type == 2)
-						|| (this.instance.players.length == 4 && this.type == 3)) {
-						this.startGame();  // enough players; start game
-					} else {
-						for (var i in this.instance.players) {  // tell each player that someone joins
-							this.instance.players[i].send("0 join " + this.instance.players.length + " " + client.userid);
-						}	
-					}
-				} else {
-					// TODO: report error
-				}
-				break;
+			// case "join":  // a client joins the game
+				// if (!this.started) {
+					// this.instance.players.push(client);
+					// if ((this.instance.players.length == 2 && this.type == 0)
+						// || (this.instance.players.length == 3 && this.type == 1)
+						// || (this.instance.players.length == 4 && this.type == 2)
+						// || (this.instance.players.length == 4 && this.type == 3)) {
+						// this.startGame();  // enough players; start game
+					// } else {
+						// for (var i in this.instance.players) {  // tell each player that someone joins
+							// this.instance.players[i].send("0 join " + this.instance.players.length + " " + client.userid);
+						// }	
+					// }
+				// } else {
+					// // TODO: report error
+				// }
+				// break;
 			case "leave":
 				for (var i in this.instance.players) {
 					if (this.instance.players[i].userid == client.userid) {
+						this.instance.players[i].game = null;
 						this.instance.players.splice(i, i+1);
 						for (var i in this.instance.players) {  // tell each player that someone leaves
 							this.instance.players[i].send("0 leave " + this.instance.players.length + " " + client.userid);
@@ -108,7 +115,7 @@
 				var ycoord1 = parseInt(keywords[3]);
 				var xcoord2 = parseInt(keywords[4]);
 				var ycoord2 = parseInt(keywords[5]);
-				if (this.canMove(client, new Coordinate(xcoord1, ycoord1), new Coordinate(xcoord2, ycoord2))) {
+				if (this.canMove(client, new helper.Coordinate(xcoord1, ycoord1), new helper.Coordinate(xcoord2, ycoord2))) {
 					this.makeMove();  // move in our local game
 					for (var i in this.instance.players) {  // tell each player the result of move
 						this.instance.players[i].send(message);
@@ -120,7 +127,7 @@
 				var ycoord1 = parseInt(keywords[3]);
 				var xcoord2 = parseInt(keywords[4]);
 				var ycoord2 = parseInt(keywords[5]);
-				if (this.canAttack(client, new Coordinate(xcoord1, ycoord1), new Coordinate(xcoord2, ycoord2))) {
+				if (this.canAttack(client, new helper.Coordinate(xcoord1, ycoord1), new helper.Coordinate(xcoord2, ycoord2))) {
 					var responses = this.makeAttack();  // attack in our local game and get results
 					for (var i in this.instance.players) {  // tell each player the result of attack
 						for (var j in responses)
@@ -169,10 +176,10 @@
 		
 		// hardcoded game instance for test!
 		this.hexgrid = new BuildMap(40,2.0,1500,1200,40);
-		this.hexgrid.matrix[0][0].piece = new Unit(0, 0, 1, 0, new Coordinate(0, 0), 0, null);
-		this.hexgrid.matrix[1][1].piece = new Unit(0, 0, 1, 0, new Coordinate(1, 1), 0, null);
-		this.hexgrid.matrix[10][10].piece = new Unit(1, 1, 1, 0, new Coordinate(10, 10), 0, null);
-		this.hexgrid.matrix[11][11].piece = new Unit(1, 1, 1, 0, new Coordinate(11, 11), 0, null);
+		this.hexgrid.matrix[0][0].piece = new Unit(0, 0, 1, 0, new helper.Coordinate(0, 0), 0, null);
+		this.hexgrid.matrix[1][1].piece = new Unit(0, 0, 1, 0, new helper.Coordinate(1, 1), 0, null);
+		this.hexgrid.matrix[10][10].piece = new Unit(1, 1, 1, 0, new helper.Coordinate(10, 10), 0, null);
+		this.hexgrid.matrix[11][11].piece = new Unit(1, 1, 1, 0, new helper.Coordinate(11, 11), 0, null);
 		
 		for (var i in this.instance.players) {
 			this.instance.players[i].send("0 start 0 " + i);
