@@ -68,7 +68,7 @@ function animate(){
 }
 
 function onnetmessage(data){
-		var keywords = message.split(" ");
+		var keywords = data.split(" ");
 		var msgType = parseInt(keywords[0]);
 		
 		switch (msgType) {
@@ -92,6 +92,9 @@ function onnetmessage(data){
 		}
 }
 
+function connecting(data){
+}
+
 function ondisconnect(data){
 }
 
@@ -108,9 +111,7 @@ function main(){
 
             //When we connect, we are not 'connected' until we have a server id
             //and are placed in a game by the server. The server sends us a message for that.
-        this.socket.on('connect', function(){
-            this.players.self.state = 'connecting';
-        }.bind(this));
+        this.socket.on('connect', this.connecting.bind(this));
 
 
             //Sent when we are disconnected (network, server down, etc)
