@@ -51,5 +51,4 @@ Unit.prototype.gotHit = function(/*Unit*/enemy){
 	}
 };
 
-Unit.prototype.die = function(){
-}
+
