@@ -49,6 +49,15 @@ Unit.prototype.gotHit = function(/*Unit*/enemy){
         this.hp = this.hp - damage;
 		enemy.hp = enemy.hp - damage;
 	}
+	if(this.hp < 0){
+		this.hp = 0;
+	}
+	if(enemy.hp < 0){
+		enemy.hp = 0;
+	}
 };
 
-
+Unit.prototype.die = function(/*Unit*/enemy){
+	//TODO
+	//Used for unit animation.
+};
