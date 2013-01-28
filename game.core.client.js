@@ -163,12 +163,12 @@ function main(){
 				var isReachable = hexgrid.isReachable(coord);
 				var isAttackable = hexgrid.isAttackable(coord);
 				if (last_click_coord && isReachable) { // move a unit to a reachable coord
-					this.client_onnetmessage('1 move ' + last_click_coord.X +' ' + last_click_coord.Y + ' ' + coord.X + ' ' + coord.Y);
+					this.onnetmessage('1 move ' + last_click_coord.X +' ' + last_click_coord.Y + ' ' + coord.X + ' ' + coord.Y);
 					last_click_coord = null;
 					hexgrid.clearReachable();
 				}
 			    else if (last_click_coord && isAttackable){
-					this.client_onnetmessage('1 attack ' + last_click_coord.X +' ' + last_click_coord.Y + ' ' + coord.X + ' ' + coord.Y);
+					this.onnetmessage('1 attack ' + last_click_coord.X +' ' + last_click_coord.Y + ' ' + coord.X + ' ' + coord.Y);
 					last_click_coord = null;
 					hexgrid.clearReachable();
 				} else if (!last_click_coord && (unitplayer == player)) { // select a unit
