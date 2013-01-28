@@ -6,7 +6,7 @@
 *Constructor for a Map. Automatically builds map of hexagons.
 * @constructor
 */
-function BuildMap(/*double*/ side,/*double*/ratio,/*int*/ x, /*int*/y,/*double*/offset){
+var BuildMap = function(/*double*/ side,/*double*/ratio,/*int*/ x, /*int*/y,/*double*/offset){
 	
 	this.matrix = [];
 	this.reachables = [];
@@ -135,7 +135,10 @@ function BuildMap(/*double*/ side,/*double*/ratio,/*int*/ x, /*int*/y,/*double*/
 	}
 }
 
-
+// server side we export BuildMap.
+if( 'undefined' != typeof global ) {
+    module.exports = BuildMap;
+}
 
 /**
 * Helper function to calculate the specs of a hexagon.

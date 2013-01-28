@@ -17,3 +17,9 @@ function Coordinate(x, y) {
 	this.X = x;
 	this.Y = y;
 };
+
+// server side we export Point and Coordinate.
+if( 'undefined' != typeof global ) {
+    exports.Point = Point;
+	exports.Coordinate = Coordinate;
+}

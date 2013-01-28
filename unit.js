@@ -4,7 +4,7 @@
 * Prototype for a unit
 * @constructor
 */
-function Unit(/*int*/player,/*int*/ team,/*int*/hp,/*int*/ type, /*Coordinate*/cord, /*int*/ cooldown, /*image*/pic){
+var Unit = function(/*int*/player,/*int*/ team,/*int*/hp,/*int*/ type, /*Coordinate*/cord, /*int*/ cooldown, /*image*/pic){
 	this.player = player; //Starts from 0
 	this.team = team; //Starts from 0
 	this.hp = hp;
@@ -14,6 +14,11 @@ function Unit(/*int*/player,/*int*/ team,/*int*/hp,/*int*/ type, /*Coordinate*/c
 	this.y = cord.Y;
 	this.cooldown = cooldown;
 	this.image = pic;
+}
+
+// server side we export Unit.
+if( 'undefined' != typeof global ) {
+    module.exports = Unit;
 }
 
 /**

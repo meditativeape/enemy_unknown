@@ -15,11 +15,8 @@
         //are going to include some values to handle that.
     global.window = global.document = global;
 
-        //Import shared library and server-side game library code.
-	require('./helper.js');
-	require('./hexgrid.js');
-	require('./unit.js');
-	require('./game.core.server.js');
+        //Import server-side game library code.
+	var game_core_server = require('./game.core.server.js');
 
         //A simple wrapper for logging so we can toggle it,
         //and augment it for clarity.
@@ -27,82 +24,64 @@
         if(verbose) console.log.apply(this,arguments);
     }
 
+	// List to store games
+	game_server.games = [];
+	game_server.game_count = 0;
 
     //Relay messages from the client
     game_server.onMessage = function(client,message) {
 		   //the client should be in a game, so
             //we can tell that game to handle the input
-		if(client && client.game && client.game.gamecore) {
+		if(client && client.game) {
             client.game.gamecore.handle_server_input(client, message);
         }
 		
     }; //game_server.onMessage
 
 
-        //Define some required functions
-    game_server.createGame = function(player,type) {
+    // Define some required functions
+    game_server.createGame = function(player, type) {
 
-            //Create a new game instance
-		var thegame = new Object();
-		thegame.id = UUID(); //generate a new id for the game
-		thegame.players = new Array(); 
-		thegame.players[0] = player;//so we know who initiated the game
-		            //Create a new game core instance, this actually runs the
-            //game code like collisions and such.
-		thegame.type = type;
-        thegame.gamecore = new game_core( thegame,type,this );
+        // Create a new game instance
+        var thegame = new game_core_server([player], UUID(), type, this);
 		
-            //Store it in the list of game
-        this.games[ thegame.id ] = thegame;
+        // Store it in the list of game
+        this.games.push(thegame);
 
-            //Keep track
+        // Keep track of #games
         this.game_count++;
 
-            //tell the player that they are now the host
-            //s=server message, h=you are hosting
-
-        player.send('0 join 1 '+ player.userid);
-        console.log('server host at  ' + thegame.gamecore.local_time);
+        // Tell the player that he joins the game
+        player.send('0 join 1 ' + player.userid);
         player.game = thegame;
-        
-        this.log('player ' + player.userid + ' created a game with id ' + player.game.id);
+		
+        this.log('Player ' + player.userid + ' created a game with id ' + player.game.id);
 
-            //return it
+        // return it
         return thegame;
 
-    }; //game_server.createGame
+    }; // game_server.createGame
 	
 	
 	game_server.endGame = function(gameid){
-		for (person in this.games[gameid].players){
-			person.game = null;
+	
+		for (var i in this.games) {
+			if (this.games[i].gameid == gameid) {
+				this.games.splice(i, i+1);
+				this.game_count--;
+				this.log('game removed. there are now ' + this.game_count + ' games' );
+				break;
+			}
 		}
-        delete this.games[gameid];
-        this.game_count--;
-        this.log('game removed. there are now ' + this.game_count + ' games' );
+        
 	}//game_server.endGame 
-	
-	
-        //we are requesting to leave a game
-    game_server.leaveGame = function(gameid, userid) {
-
-        var thegame = this.games[gameid];
-
-        if(thegame) {
-			thegame.left(userid);
-			userid.game = null;
-        } else {
-            this.log('that game was not found!');
-        }
-
-    }; //game_server.leaveGame
 
     game_server.findGame = function(player,type) {
 
-
-		if(type = 0){
-			needed = 2;
-		}
+		var needed = 2;
+		// if(type = 0){
+			// needed = 2;
+		// }
         this.log('looking for a game. We have : ' + this.game_count);
 
             //so there are games active,
@@ -113,8 +92,6 @@
 
                 //Check the list of games for an open game
             for(var gameid in this.games) {
-                    //only care about our own properties.
-                if(!this.games.hasOwnProperty(gameid)) continue;
 		
                     //get the game we are checking against
                 var game_instance = this.games[gameid];
@@ -129,13 +106,16 @@
                         //increase the player count and store
                         //the player as the client of this game
                     game_instance.players[player_count] = player;
-					player.send('0 join ' + player_count + ' ' +player.userid)
+					player.game = game_instance;
+					for (var i in game_instance.players)
+						game_instance.players[i].send('0 join ' + player_count + ' ' +player.userid);
                         //start running the game on the server,
                         //which will tell them to respawn/start
 					if(player_count == needed){
                     	game_instance.start();
+						this.games.splice(gameid, gameid+1);
 					}
-
+					break;
                 } //if less than 2 players
             } //for all games
 
@@ -143,7 +123,7 @@
                 //we must create one
             if(!joined_a_game) {
 
-                this.createGame(player);
+                this.createGame(player, type);
 
             } //if no join already
 
