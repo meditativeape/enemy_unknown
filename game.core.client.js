@@ -129,9 +129,9 @@ function main(){
 	minimap = new BuildMiniMap(camera, [img.width, img.height], 200);
 	hexgrid = new BuildMap(40,2.0,1500,1200,40);
 	this.hexgrid.matrix[0][0].piece = new Unit(0, 0, 1, 0, new Coordinate(0, 0), 0, unit_img);
-	this.hexgrid.matrix[1][1].piece = new Unit(0, 0, 1, 0, new Coordinate(1, 1), 0, unit_img);
-	this.hexgrid.matrix[10][10].piece = new Unit(1, 1, 1, 0, new Coordinate(10, 10), 0, unit_img);
-	this.hexgrid.matrix[9][9].piece = new Unit(1, 1, 1, 0, new Coordinate(9, 9), 0, unit_img);
+	this.hexgrid.matrix[0][2].piece = new Unit(0, 0, 1, 0, new Coordinate(0, 2), 0, unit_img);
+	this.hexgrid.matrix[2][0].piece = new Unit(1, 1, 1, 0, new Coordinate(2, 0), 0, unit_img);
+	this.hexgrid.matrix[2][2].piece = new Unit(1, 1, 1, 0, new Coordinate(2, 2), 0, unit_img);
 	
 	document.addEventListener('keydown', function(event) {  // key pressing event listener
 		if (event.keyCode == 37) { // left
