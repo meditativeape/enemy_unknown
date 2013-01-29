@@ -2,6 +2,13 @@
 * Hex grid map objects and helper functions.
 */
 
+// server side we import Point and Coordinate.
+if( 'undefined' != typeof global ) {
+    var helper = require("./helper.js");
+	var Point = helper.Point;
+	var Coordinate = helper.Coordinate;
+}
+
 /**
 *Constructor for a Map. Automatically builds map of hexagons.
 * @constructor
