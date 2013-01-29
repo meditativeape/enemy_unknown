@@ -33,7 +33,7 @@
 		   //the client should be in a game, so
             //we can tell that game to handle the input
 		if(client && client.game) {
-            client.game.gamecore.handle_server_input(client, message);
+            client.game.handleClientInput(client, message);
         }
 		
     }; //game_server.onMessage
@@ -100,7 +100,7 @@
                     //If the game is a player short
 				var player_count = game_instance.players.length;
                 if(player_count < needed) {
-
+					this.log('found a game....');
                         //someone wants us to join!
                     joined_a_game = true;
                         //increase the player count and store
@@ -111,8 +111,9 @@
 						game_instance.players[i].send('0 join ' + player_count + ' ' +player.userid);
                         //start running the game on the server,
                         //which will tell them to respawn/start
-					if(player_count == needed){
-                    	game_instance.start();
+					if (player_count+1 == needed){
+						this.log('game.server starts the game....');
+                    	game_instance.startGame();
 						this.games.splice(gameid, gameid+1);
 					}
 					break;

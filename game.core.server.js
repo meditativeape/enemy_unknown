@@ -25,10 +25,10 @@ var Unit = require('./unit.js');
 
     };
 	
-	game_core_server.canMove = function(coord1, coord2, player){
+	game_core_server.prototype.canMove = function(coord1, coord2, player){
 		
 		var unit = this.hexgrid.getUnit(coord1);
-		if (unit.teamID == player.teamID && !this.map.getUnit(coord2)){ // coord1 has player's unit and coord2 is empty
+		if (unit.team == player.team && !this.hexgrid.getUnit(coord2)){ // coord1 has player's unit and coord2 is empty
 			if (this.hexgrid.hexDist(this.hexgrid.matrix[coord1.X][coord1.Y], this.hexgrid.matrix[coord2.X][coord2.Y]) <= unit.range)
 				return true;
 		}
@@ -37,38 +37,39 @@ var Unit = require('./unit.js');
 		
 	};
 	
-	game_core_server.makeMove = function(coord1, coord2){
+	game_core_server.prototype.makeMove = function(coord1, coord2){
 		this.hexgrid.move(coord1, coord2);
 	};
 	
-	game_core_server.canAttack = function(coord1, coord2, player){
+	game_core_server.prototype.canAttack = function(coord1, coord2, player){
 	
 		var myUnit = this.hexgrid.getUnit(coord1);
 		var theirUnit = this.hexgrid.getUnit(coord2)
-		if (myUnit.teamID == player.teamID && theirUnit && theirUnit.teamID != player.teamID)
+		if (myUnit.team == player.team && theirUnit && theirUnit.team != player.team)
 			if (this.hexgrid.hexDist(this.hexgrid.matrix[coord1.X][coord1.Y], this.hexgrid.matrix[coord2.X][coord2.Y]) == 1)
 				return true;
 		return false;
 	
 	};
 	
-	game_core_server.makeAttack = function(coord1, coord2){
-		this.hexgrid.attack(coord1, coord2);
+	game_core_server.prototype.makeAttack = function(coord1, coord2){
 		var responses = [];
 		var unit1 = this.hexgrid.getUnit(coord1);
 		var unit2 = this.hexgrid.getUnit(coord2);
+		this.hexgrid.attack(coord1, coord2);
 		responses.push(["attack", coord1.X, coord1.Y, unit1.hp, coord2.X, coord2.Y, unit2.hp].join(" "));
-		if (unit1.hp == 0)  // unit 1 dies
+		if (unit1.hp <= 0)  // unit 1 dies
 			responses.push(["die", coord1.X, coord1.Y, unit1.type].join(" "));
-		if (unit2.hp == 0)  // unit 2 dies
+		if (unit2.hp <= 0)  // unit 2 dies
 			responses.push(["die", coord2.X, coord2.Y, unit2.type].join(" "));
 		return responses;
 	};
 
-	game_core_server.handleClientInput = function(client, message){
+	game_core_server.prototype.handleClientInput = function(client, message){
 		
 		var keywords = message.split(" ");
 		var msgType = parseInt(keywords[0]);
+		console.log("received a message: " + message);
 		
 		switch (msgType) {
 		
@@ -115,10 +116,12 @@ var Unit = require('./unit.js');
 				var ycoord1 = parseInt(keywords[3]);
 				var xcoord2 = parseInt(keywords[4]);
 				var ycoord2 = parseInt(keywords[5]);
-				if (this.canMove(client, new helper.Coordinate(xcoord1, ycoord1), new helper.Coordinate(xcoord2, ycoord2))) {
-					this.makeMove();  // move in our local game
-					for (var i in this.instance.players) {  // tell each player the result of move
-						this.instance.players[i].send(message);
+				var coord1 = new helper.Coordinate(xcoord1, ycoord1);
+				var coord2 = new helper.Coordinate(xcoord2, ycoord2);
+				if (this.canMove(coord1, coord2, client)) {
+					this.makeMove(coord1, coord2);  // move in our local game
+					for (var i in this.players) {  // tell each player the result of move
+						this.players[i].send(message);
 					}
 				}
 				break;
@@ -127,11 +130,13 @@ var Unit = require('./unit.js');
 				var ycoord1 = parseInt(keywords[3]);
 				var xcoord2 = parseInt(keywords[4]);
 				var ycoord2 = parseInt(keywords[5]);
-				if (this.canAttack(client, new helper.Coordinate(xcoord1, ycoord1), new helper.Coordinate(xcoord2, ycoord2))) {
-					var responses = this.makeAttack();  // attack in our local game and get results
-					for (var i in this.instance.players) {  // tell each player the result of attack
+				var coord1 = new helper.Coordinate(xcoord1, ycoord1);
+				var coord2 = new helper.Coordinate(xcoord2, ycoord2);
+				if (this.canAttack(coord1, coord2, client)) {
+					var responses = this.makeAttack(coord1, coord2);  // attack in our local game and get results
+					for (var i in this.players) {  // tell each player the result of attack
 						for (var j in responses)
-							this.instance.players[i].send(responses[j]);
+							this.players[i].send(responses[j]);
 					}
 				}
 				break;
@@ -171,17 +176,20 @@ var Unit = require('./unit.js');
 		}
 	};
 
-	game_core_server.startGame = function(){
+	game_core_server.prototype.startGame = function(){
 		this.started = true;
 		
+		console.log("game started!");
 		// hardcoded game instance for test!
 		this.hexgrid = new BuildMap(40,2.0,1500,1200,40);
 		this.hexgrid.matrix[0][0].piece = new Unit(0, 0, 1, 0, new helper.Coordinate(0, 0), 0, null);
-		this.hexgrid.matrix[1][1].piece = new Unit(0, 0, 1, 0, new helper.Coordinate(1, 1), 0, null);
-		this.hexgrid.matrix[10][10].piece = new Unit(1, 1, 1, 0, new helper.Coordinate(10, 10), 0, null);
-		this.hexgrid.matrix[11][11].piece = new Unit(1, 1, 1, 0, new helper.Coordinate(11, 11), 0, null);
+		this.hexgrid.matrix[0][2].piece = new Unit(0, 0, 1, 0, new helper.Coordinate(0, 2), 0, null);
+		this.hexgrid.matrix[2][0].piece = new Unit(1, 1, 1, 0, new helper.Coordinate(2, 0), 0, null);
+		this.hexgrid.matrix[2][2].piece = new Unit(1, 1, 1, 0, new helper.Coordinate(2, 2), 0, null);
+		this.players[0].team = 0;
+		this.players[1].team = 1;
 		
-		for (var i in this.instance.players) {
-			this.instance.players[i].send("0 start 0 " + i);
+		for (var i in this.players) {
+			this.players[i].send("0 start 0 " + i);
 		}
 	};

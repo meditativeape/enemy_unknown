@@ -122,7 +122,7 @@
             if(client.game && client.game.id) {
 
                 //player leaving a game should tell the game_server
-                game_server.leaveGame(client.game.id, client.userid);
+                game_server.endGame(client.game.id, client.userid); // TODO: delegate to game.core.server
 
             } //client.game_id
 
