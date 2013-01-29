@@ -62,7 +62,7 @@ Unit.prototype.gotHit = function(/*Unit*/enemy){
 	}
 };
 
-Unit.prototype.die = function(/*Unit*/enemy){
+Unit.prototype.die = function(){
 	//TODO
 	//Used for unit animation.
 };
