@@ -28,7 +28,7 @@ var Unit = require('./unit.js');
 	game_core_server.prototype.canMove = function(coord1, coord2, player){
 		
 		var unit = this.hexgrid.getUnit(coord1);
-		if (unit.teamID == player.teamID && !this.map.getUnit(coord2)){ // coord1 has player's unit and coord2 is empty
+		if (unit.team == player.team && !this.map.getUnit(coord2)){ // coord1 has player's unit and coord2 is empty
 			if (this.hexgrid.hexDist(this.hexgrid.matrix[coord1.X][coord1.Y], this.hexgrid.matrix[coord2.X][coord2.Y]) <= unit.range)
 				return true;
 		}
@@ -45,7 +45,7 @@ var Unit = require('./unit.js');
 	
 		var myUnit = this.hexgrid.getUnit(coord1);
 		var theirUnit = this.hexgrid.getUnit(coord2)
-		if (myUnit.teamID == player.teamID && theirUnit && theirUnit.teamID != player.teamID)
+		if (myUnit.team == player.team && theirUnit && theirUnit.team != player.team)
 			if (this.hexgrid.hexDist(this.hexgrid.matrix[coord1.X][coord1.Y], this.hexgrid.matrix[coord2.X][coord2.Y]) == 1)
 				return true;
 		return false;
@@ -116,7 +116,7 @@ var Unit = require('./unit.js');
 				var ycoord1 = parseInt(keywords[3]);
 				var xcoord2 = parseInt(keywords[4]);
 				var ycoord2 = parseInt(keywords[5]);
-				if (this.canMove(client, new helper.Coordinate(xcoord1, ycoord1), new helper.Coordinate(xcoord2, ycoord2))) {
+				if (this.canMove(new helper.Coordinate(xcoord1, ycoord1), new helper.Coordinate(xcoord2, ycoord2), client)) {
 					this.makeMove();  // move in our local game
 					for (var i in this.instance.players) {  // tell each player the result of move
 						this.instance.players[i].send(message);
@@ -128,7 +128,7 @@ var Unit = require('./unit.js');
 				var ycoord1 = parseInt(keywords[3]);
 				var xcoord2 = parseInt(keywords[4]);
 				var ycoord2 = parseInt(keywords[5]);
-				if (this.canAttack(client, new helper.Coordinate(xcoord1, ycoord1), new helper.Coordinate(xcoord2, ycoord2))) {
+				if (this.canAttack(new helper.Coordinate(xcoord1, ycoord1), new helper.Coordinate(xcoord2, ycoord2), client)) {
 					var responses = this.makeAttack();  // attack in our local game and get results
 					for (var i in this.instance.players) {  // tell each player the result of attack
 						for (var j in responses)
@@ -182,8 +182,10 @@ var Unit = require('./unit.js');
 		this.hexgrid.matrix[1][1].piece = new Unit(0, 0, 1, 0, new helper.Coordinate(1, 1), 0, null);
 		this.hexgrid.matrix[10][10].piece = new Unit(1, 1, 1, 0, new helper.Coordinate(10, 10), 0, null);
 		this.hexgrid.matrix[9][9].piece = new Unit(1, 1, 1, 0, new helper.Coordinate(9, 9), 0, null);
+		this.players[0].team = 0;
+		this.players[1].team = 1;
 		
-		for (var i in this.instance.players) {
-			this.instance.players[i].send("0 start 0 " + i);
+		for (var i in this.players) {
+			this.players[i].send("0 start 0 " + i);
 		}
 	};
