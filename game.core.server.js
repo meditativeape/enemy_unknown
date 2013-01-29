@@ -57,11 +57,11 @@ var Unit = require('./unit.js');
 		var unit1 = this.hexgrid.getUnit(coord1);
 		var unit2 = this.hexgrid.getUnit(coord2);
 		this.hexgrid.attack(coord1, coord2);
-		responses.push(["attack", coord1.X, coord1.Y, unit1.hp, coord2.X, coord2.Y, unit2.hp].join(" "));
+		responses.push(["1", "attack", coord1.X, coord1.Y, unit1.hp, coord2.X, coord2.Y, unit2.hp].join(" "));
 		if (unit1.hp <= 0)  // unit 1 dies
-			responses.push(["die", coord1.X, coord1.Y, unit1.type].join(" "));
+			responses.push(["1", "die", coord1.X, coord1.Y, unit1.type].join(" "));
 		if (unit2.hp <= 0)  // unit 2 dies
-			responses.push(["die", coord2.X, coord2.Y, unit2.type].join(" "));
+			responses.push(["1", "die", coord2.X, coord2.Y, unit2.type].join(" "));
 		return responses;
 	};
 
@@ -77,15 +77,15 @@ var Unit = require('./unit.js');
 			switch (keywords[1]) {
 			// case "join":  // a client joins the game
 				// if (!this.started) {
-					// this.instance.players.push(client);
-					// if ((this.instance.players.length == 2 && this.type == 0)
-						// || (this.instance.players.length == 3 && this.type == 1)
-						// || (this.instance.players.length == 4 && this.type == 2)
-						// || (this.instance.players.length == 4 && this.type == 3)) {
+					// this.players.push(client);
+					// if ((this.players.length == 2 && this.type == 0)
+						// || (this.players.length == 3 && this.type == 1)
+						// || (this.players.length == 4 && this.type == 2)
+						// || (this.players.length == 4 && this.type == 3)) {
 						// this.startGame();  // enough players; start game
 					// } else {
-						// for (var i in this.instance.players) {  // tell each player that someone joins
-							// this.instance.players[i].send("0 join " + this.instance.players.length + " " + client.userid);
+						// for (var i in this.players) {  // tell each player that someone joins
+							// this.players[i].send("0 join " + this.players.length + " " + client.userid);
 						// }	
 					// }
 				// } else {
@@ -93,12 +93,12 @@ var Unit = require('./unit.js');
 				// }
 				// break;
 			case "leave":
-				for (var i in this.instance.players) {
-					if (this.instance.players[i].userid == client.userid) {
-						this.instance.players[i].game = null;
-						this.instance.players.splice(i, i+1);
-						for (var i in this.instance.players) {  // tell each player that someone leaves
-							this.instance.players[i].send("0 leave " + this.instance.players.length + " " + client.userid);
+				for (var i in this.players) {
+					if (this.players[i].userid == client.userid) {
+						this.players[i].game = null;
+						this.players.splice(i, i+1);
+						for (var i in this.players) {  // tell each player that someone leaves
+							this.sendMsg(this.players[i], "0 leave " + this.players.length + " " + client.userid);
 						}
 						break;
 					}
@@ -121,7 +121,7 @@ var Unit = require('./unit.js');
 				if (this.canMove(coord1, coord2, client)) {
 					this.makeMove(coord1, coord2);  // move in our local game
 					for (var i in this.players) {  // tell each player the result of move
-						this.players[i].send(message);
+						this.sendMsg(this.players[i], message);
 					}
 				}
 				break;
@@ -136,7 +136,7 @@ var Unit = require('./unit.js');
 					var responses = this.makeAttack(coord1, coord2);  // attack in our local game and get results
 					for (var i in this.players) {  // tell each player the result of attack
 						for (var j in responses)
-							this.players[i].send(responses[j]);
+							this.sendMsg(this.players[i], responses[j]);
 					}
 				}
 				break;
@@ -175,6 +175,11 @@ var Unit = require('./unit.js');
 			// TODO: send response about invalid message
 		}
 	};
+	
+	game_core_server.prototype.sendMsg = function(recipient, message){
+		console.log("send message: " + message);
+		recipient.send(message);
+	};
 
 	game_core_server.prototype.startGame = function(){
 		this.started = true;
@@ -190,6 +195,6 @@ var Unit = require('./unit.js');
 		this.players[1].team = 1;
 		
 		for (var i in this.players) {
-			this.players[i].send("0 start 0 " + i);
+			this.sendMsg(this.players[i], "0 start 0 " + i);
 		}
 	};

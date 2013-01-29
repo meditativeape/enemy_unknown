@@ -78,7 +78,6 @@ function onnetmessage(data){
 			case "move":  // a client joins the game
 				hexgrid.move(new Coordinate(parseInt(keywords[2]),parseInt(keywords[3])),new Coordinate(parseInt(keywords[4]),parseInt(keywords[5])))
 				break;
-			}
 			case "attack":
 				hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece.hp = parseInt(keywords[4]);
 				hexgrid.matrix[parseInt(keywords[5])][parseInt(keywords[6])].piece.hp = parseInt(keywords[7]);
@@ -88,7 +87,7 @@ function onnetmessage(data){
 				hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece.die();
 				hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece = null;
 				break;
-				
+			}
 		}
 }
 
