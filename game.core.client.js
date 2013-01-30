@@ -28,7 +28,8 @@ var unit_img;
 var camera;
 var minimap;
 var hexgrid;
-var player = 0;
+var started = false;
+var player;
 
 var load_assets = function() {
 
@@ -62,9 +63,16 @@ var load_assets = function() {
 function animate(){
 	requestAnimationFrame(animate);
 	
-	camera.draw(img);
-	hexgrid.draw(camera);
-	minimap.draw(img);
+	if (started) {
+		camera.draw(img);
+		hexgrid.draw(camera);
+		minimap.draw(img);
+	} else {
+		var ctx = document.getElementById('gameCanvas').getContext('2d');
+		ctx.font = 'italic 60px Calibri';
+		ctx.fillStyle = 'rgba(127, 155, 0, 0.5)';;
+		ctx.fillText("Waiting for other players...", 80, 260);		
+	}
 }
 
 function onnetmessage(data){
@@ -73,9 +81,18 @@ function onnetmessage(data){
 		
 		switch (msgType) {
 		
+		case 0:
+			switch (keywords[1]) {
+			case "start":  // game starts
+				player = parseInt(keywords[3]);
+				startGame();
+				break;
+			}
+			break;
+		
 		case 1:  // game control messages
 			switch (keywords[1]) {
-			case "move":  // a client joins the game
+			case "move":
 				hexgrid.move(new Coordinate(parseInt(keywords[2]),parseInt(keywords[3])),new Coordinate(parseInt(keywords[4]),parseInt(keywords[5])))
 				break;
 			case "attack":
@@ -88,6 +105,7 @@ function onnetmessage(data){
 				hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece = null;
 				break;
 			}
+			break;
 		}
 }
 
@@ -119,18 +137,24 @@ function main(){
         this.socket.on('onconnected', this.onconnected.bind(this));
             //On message from the server, we parse the commands and send it to the handlers
         this.socket.on('message', this.onnetmessage.bind(this));
+		// Start animation
+		var canvas = document.getElementById('gameCanvas');
+		canvas.width = 800;
+		canvas.height = 600;
+		animate();
 		
 		//TODO
-		
-	//
-	
+}
+
+function startGame(){
 	camera = new BuildCamera([img.width, img.height], new Point(0, 0), 5);
 	minimap = new BuildMiniMap(camera, [img.width, img.height], 200);
 	hexgrid = new BuildMap(40,2.0,1500,1200,40);
-	this.hexgrid.matrix[0][0].piece = new Unit(0, 0, 1, 0, new Coordinate(0, 0), 0, unit_img);
-	this.hexgrid.matrix[0][2].piece = new Unit(0, 0, 1, 0, new Coordinate(0, 2), 0, unit_img);
-	this.hexgrid.matrix[2][0].piece = new Unit(1, 1, 1, 0, new Coordinate(2, 0), 0, unit_img);
-	this.hexgrid.matrix[2][2].piece = new Unit(1, 1, 1, 0, new Coordinate(2, 2), 0, unit_img);
+	hexgrid.matrix[0][0].piece = new Unit(0, 0, 1, 0, new Coordinate(0, 0), 0, unit_img);
+	hexgrid.matrix[0][2].piece = new Unit(0, 0, 1, 0, new Coordinate(0, 2), 0, unit_img);
+	hexgrid.matrix[2][0].piece = new Unit(1, 1, 1, 0, new Coordinate(2, 0), 0, unit_img);
+	hexgrid.matrix[2][2].piece = new Unit(1, 1, 1, 0, new Coordinate(2, 2), 0, unit_img);
+	started = true;
 	
 	document.addEventListener('keydown', function(event) {  // key pressing event listener
 		if (event.keyCode == 37) { // left
@@ -187,11 +211,6 @@ function main(){
 			hexgrid.clearReachable();
 		}
 	});
-	
-	var canvas = document.getElementById('gameCanvas');
-	canvas.width = 800;
-	canvas.height = 600;
-	animate();
 }
 
 load_assets();

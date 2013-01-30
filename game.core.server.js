@@ -93,16 +93,7 @@ var Unit = require('./unit.js');
 				// }
 				// break;
 			case "leave":
-				for (var i in this.players) {
-					if (this.players[i].userid == client.userid) {
-						this.players[i].game = null;
-						this.players.splice(i, i+1);
-						for (var i in this.players) {  // tell each player that someone leaves
-							this.sendMsg(this.players[i], "0 leave " + this.players.length + " " + client.userid);
-						}
-						break;
-					}
-				}
+				this.leaveGame(client);
 				break;
 			default:
 				// TODO: send response about invalid message
@@ -197,4 +188,23 @@ var Unit = require('./unit.js');
 		for (var i in this.players) {
 			this.sendMsg(this.players[i], "0 start 0 " + i);
 		}
+	};
+	
+	game_core_server.prototype.leaveGame = function(client){
+		for (var i in this.players)
+			if (this.players[i].userid == client.userid) {
+				this.players[i].game = null;
+				this.players.splice(i, i+1);
+				for (var i in this.players) {  // tell each player that someone leaves
+					this.sendMsg(this.players[i], "0 leave " + this.players.length + " " + client.userid);
+				}
+				break;
+			}
+		// if this game has no more than one player, end it
+		if (this.players.length == 1) {
+			this.sendMsg(this.players[0], "0 end " + this.players[0].userid);
+			this.players[0].game = null;
+		}
+		if (this.players.length <= 1)
+			this.server.endGame();
 	};

@@ -38,6 +38,14 @@
 		
     }; //game_server.onMessage
 
+	//Remove client for a game
+	game_server.onDisconnect = function(client) {
+	
+		if(client.game) {
+			client.game.leaveGame(client);
+		}
+	
+	}
 
     // Define some required functions
     game_server.createGame = function(player, type) {

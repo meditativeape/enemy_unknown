@@ -114,17 +114,11 @@
             //in, and make sure the other player knows that they left and so on.
         client.on('disconnect', function () {
 
-                //Useful to know when soomeone disconnects
-            console.log('\t socket.io:: client disconnected ' + client.userid + ' ' + client.game_id);
-            
-                //If the client was in a game, set by game_server.findGame,
-                //we can tell the game server to update that game state.
-            if(client.game && client.game.id) {
-
+                //Useful to know when someone disconnects
+            console.log('\t socket.io:: client disconnected ' + client.userid + ' ' + client.game.id);
+			
                 //player leaving a game should tell the game_server
-                game_server.endGame(client.game.id, client.userid); // TODO: delegate to game.core.server
-
-            } //client.game_id
+            game_server.onDisconnect(client);
 
         }); //client.on disconnect
      
