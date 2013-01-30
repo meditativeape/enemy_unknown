@@ -21,6 +21,20 @@ if( 'undefined' != typeof global ) {
     module.exports = Unit;
 }
 
+Unit.prototype.setcd = function(/*int*/ time){
+	this.cooldown = time;
+	var self = this;
+	var cding = window.setInterval(function(){
+			if(self.cooldown>0){
+				self.cooldown--;
+			}else{
+				window.clearInterval(cding);
+			}
+		}
+		,1000);
+
+}
+
 /**
  * Unit Method: Draws this unit to the canvas
  * @this {Unit}
