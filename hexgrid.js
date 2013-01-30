@@ -82,7 +82,18 @@ var BuildMap = function(/*double*/ side,/*double*/ratio,/*int*/ x, /*int*/y,/*do
 		this.matrix[dest.X][dest.Y].piece.setcd(5);
 	};
 	
-
+	this.attack = function(/*coordinate*/ attacker, /*coordinate*/gothit){
+		this.matrix[gothit.X][gothit.Y].piece.gotHit(this.matrix[attacker.X][attacker.Y].piece);
+		this.matrix[attacker.X][attacker.Y].piece.setcd(5);
+		if(this.matrix[gothit.X][gothit.Y].piece.hp<=0){
+			this.matrix[gothit.X][gothit.Y].piece = null;
+		}
+		if(this.matrix[attacker.X][attacker.Y].piece.hp<=0){
+			this.matrix[attacker.X][attacker.Y].piece = null;
+		}
+		
+	}
+	
 
 	
 	this.getUnit = function(/*Coordinate*/toCheck){
@@ -95,8 +106,7 @@ var BuildMap = function(/*double*/ side,/*double*/ratio,/*int*/ x, /*int*/y,/*do
 	};
 	
 	this.markReachable = function(/*Coordinate*/coord){
-		if (this.getUnit(coord)) { // this coordinate has a unit
-			if(this.getUnit(coord).cooldown==0){
+
 				var selectedHex = this.matrix[coord.X][coord.Y];
 				for(var x in this.matrix){ // brute force!
 					for(var y in this.matrix[x]){
@@ -112,8 +122,7 @@ var BuildMap = function(/*double*/ side,/*double*/ratio,/*int*/ x, /*int*/y,/*do
 						}
 					}
 				}
-			}
-		}
+	
 	};
 	
 	
