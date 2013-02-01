@@ -23,8 +23,8 @@
 
 }() );
 
-var img;
-var unit_img;
+var background, unit_unknown, unit_fire, unit_water;
+// var images;   TODO: put all images into an array
 var camera;
 var minimap;
 var hexgrid;
@@ -51,22 +51,24 @@ var load_assets = function() {
 	
 	function isAppLoaded() {
 		files_loaded++;
-		if (files_loaded >= 2) {
+		if (files_loaded >= 4) {
 			main();
 		}
 	}
 	
-	img = load_image("http://1.bp.blogspot.com/-zTYKmcB26qQ/Ts1Tyf4wjeI/AAAAAAAABrg/15p7wQiAsxQ/s1600/universe.jpg");
-	unit_img = load_image("sprites\\unit_drop_2.png");
+	background = load_image("sprites\\bg_temp.jpg");
+	unit_unknown = load_image("sprites\\unit_drop_2.png");
+	unit_fire = load_image("sprites\\fire_breath.gif");
+	unit_water = load_image("sprites\\water_breath.gif");
 };
 
 function animate(){
 	requestAnimationFrame(animate);
 	
 	if (started) {
-		camera.draw(img);
+		camera.draw(background);
 		hexgrid.draw(camera);
-		minimap.draw(img);
+		minimap.draw(background);
 	} else {
 		var ctx = document.getElementById('gameCanvas').getContext('2d');
 		ctx.font = 'italic 60px Calibri';
@@ -148,13 +150,21 @@ function main(){
 }
 
 function startGame(){
-	camera = new BuildCamera([img.width, img.height], new Point(0, 0), 5);
-	minimap = new BuildMiniMap(camera, [img.width, img.height], 200);
+	// hard-coded game instance for demo!!!
+	camera = new BuildCamera([background.width, background.height], new Point(0, 0), 5);
+	minimap = new BuildMiniMap(camera, [background.width, background.height], 200);
 	hexgrid = new BuildMap(40,2.0,1500,1200,40);
-	hexgrid.matrix[0][0].piece = new Unit(0, 0, 1, 0, new Coordinate(0, 0), 0, unit_img);
-	hexgrid.matrix[0][2].piece = new Unit(0, 0, 1, 0, new Coordinate(0, 2), 0, unit_img);
-	hexgrid.matrix[2][0].piece = new Unit(1, 1, 1, 0, new Coordinate(2, 0), 0, unit_img);
-	hexgrid.matrix[2][2].piece = new Unit(1, 1, 1, 0, new Coordinate(2, 2), 0, unit_img);
+	if (player == 0) {
+		hexgrid.matrix[0][0].piece = new Unit(0, 0, 1, 0, new Coordinate(0, 0), 0, unit_fire);
+		hexgrid.matrix[0][2].piece = new Unit(0, 0, 1, 0, new Coordinate(0, 2), 0, unit_fire);
+		hexgrid.matrix[2][0].piece = new Unit(1, 1, 1, 0, new Coordinate(2, 0), 0, unit_unknown);
+		hexgrid.matrix[2][2].piece = new Unit(1, 1, 1, 0, new Coordinate(2, 2), 0, unit_unknown);
+	} else {
+		hexgrid.matrix[0][0].piece = new Unit(0, 0, 1, 0, new Coordinate(0, 0), 0, unit_unknown);
+		hexgrid.matrix[0][2].piece = new Unit(0, 0, 1, 0, new Coordinate(0, 2), 0, unit_unknown);
+		hexgrid.matrix[2][0].piece = new Unit(1, 1, 1, 0, new Coordinate(2, 0), 0, unit_water);
+		hexgrid.matrix[2][2].piece = new Unit(1, 1, 1, 0, new Coordinate(2, 2), 0, unit_water);
+	}
 	started = true;
 	
 	document.addEventListener('keydown', function(event) {  // key pressing event listener
