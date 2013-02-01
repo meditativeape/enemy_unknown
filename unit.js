@@ -14,6 +14,9 @@ var Unit = function(/*int*/player,/*int*/ team,/*int*/hp,/*int*/ type, /*Coordin
 	this.y = cord.Y;
 	this.cooldown = cooldown;
 	this.image = pic;
+	this.attacking = false;
+	this.damaged = false;
+	this.death = null;
 }
 
 // server side we export Unit.
@@ -42,7 +45,7 @@ Unit.prototype.setcd = function(/*int*/ time){
 Unit.prototype.draw = function(/*Point*/p, /*int*/height) {
 	var ctx = document.getElementById('gameCanvas').getContext('2d');
 	ctx.drawImage(this.image, p.X - this.image.width/2, p.Y + height/4 - this.image.height, 
-		this.image.width, this.image.height);
+			this.image.width, this.image.height);
 };
 
 Unit.prototype.gotHit = function(/*Unit*/enemy){
@@ -57,7 +60,7 @@ Unit.prototype.gotHit = function(/*Unit*/enemy){
 	//Enemy advantage
     if (flag>2){
     	this.hp = this.hp - damage; 
-		enemy.hp = enemy.hp - floor(damage/2);
+		//enemy.hp = enemy.hp - floor(damage/2);
 	}
 	//My advantage
     else if (flag!=0){
@@ -66,7 +69,7 @@ Unit.prototype.gotHit = function(/*Unit*/enemy){
 	}
     else{
         this.hp = this.hp - damage;
-		enemy.hp = enemy.hp - damage;
+		//enemy.hp = enemy.hp - damage;
 	}
 	if(this.hp < 0){
 		this.hp = 0;
@@ -76,7 +79,4 @@ Unit.prototype.gotHit = function(/*Unit*/enemy){
 	}
 };
 
-Unit.prototype.die = function(){
-	//TODO
-	//Used for unit animation.
-};
+
