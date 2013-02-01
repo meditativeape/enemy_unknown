@@ -100,11 +100,11 @@ function onnetmessage(data){
 			case "attack":
 				hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece.hp = parseInt(keywords[4]);
 				hexgrid.matrix[parseInt(keywords[5])][parseInt(keywords[6])].piece.hp = parseInt(keywords[7]);
-				this.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece.setcd(5);
+				hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece.setcd(5);
 				break;
 			case "die":
 				hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece.type = parseInt(keywords[4]);
-				hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece.die();
+				// hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece.die();
 				hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece = null;
 				break;
 			}
