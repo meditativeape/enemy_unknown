@@ -25,13 +25,13 @@ Unit.prototype.setcd = function(/*int*/ time){
 	this.cooldown = time;
 	var self = this;
 	var cding = window.setInterval(function(){
-			if(self.cooldown>0){
-				self.cooldown--;
+			if(self.cooldown>=0){
+				self.cooldown = self.cooldown - 0.5;
 			}else{
 				window.clearInterval(cding);
 			}
 		}
-		,1000);
+		,500);
 
 }
 

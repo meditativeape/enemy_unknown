@@ -178,7 +178,7 @@ function startGame(){
 			camera.moveDown();
 		}
 	});
-	
+		
 	var last_click_coord = null;
 	document.addEventListener('click', function(event) {  // left click event listener
 		if (minimap.checkClick(event)) {
@@ -206,8 +206,13 @@ function startGame(){
 					last_click_coord = null;
 					hexgrid.clearReachable();
 				} else if (!last_click_coord && (unitplayer == player)) { // select a unit
-					last_click_coord = coord;
-					hexgrid.markReachable(coord);
+					if (hexgrid.getUnit(coord)) { // this coordinate has a unit
+						if(hexgrid.getUnit(coord).cooldown<=0){
+							last_click_coord = coord;
+							hexgrid.markReachable(coord);
+						}
+					}
+
 				}
 			}
 		}
