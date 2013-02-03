@@ -31,8 +31,9 @@
 
 	var game_core_client = function() {
 	
-		// TODO: Container for all unit images and animations
-		this.sprites = [];
+		// Container for all unit images and animations
+		// 0:crystal ball, 1:treasure box, 2:potion bottle, 3:TBD
+		this.sprites = [[], [], [], []];
 
 		this.background = null;
 		this.camera = null;
@@ -66,15 +67,21 @@
 		
 		var isAppLoaded = function() {
 			files_loaded++;
-			if (files_loaded >= 4) {
+			if (files_loaded >= 10) {
 				gc.initiate();
 			}
 		}
 		
 		this.background = load_image("sprites\\bg_temp.jpg");
-		this.sprites[5] = load_image("sprites\\unit_drop_2.png");
-		this.sprites[3] = load_image("sprites\\fire_breath.gif");
-		this.sprites[1] = load_image("sprites\\water_breath.gif");
+		this.sprites[0][1] = load_image("sprites\\ball_water.png");
+		this.sprites[0][3] = load_image("sprites\\ball_fire.png");
+		this.sprites[0][5] = load_image("sprites\\ball_unknown.png");
+		this.sprites[1][1] = load_image("sprites\\box_water.png");
+		this.sprites[1][3] = load_image("sprites\\box_fire.png");
+		this.sprites[1][5] = load_image("sprites\\box_unknown.png");
+		this.sprites[2][1] = load_image("sprites\\potion_water.png");
+		this.sprites[2][3] = load_image("sprites\\potion_fire.png");
+		this.sprites[2][5] = load_image("sprites\\potion_unknown.png");
 	};
 
 	game_core_client.prototype.onnetmessage = function(data){
@@ -153,17 +160,36 @@
 		this.camera = new BuildCamera([this.background.width, this.background.height], new Point(0, 0), 5);
 		this.minimap = new BuildMiniMap(this.camera, [this.background.width, this.background.height], 200);
 		this.hexgrid = new BuildMap(40,2.0,1500,1200,40);
-		if (this.player == 0) {
-			this.hexgrid.matrix[0][0].piece = new Unit(0, 0, 1, 0, new Coordinate(0, 0), 0, this.sprites[3]);
-			this.hexgrid.matrix[0][2].piece = new Unit(0, 0, 1, 0, new Coordinate(0, 2), 0, this.sprites[3]);
-			this.hexgrid.matrix[2][0].piece = new Unit(1, 1, 1, 0, new Coordinate(2, 0), 0, this.sprites[5]);
-			this.hexgrid.matrix[2][2].piece = new Unit(1, 1, 1, 0, new Coordinate(2, 2), 0, this.sprites[5]);
-		} else {
-			this.hexgrid.matrix[0][0].piece = new Unit(0, 0, 1, 0, new Coordinate(0, 0), 0, this.sprites[5]);
-			this.hexgrid.matrix[0][2].piece = new Unit(0, 0, 1, 0, new Coordinate(0, 2), 0, this.sprites[5]);
-			this.hexgrid.matrix[2][0].piece = new Unit(1, 1, 1, 0, new Coordinate(2, 0), 0, this.sprites[1]);
-			this.hexgrid.matrix[2][2].piece = new Unit(1, 1, 1, 0, new Coordinate(2, 2), 0, this.sprites[1]);
-		}
+		// enemy
+		// if (this.player == 0) {
+			// this.hexgrid.matrix[0][0].piece = new Unit(0, 0, 1, 0, new Coordinate(0, 0), 0, this.sprites[0][1]);
+			// this.hexgrid.matrix[0][2].piece = new Unit(0, 0, 1, 0, new Coordinate(0, 2), 0, this.sprites[0][3]);
+			// this.hexgrid.matrix[2][0].piece = new Unit(1, 1, 1, 0, new Coordinate(2, 0), 0, this.sprites[1][5]);
+			// this.hexgrid.matrix[2][2].piece = new Unit(1, 1, 1, 0, new Coordinate(2, 2), 0, this.sprites[1][5]);
+			// this.hexgrid.matrix[3][0].piece = new Unit(2, 2, 1, 0, new Coordinate(3, 0), 0, this.sprites[2][5]);
+			// this.hexgrid.matrix[3][2].piece = new Unit(2, 2, 1, 0, new Coordinate(3, 2), 0, this.sprites[2][5]);
+		// } else if (this.player == 1) {
+			// this.hexgrid.matrix[0][0].piece = new Unit(0, 0, 1, 0, new Coordinate(0, 0), 0, this.sprites[0][5]);
+			// this.hexgrid.matrix[0][2].piece = new Unit(0, 0, 1, 0, new Coordinate(0, 2), 0, this.sprites[0][5]);
+			// this.hexgrid.matrix[2][0].piece = new Unit(1, 1, 1, 0, new Coordinate(2, 0), 0, this.sprites[1][1]);
+			// this.hexgrid.matrix[2][2].piece = new Unit(1, 1, 1, 0, new Coordinate(2, 2), 0, this.sprites[1][3]);
+			// this.hexgrid.matrix[3][0].piece = new Unit(2, 2, 1, 0, new Coordinate(3, 0), 0, this.sprites[2][5]);
+			// this.hexgrid.matrix[3][2].piece = new Unit(2, 2, 1, 0, new Coordinate(3, 2), 0, this.sprites[2][5]);
+		// } else {
+			// this.hexgrid.matrix[0][0].piece = new Unit(0, 0, 1, 0, new Coordinate(0, 0), 0, this.sprites[0][5]);
+			// this.hexgrid.matrix[0][2].piece = new Unit(0, 0, 1, 0, new Coordinate(0, 2), 0, this.sprites[0][5]);
+			// this.hexgrid.matrix[2][0].piece = new Unit(1, 1, 1, 0, new Coordinate(2, 0), 0, this.sprites[1][5]);
+			// this.hexgrid.matrix[2][2].piece = new Unit(1, 1, 1, 0, new Coordinate(2, 2), 0, this.sprites[1][5]);
+			// this.hexgrid.matrix[3][0].piece = new Unit(2, 2, 1, 0, new Coordinate(3, 0), 0, this.sprites[2][1]);
+			// this.hexgrid.matrix[3][2].piece = new Unit(2, 2, 1, 0, new Coordinate(3, 2), 0, this.sprites[2][3]);
+		// }
+		// or friend
+		this.hexgrid.matrix[0][0].piece = new Unit(0, 0, 1, 0, new Coordinate(0, 0), 0, this.sprites[0][1]);
+		this.hexgrid.matrix[0][2].piece = new Unit(0, 0, 1, 0, new Coordinate(0, 2), 0, this.sprites[0][3]);
+		this.hexgrid.matrix[2][0].piece = new Unit(1, 1, 1, 0, new Coordinate(2, 0), 0, this.sprites[1][1]);
+		this.hexgrid.matrix[2][2].piece = new Unit(1, 1, 1, 0, new Coordinate(2, 2), 0, this.sprites[1][3]);
+		this.hexgrid.matrix[3][0].piece = new Unit(2, 2, 1, 0, new Coordinate(3, 0), 0, this.sprites[2][1]);
+		this.hexgrid.matrix[3][2].piece = new Unit(2, 2, 1, 0, new Coordinate(3, 2), 0, this.sprites[2][3]);
 		this.started = true;
 		
 		document.addEventListener('keydown', function(event) {  // key pressing event listener

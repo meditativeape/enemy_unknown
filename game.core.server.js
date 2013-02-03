@@ -182,6 +182,8 @@ var Unit = require('./unit.js');
 		this.hexgrid.matrix[0][2].piece = new Unit(0, 0, 1, 0, new helper.Coordinate(0, 2), 0, null);
 		this.hexgrid.matrix[2][0].piece = new Unit(1, 1, 1, 0, new helper.Coordinate(2, 0), 0, null);
 		this.hexgrid.matrix[2][2].piece = new Unit(1, 1, 1, 0, new helper.Coordinate(2, 2), 0, null);
+		this.hexgrid.matrix[3][0].piece = new Unit(2, 2, 1, 0, new helper.Coordinate(3, 0), 0, null);
+		this.hexgrid.matrix[3][2].piece = new Unit(2, 2, 1, 0, new helper.Coordinate(3, 2), 0, null);
 		this.players[0].team = 0;
 		this.players[1].team = 1;
 		
