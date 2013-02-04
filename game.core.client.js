@@ -114,8 +114,9 @@
 			case 1:  // game control messages
 				switch (keywords[1]) {
 				case "add":
-					var sprite = this.sprites[parseInt(keywords[2])][parseInt(keywords[4])]
-					this.hexgrid.matrix[parseInt(keywords[5])][parseInt(keywords[6])].piece = new Unit(parseInt(keywords[2]),parseInt(keywords[3]),1,parseInt(keywords[4]),new Coordinate(parseInt(keywords[5]),parseInt(keywords[6])),0,sprite)
+					var sprite = this.sprites[parseInt(keywords[2])][parseInt(keywords[4])];
+					this.hexgrid.matrix[parseInt(keywords[5])][parseInt(keywords[6])].piece = new Unit(parseInt(keywords[2]),parseInt(keywords[3]),1,parseInt(keywords[4]),new Coordinate(parseInt(keywords[5]),parseInt(keywords[6])),0,sprite);
+					break;
 				case "move":
 					this.hexgrid.move(new Coordinate(parseInt(keywords[2]),parseInt(keywords[3])),new Coordinate(parseInt(keywords[4]),parseInt(keywords[5])))
 					break;

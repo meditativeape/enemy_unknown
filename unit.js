@@ -64,8 +64,8 @@ Unit.prototype.gotHit = function(/*Unit*/enemy){
 	}
 	//My advantage
     else if (flag!=0){
-        this.hp = this.hp - floor(damage/2);
-		enemy.hp = enemy.hp - damage;
+        this.hp = this.hp - Math.floor(damage/2);
+		//enemy.hp = enemy.hp - damage;
 	}
     else{
         this.hp = this.hp - damage;
