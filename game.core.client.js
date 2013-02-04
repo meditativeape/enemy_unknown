@@ -82,6 +82,16 @@
 		this.sprites[2][1] = load_image("sprites\\potion_water.png");
 		this.sprites[2][3] = load_image("sprites\\potion_fire.png");
 		this.sprites[2][5] = load_image("sprites\\potion_unknown.png");
+		
+//		this.sprites[0][1] = load_image("sprites\\frank_water.png");
+//		this.sprites[0][3] = load_image("sprites\\frank_fire.png");
+//		this.sprites[0][5] = load_image("sprites\\frank_unknown.png");
+//		this.sprites[1][1] = load_image("sprites\\beck_water.png");
+//		this.sprites[1][3] = load_image("sprites\\beck_fire.png");
+//		this.sprites[1][5] = load_image("sprites\\beck_unknown.png");
+//		this.sprites[2][1] = load_image("sprites\\hawaii_water.png");
+//		this.sprites[2][3] = load_image("sprites\\hawaii_fire.png");
+//		this.sprites[2][5] = load_image("sprites\\hawaii_unknown.png");
 	};
 
 	game_core_client.prototype.onnetmessage = function(data){
@@ -92,15 +102,20 @@
 			
 			case 0:
 				switch (keywords[1]) {
-				case "start":  // game starts
+				case "init":  // game starts
 					this.player = parseInt(keywords[3]);
-					this.startGame();
+					this.initGame();
+					break;
+				case "start":
+					this.started = true;
 					break;
 				}
-				break;
 			
 			case 1:  // game control messages
 				switch (keywords[1]) {
+				case "add":
+					var sprite = this.sprites[parseInt(keywords[2])][parseInt(keywords[4])]
+					this.hexgrid.matrix[parseInt(keywords[5])][parseInt(keywords[6])].piece = new Unit(parseInt(keywords[2]),parseInt(keywords[3]),1,parseInt(keywords[4]),new Coordinate(parseInt(keywords[5]),parseInt(keywords[6])),0,sprite)
 				case "move":
 					this.hexgrid.move(new Coordinate(parseInt(keywords[2]),parseInt(keywords[3])),new Coordinate(parseInt(keywords[4]),parseInt(keywords[5])))
 					break;
@@ -155,42 +170,11 @@
 		//TODO
 	};
 
-	game_core_client.prototype.startGame = function(){
+	game_core_client.prototype.initGame = function(){
 		// hard-coded game instance for demo!!!
 		this.camera = new BuildCamera([this.background.width, this.background.height], new Point(0, 0), 5);
 		this.minimap = new BuildMiniMap(this.camera, [this.background.width, this.background.height], 200);
 		this.hexgrid = new BuildMap(40,2.0,1500,1200,40);
-		// enemy
-		// if (this.player == 0) {
-			// this.hexgrid.matrix[0][0].piece = new Unit(0, 0, 1, 0, new Coordinate(0, 0), 0, this.sprites[0][1]);
-			// this.hexgrid.matrix[0][2].piece = new Unit(0, 0, 1, 0, new Coordinate(0, 2), 0, this.sprites[0][3]);
-			// this.hexgrid.matrix[2][0].piece = new Unit(1, 1, 1, 0, new Coordinate(2, 0), 0, this.sprites[1][5]);
-			// this.hexgrid.matrix[2][2].piece = new Unit(1, 1, 1, 0, new Coordinate(2, 2), 0, this.sprites[1][5]);
-			// this.hexgrid.matrix[3][0].piece = new Unit(2, 2, 1, 0, new Coordinate(3, 0), 0, this.sprites[2][5]);
-			// this.hexgrid.matrix[3][2].piece = new Unit(2, 2, 1, 0, new Coordinate(3, 2), 0, this.sprites[2][5]);
-		// } else if (this.player == 1) {
-			// this.hexgrid.matrix[0][0].piece = new Unit(0, 0, 1, 0, new Coordinate(0, 0), 0, this.sprites[0][5]);
-			// this.hexgrid.matrix[0][2].piece = new Unit(0, 0, 1, 0, new Coordinate(0, 2), 0, this.sprites[0][5]);
-			// this.hexgrid.matrix[2][0].piece = new Unit(1, 1, 1, 0, new Coordinate(2, 0), 0, this.sprites[1][1]);
-			// this.hexgrid.matrix[2][2].piece = new Unit(1, 1, 1, 0, new Coordinate(2, 2), 0, this.sprites[1][3]);
-			// this.hexgrid.matrix[3][0].piece = new Unit(2, 2, 1, 0, new Coordinate(3, 0), 0, this.sprites[2][5]);
-			// this.hexgrid.matrix[3][2].piece = new Unit(2, 2, 1, 0, new Coordinate(3, 2), 0, this.sprites[2][5]);
-		// } else {
-			// this.hexgrid.matrix[0][0].piece = new Unit(0, 0, 1, 0, new Coordinate(0, 0), 0, this.sprites[0][5]);
-			// this.hexgrid.matrix[0][2].piece = new Unit(0, 0, 1, 0, new Coordinate(0, 2), 0, this.sprites[0][5]);
-			// this.hexgrid.matrix[2][0].piece = new Unit(1, 1, 1, 0, new Coordinate(2, 0), 0, this.sprites[1][5]);
-			// this.hexgrid.matrix[2][2].piece = new Unit(1, 1, 1, 0, new Coordinate(2, 2), 0, this.sprites[1][5]);
-			// this.hexgrid.matrix[3][0].piece = new Unit(2, 2, 1, 0, new Coordinate(3, 0), 0, this.sprites[2][1]);
-			// this.hexgrid.matrix[3][2].piece = new Unit(2, 2, 1, 0, new Coordinate(3, 2), 0, this.sprites[2][3]);
-		// }
-		// or friend
-		this.hexgrid.matrix[0][0].piece = new Unit(0, 0, 1, 0, new Coordinate(0, 0), 0, this.sprites[0][1]);
-		this.hexgrid.matrix[0][2].piece = new Unit(0, 0, 1, 0, new Coordinate(0, 2), 0, this.sprites[0][3]);
-		this.hexgrid.matrix[2][0].piece = new Unit(1, 1, 1, 0, new Coordinate(2, 0), 0, this.sprites[1][1]);
-		this.hexgrid.matrix[2][2].piece = new Unit(1, 1, 1, 0, new Coordinate(2, 2), 0, this.sprites[1][3]);
-		this.hexgrid.matrix[3][0].piece = new Unit(2, 2, 1, 0, new Coordinate(3, 0), 0, this.sprites[2][1]);
-		this.hexgrid.matrix[3][2].piece = new Unit(2, 2, 1, 0, new Coordinate(3, 2), 0, this.sprites[2][3]);
-		this.started = true;
 		
 		document.addEventListener('keydown', function(event) {  // key pressing event listener
 			if (event.keyCode == 37) { // left
