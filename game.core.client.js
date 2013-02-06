@@ -108,6 +108,8 @@
 					break;
 				case "start":
 					this.started = true;
+					var p = this.matix[parseInt(keywords[3])][parseInt(keywords[4])].MidPoint;
+					this.camera.setPos(new Point(p.x-this.camera.canvas.width/2,p.x-this.camera.canvas.hieght/2))
 					break;
 				}
 			
@@ -137,7 +139,7 @@
 	game_core_client.prototype.connecting = function(data){
 	};
 
-	game_core_client.prototype.ondisconnect = function(data){
+	game_core_client.prototype.ondisconnect = function(data){ 
 	};
 
 	game_core_client.prototype.onconnected = function(data){

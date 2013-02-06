@@ -86,10 +86,19 @@
 
     game_server.findGame = function(player,type) {
 
-		var needed = 2;
-		// if(type = 0){
-			// needed = 2;
-		// }
+		var needed;
+		 if(type = 0){
+			 needed = 2;
+		 }
+		 if(type = 1){
+			 needed = 3;
+		 }
+		 if(type = 2){
+			 needed = 4;
+		 }
+		 if(type = 3){
+			 needed = 4;
+		 }
         this.log('looking for a game. We have : ' + this.game_count);
 
             //so there are games active,
