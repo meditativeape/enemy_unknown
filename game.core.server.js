@@ -211,27 +211,37 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 		// hardcoded game instance for test!
 		var pieces = [];
 		this.hexgrid = new BuildMap(40,2.0,1500,1200,40);
-		pieces.push(this.hexgrid.matrix[0][0].piece = new Unit(0, 0, 1, randomType(), new helper.Coordinate(0, 0), 0, null));
-		pieces.push(this.hexgrid.matrix[0][2].piece = new Unit(0, 0, 1, randomType(), new helper.Coordinate(0, 2), 0, null));
-		pieces.push(this.hexgrid.matrix[2][0].piece = new Unit(1, 1, 1, randomType(), new helper.Coordinate(2, 0), 0, null));
-		pieces.push(this.hexgrid.matrix[2][2].piece = new Unit(1, 1, 1, randomType(), new helper.Coordinate(2, 2), 0, null));
-		pieces.push(this.hexgrid.matrix[3][0].piece = new Unit(2, 2, 1, randomType(), new helper.Coordinate(3, 0), 0, null));
-		pieces.push(this.hexgrid.matrix[3][2].piece = new Unit(2, 2, 1, randomType(), new helper.Coordinate(3, 2), 0, null));
+		// 2 players
+		pieces.push(this.hexgrid.matrix[0][1].piece = new Unit(0, 0, 1, randomType(), new helper.Coordinate(0, 1), 0, null));
+		pieces.push(this.hexgrid.matrix[1][0].piece = new Unit(0, 0, 1, randomType(), new helper.Coordinate(1, 0), 0, null));
+		pieces.push(this.hexgrid.matrix[4][5].piece = new Unit(1, 1, 1, randomType(), new helper.Coordinate(4, 5), 0, null));
+		pieces.push(this.hexgrid.matrix[5][4].piece = new Unit(1, 1, 1, randomType(), new helper.Coordinate(5, 4), 0, null));
+		// 3 players
+		if (this.type == 1) {
+			pieces.push(this.hexgrid.matrix[0][5].piece = new Unit(2, 2, 1, randomType(), new helper.Coordinate(0, 5), 0, null));
+			pieces.push(this.hexgrid.matrix[1][4].piece = new Unit(2, 2, 1, randomType(), new helper.Coordinate(1, 4), 0, null));
+		}
+		// 4 players
+		if (this.type == 2) {
+			pieces.push(this.hexgrid.matrix[5][1].piece = new Unit(3, 3, 1, randomType(), new helper.Coordinate(5, 1), 0, null));
+			pieces.push(this.hexgrid.matrix[6][0].piece = new Unit(3, 3, 1, randomType(), new helper.Coordinate(6, 0), 0, null));
+		}
 		
-		this.players[0].team = 0;
-		this.players[1].team = 1;
-		
-		for (var i in this.players)
+		// do not work for 2v2 yet
+		var k = 0;
+		for (var i in this.players) {
+			this.players[i].team = k++;
 			for (var j in pieces) {
 				if (this.players[i].team == pieces[j].team)
 					this.sendMsg(this.players[i], "1 add {0} {1} {2} {3} {4}".format([pieces[j].player, pieces[j].team, pieces[j].type, pieces[j].x, pieces[j].y]));
 				else
 					this.sendMsg(this.players[i], "1 add {0} {1} {2} {3} {4}".format([pieces[j].player, pieces[j].team, 5, pieces[j].x, pieces[j].y]));
 			}
+		}
 		
 		console.log("Game started!");
 		for (var i in this.players) {
-			this.sendMsg(this.players[i], "0 start");
+			this.sendMsg(this.players[i], "0 start {0} {1}".format(pieces[2*i].x, pieces[2*i].y));
 		}
 	};
 	
