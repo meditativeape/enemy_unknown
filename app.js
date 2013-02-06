@@ -17,7 +17,7 @@
 
         verbose         = false,
         app             = express.createServer();
-		gametype		= parseInt(process.argv[2]) || 2;
+		gametype		= parseInt(process.argv[2]) || 0;
 
 /* Express server set up. */
 
@@ -93,7 +93,8 @@
 
             //tell the player they connected, giving them their id
         client.emit('onconnected', { id: client.userid } );
-
+		console.log(gametype);
+		console.log(process.argv);
             //now we can find them a game to play with someone.
             //if no game exists with someone waiting, they create one and wait.
         game_server.findGame(client, gametype);

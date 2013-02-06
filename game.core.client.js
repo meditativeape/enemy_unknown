@@ -108,7 +108,7 @@
 					break;
 				case "start":
 					this.started = true;
-					var p = this.matix[parseInt(keywords[3])][parseInt(keywords[4])].MidPoint;
+					var p = this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].MidPoint;
 					this.camera.setPos(new Point(p.x-this.camera.canvas.width/2,p.x-this.camera.canvas.hieght/2))
 					break;
 				}
