@@ -1,6 +1,6 @@
 {
   "name": "enemy-unknown",
-  "author" : "Beck Chen, Frank Zhang, Yi Hua",
+  "author": "Beck Chen, Frank Zhang, Yi Hua",
   "description": "Beck, Frank, and Yi's Comp460 game.",
   "version": "1.0.0",
   "dependencies": {
@@ -12,5 +12,7 @@
     "node": "0.8.x"
   },
   "subdomain": "enemyunknown",
-  "scripts.start": "app.js"
+  "scripts": {
+    "start": "app.js"
+  }
 }
