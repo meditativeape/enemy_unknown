@@ -11,10 +11,6 @@
   "engines": {
     "node": "0.8.x"
   },
-  "subdomain": {
-	"enemyunknown"
-  },
-  "scripts.start": {
-	"app.js"
-  }
+  "subdomain": "enemyunknown",
+  "scripts.start": "app.js"
 }
