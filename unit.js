@@ -44,7 +44,7 @@ Unit.prototype.setcd = function(/*int*/ time){
  */
 Unit.prototype.draw = function(/*Point*/p, /*int*/height) {
 	var ctx = document.getElementById('gameCanvas').getContext('2d');
-	ctx.drawImage(this.image, p.X - this.image.width/2, p.Y + height/4 - this.image.height, 
+	ctx.drawImage(this.image, Math.floor(p.X - this.image.width/2), Math.floor(p.Y + height/4 - this.image.height), 
 			this.image.width, this.image.height);
 };
 

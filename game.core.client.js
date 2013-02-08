@@ -73,12 +73,12 @@
 		}
 		
 		this.background = load_image("sprites\\bg_temp.jpg");
-		this.sprites[0][1] = load_image("sprites\\ball_water.png");
-		this.sprites[0][3] = load_image("sprites\\ball_fire.png");
-		this.sprites[0][5] = load_image("sprites\\ball_unknown.png");
-		this.sprites[1][1] = load_image("sprites\\box_water.png");
-		this.sprites[1][3] = load_image("sprites\\box_fire.png");
-		this.sprites[1][5] = load_image("sprites\\box_unknown.png");
+		this.sprites[0][1] = load_image("sprites\\unknown.png");
+		this.sprites[0][3] = load_image("sprites\\unknown.png");
+		this.sprites[0][5] = load_image("sprites\\unknown.png");
+		this.sprites[1][1] = load_image("sprites\\unknown.png");
+		this.sprites[1][3] = load_image("sprites\\unknown.png");
+		this.sprites[1][5] = load_image("sprites\\unknown.png");
 		this.sprites[2][1] = load_image("sprites\\potion_water.png");
 		this.sprites[2][3] = load_image("sprites\\potion_fire.png");
 		this.sprites[2][5] = load_image("sprites\\potion_unknown.png");
