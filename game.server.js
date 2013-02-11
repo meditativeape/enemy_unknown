@@ -63,7 +63,8 @@
         player.send('0 join 1 ' + player.userid);
         player.game = thegame;
 		
-        this.log('Player ' + player.userid + ' created a game with id ' + player.game.id);
+        this.log('Player ' + player.userid.substring(0,8) + ' created a game with id '
+		+ player.game.id.substring(0,8));
 
         // return it
         return thegame;
@@ -77,7 +78,7 @@
 			if (this.games[i].gameid == gameid) {
 				this.games.splice(i, i+1);
 				this.game_count--;
-				this.log('game removed. there are now ' + this.game_count + ' games' );
+				this.log('Game removed. There are now ' + this.game_count + ' games' );
 				break;
 			}
 		}
@@ -99,7 +100,7 @@
 		 if(type == 3){
 			 needed = 4;
 		 }
-        this.log('looking for a game. We have : ' + this.game_count);
+        this.log('Looking for a game. We have : ' + this.game_count);
 
             //so there are games active,
             //lets see if one needs another player
