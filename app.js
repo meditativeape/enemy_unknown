@@ -29,8 +29,8 @@
         //Tell the server to listen for incoming connections
     app.listen( gameport );
 
-        //Log something so we know that it succeeded.
-    console.log('\t :: Express :: Listening on port ' + gameport );
+        // something so we know that it succeeded.
+    console.log(':: Express :: Listening on port ' + gameport );
 
         //By default, we forward the / path to index.html automatically.
     app.get( '/', function( req, res ){
@@ -47,7 +47,7 @@
         var file = req.params[0];
 
             //For debugging, we can track what files are requested.
-        if(verbose) console.log('\t :: Express :: file requested : ' + file);
+        if(verbose) console.log(':: Express :: file requested : ' + file);
 
             //Send the requesting client the file.
         res.sendfile( __dirname + '/' + file );
@@ -93,15 +93,13 @@
 
             //tell the player they connected, giving them their id
         client.emit('onconnected', { id: client.userid } );
-		console.log(gametype);
-		console.log(process.argv);
+
             //now we can find them a game to play with someone.
             //if no game exists with someone waiting, they create one and wait.
         game_server.findGame(client, gametype);
 
             //Useful to know when someone connects
-        console.log('\t socket.io:: player ' + client.userid + ' connected');
-        
+        console.log(':: socket.io :: player ' + client.userid + ' connected');
 
             //Now we want to handle some of the messages that clients will send.
             //They send messages here, and we send them to the game_server to handle.
@@ -117,7 +115,11 @@
         client.on('disconnect', function () {
 
                 //Useful to know when someone disconnects
-            console.log('\t socket.io:: client disconnected ' + client.userid + ' ' + client.game.id);
+			if (client.game)
+				console.log(':: socket.io:: client ' + client.userid.substring(0,8) + ' disconnected from game '
+				+ client.game.id.substring(0, 8));
+			else
+				console.log(':: socket.io :: client ' + client.userid.substring(0,8) + ' disconnected');
 			
                 //player leaving a game should tell the game_server
             game_server.onDisconnect(client);
