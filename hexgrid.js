@@ -145,7 +145,7 @@ var BuildMap = function(/*double*/ side,/*double*/ratio,/*int*/ x, /*int*/y,/*do
 	this.clearAttackable = function(){
 		for (var i in this.attackables){  // clear reachables
 				var check = this.attackables[i];
-				check.attackables = false;
+				check.attackable = false;
 		}
 		this.attackables = [];
 	};
