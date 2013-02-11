@@ -63,7 +63,7 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 	
 	game_core_server.prototype.canAttack = function(coord1, coord2, coord3, player){
 	
-		if (((coord1.X != coord2.X) || (coord1.Y != coord2.Y)) && !this.canMove(coord1, coord2))
+		if (((coord1.X != coord2.X) || (coord1.Y != coord2.Y)) && !this.canMove(coord1, coord2, player))
 			return false;
 		var myUnit = this.hexgrid.getUnit(coord1);
 		var theirUnit = this.hexgrid.getUnit(coord3);
