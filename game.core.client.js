@@ -35,6 +35,7 @@
 		// 0:crystal ball, 1:treasure box, 2:potion bottle, 3:TBD
 		this.sprites = [[], [], [], []];
 		this.last_click_coord = null;
+		this.moveAndAttack = null;
 		this.background = null;
 		this.camera = null;
 		this.minimap = null;
@@ -121,12 +122,13 @@
 					break;
 				case "move":
 					this.hexgrid.move(new Coordinate(parseInt(keywords[2]),parseInt(keywords[3])),new Coordinate(parseInt(keywords[4]),parseInt(keywords[5])))
-					this.matrix[dest.X][dest.Y].piece.setcd(3);
+					this.matrix[parseInt(keywords[4])][parseInt(keywords[5])].piece.setcd(3);
 					break;
 				case "attack":
-					this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece.hp = parseInt(keywords[4]);
-					this.hexgrid.matrix[parseInt(keywords[5])][parseInt(keywords[6])].piece.hp = parseInt(keywords[7]);
-					this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece.setcd(5);
+					this.hexgrid.move(new Coordinate(parseInt(keywords[2]),parseInt(keywords[3])),new Coordinate(parseInt(keywords[4]),parseInt(keywords[5])))
+					this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece.hp = parseInt(keywords[6]);
+					this.hexgrid.matrix[parseInt(keywords[7])][parseInt(keywords[8])].piece.hp = parseInt(keywords[9]);
+					this.hexgrid.matrix[parseInt(keywords[4])][parseInt(keywords[5])].piece.setcd(3);
 					break;
 				case "die":
 					this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece.type = parseInt(keywords[4]);
@@ -209,19 +211,36 @@
 					
 					var isReachable = gc.hexgrid.isReachable(coord);
 					var isAttackable = gc.hexgrid.isAttackable(coord);
-					if (last_click_coord && isReachable) { // move a unit to a reachable coord
-						gc.socket.send('1 move ' + last_click_coord.X +' ' + last_click_coord.Y + ' ' + coord.X + ' ' + coord.Y);
-						last_click_coord = null;
+					//After unit has moved
+					if (this.last_click_coord && isReachable) {
+						this.moveAndAttack = coord // move a unit to a reachable coord
 						gc.hexgrid.clearReachable();
+						gc.hexgrid.clearAttackable();
+						gc.hexgrid.markAttackable(coord);
+						if(gc.hexgrid.reachables.size==0){
+							gc.socket.send('1 move ' + this.last_click_coord.X +' ' + this.last_click_coord.Y + ' ' + this.moveAndAttack.X +' ' + this.moveAndAttack.Y);
+							this.moveAndAttack = null;
+							this.last_click_coord = null;
+							gc.hexgrid.clearAttackable();
+						}
 					}
-					else if (last_click_coord && isAttackable){
-						gc.socket.send('1 attack ' + last_click_coord.X +' ' + last_click_coord.Y + ' ' + coord.X + ' ' + coord.Y);
-						last_click_coord = null;
+					//After unit has attacked
+					else if (this.last_click_coord && isAttackable){
+						if(this.moveAndAttack){
+							gc.socket.send('1 attack ' + this.last_click_coord.X +' ' + this.last_click_coord.Y + ' ' + this.moveAndAttack.X +' ' + this.moveAndAttack.Y + ' ' + coord.X + ' ' + coord.Y);
+						}
+						else{
+							gc.socket.send('1 attack ' + this.last_click_coord.X +' ' + this.last_click_coord.Y + ' ' + this.last_click_coord.X +' ' + this.last_click_coord.Y + ' ' + coord.X + ' ' + coord.Y);
+						}
+						this.last_click_coord = null;
+						this.moveAndAttack = null;
 						gc.hexgrid.clearReachable();
-					} else if (!last_click_coord && (unitplayer == gc.player)) { // select a unit
+						gc.hexgrid.clearAttackable();
+					//Before unit has been selected
+					} else if (!this.last_click_coord && (unitplayer == gc.player)) { // select a unit
 						if (gc.hexgrid.getUnit(coord)) { // this coordinate has a unit
 							if(gc.hexgrid.getUnit(coord).cooldown<=0){
-								last_click_coord = coord;
+								this.last_click_coord = coord;
 								gc.hexgrid.markReachable(coord);
 								gc.hexgrid.markAttackable(coord);
 							}
@@ -237,8 +256,12 @@
 			var canvasY = event.pageY - canvas.offsetTop;
 			if (canvasX <= canvas.width && canvasY <= canvas.height) {
 				event.preventDefault();
-				last_click_coord = null;
+				if (this.last_click_coord && this.moveAndAttack){
+					gc.socket.send('1 move ' + this.last_click_coord.X +' ' + this.last_click_coord.Y + ' ' + this.moveAndAttack.X +' ' + this.moveAndAttack.Y);
+				}
+				this.last_click_coord = null;
 				gc.hexgrid.clearReachable();
+				gc.hexgrid.clearAttackable();
 			}
 		});
 	};

@@ -79,12 +79,11 @@ var BuildMap = function(/*double*/ side,/*double*/ratio,/*int*/ x, /*int*/y,/*do
 	this.move = function(/*Coordinate*/ origin, /*Coordinate*/dest) {
 		var toMove = this.matrix[origin.X][origin.Y].piece;
 		this.matrix[origin.X][origin.Y].piece = null;
-		this.matrix[dest.X][dest.Y].piece = toMove;this.matrix[dest.X][dest.Y].piece.setcd(3);
+		this.matrix[dest.X][dest.Y].piece = toMove;
 	};
 	
 	this.attack = function(/*coordinate*/ attacker, /*coordinate*/gothit){
 		this.matrix[gothit.X][gothit.Y].piece.gotHit(this.matrix[attacker.X][attacker.Y].piece);
-		this.matrix[attacker.X][attacker.Y].piece.setcd(3);
 		if(this.matrix[gothit.X][gothit.Y].piece.hp<=0){
 			this.matrix[gothit.X][gothit.Y].piece = null;
 		}
