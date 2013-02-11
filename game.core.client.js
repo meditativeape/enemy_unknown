@@ -122,7 +122,7 @@
 					break;
 				case "move":
 					this.hexgrid.move(new Coordinate(parseInt(keywords[2]),parseInt(keywords[3])),new Coordinate(parseInt(keywords[4]),parseInt(keywords[5])))
-					this.matrix[parseInt(keywords[4])][parseInt(keywords[5])].piece.setcd(3);
+					this.hexgrid.matrix[parseInt(keywords[4])][parseInt(keywords[5])].piece.setcd(3);
 					break;
 				case "attack":
 					this.hexgrid.move(new Coordinate(parseInt(keywords[2]),parseInt(keywords[3])),new Coordinate(parseInt(keywords[4]),parseInt(keywords[5])))
@@ -213,11 +213,13 @@
 					var isAttackable = gc.hexgrid.isAttackable(coord);
 					//After unit has moved
 					if (this.last_click_coord && isReachable) {
+						alert("asd");
 						this.moveAndAttack = coord // move a unit to a reachable coord
 						gc.hexgrid.clearReachable();
 						gc.hexgrid.clearAttackable();
-						gc.hexgrid.markAttackable(coord);
-						if(gc.hexgrid.reachables.size==0){
+						gc.hexgrid.markAttackable(coord,this.last_click_coord);
+						if(gc.hexgrid.attackables.length==0){
+							alert("123");
 							gc.socket.send('1 move ' + this.last_click_coord.X +' ' + this.last_click_coord.Y + ' ' + this.moveAndAttack.X +' ' + this.moveAndAttack.Y);
 							this.moveAndAttack = null;
 							this.last_click_coord = null;
@@ -242,7 +244,7 @@
 							if(gc.hexgrid.getUnit(coord).cooldown<=0){
 								this.last_click_coord = coord;
 								gc.hexgrid.markReachable(coord);
-								gc.hexgrid.markAttackable(coord);
+								gc.hexgrid.markAttackable(coord,coord);
 							}
 						}
 
