@@ -61,28 +61,34 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 		this.hexgrid.move(coord1, coord2);
 	};
 	
-	game_core_server.prototype.canAttack = function(coord1, coord2, player){
+	game_core_server.prototype.canAttack = function(coord1, coord2, coord3, player){
 	
+		if (((coord1.X != coord2.X) || (coord1.Y != coord2.Y)) && !this.canMove(coord1, coord2))
+			return false;
 		var myUnit = this.hexgrid.getUnit(coord1);
-		var theirUnit = this.hexgrid.getUnit(coord2)
+		var theirUnit = this.hexgrid.getUnit(coord3);
 		if (myUnit.team == player.team && theirUnit && theirUnit.team != player.team)
-			if (this.hexgrid.hexDist(this.hexgrid.matrix[coord1.X][coord1.Y], this.hexgrid.matrix[coord2.X][coord2.Y]) == 1)
+			if (this.hexgrid.hexDist(this.hexgrid.matrix[coord2.X][coord2.Y], this.hexgrid.matrix[coord3.X][coord3.Y]) == 1)
 				return true;
 		return false;
 	
 	};
 	
-	game_core_server.prototype.makeAttack = function(coord1, coord2){
+	game_core_server.prototype.makeAttack = function(coord1, coord2, coord3){
+	
 		var responses = [];
-		var unit1 = this.hexgrid.getUnit(coord1);
-		var unit2 = this.hexgrid.getUnit(coord2);
-		this.hexgrid.attack(coord1, coord2);
-		responses.push(["1", "attack", coord1.X, coord1.Y, unit1.hp, coord2.X, coord2.Y, unit2.hp].join(" "));
+		if ((coord1.X != coord2.X) || (coord1.Y != coord2.Y))
+			this.makeMove(coord1, coord2);
+		var unit1 = this.hexgrid.getUnit(coord2);
+		var unit2 = this.hexgrid.getUnit(coord3);
+		this.hexgrid.attack(coord2, coord3);
+		responses.push(["1", "attack", coord1.X, coord1.Y, coord2.X, coord2.Y, unit1.hp, coord3.X, coord3.Y, unit2.hp].join(" "));
 		if (unit1.hp <= 0)  // unit 1 dies
-			responses.push(["1", "die", coord1.X, coord1.Y, unit1.type].join(" "));
+			responses.push(["1", "die", coord2.X, coord2.Y, unit1.type].join(" "));
 		if (unit2.hp <= 0)  // unit 2 dies
-			responses.push(["1", "die", coord2.X, coord2.Y, unit2.type].join(" "));
+			responses.push(["1", "die", coord3.X, coord3.Y, unit2.type].join(" "));
 		return responses;
+		
 	};
 
 	game_core_server.prototype.handleClientInput = function(client, message){
@@ -123,28 +129,25 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 		case 1:  // game state messages
 			switch (keywords[1]) {
 			case "move":
-				var xcoord1 = parseInt(keywords[2]);
-				var ycoord1 = parseInt(keywords[3]);
-				var xcoord2 = parseInt(keywords[4]);
-				var ycoord2 = parseInt(keywords[5]);
-				var coord1 = new helper.Coordinate(xcoord1, ycoord1);
-				var coord2 = new helper.Coordinate(xcoord2, ycoord2);
+				var coord1 = new helper.Coordinate(parseInt(keywords[2]), parseInt(keywords[3]));
+				var coord2 = new helper.Coordinate(parseInt(keywords[4]), parseInt(keywords[5]));
 				if (this.canMove(coord1, coord2, client)) {
 					this.makeMove(coord1, coord2);  // move in our local game
+					this.hexgrid.getUnit(coord2).setcd(3);
 					for (var i in this.players) {  // tell each player the result of move
 						this.sendMsg(this.players[i], message);
 					}
 				}
 				break;
 			case "attack":
-				var xcoord1 = parseInt(keywords[2]);
-				var ycoord1 = parseInt(keywords[3]);
-				var xcoord2 = parseInt(keywords[4]);
-				var ycoord2 = parseInt(keywords[5]);
-				var coord1 = new helper.Coordinate(xcoord1, ycoord1);
-				var coord2 = new helper.Coordinate(xcoord2, ycoord2);
-				if (this.canAttack(coord1, coord2, client)) {
-					var responses = this.makeAttack(coord1, coord2);  // attack in our local game and get results
+				var myCoord = new helper.Coordinate(parseInt(keywords[2]), parseInt(keywords[3]));
+				var destCoord = new helper.Coordinate(parseInt(keywords[4]), parseInt(keywords[5]));
+				var oppoCoord = new helper.Coordinate(parseInt(keywords[6]), parseInt(keywords[7]));
+				if (this.canAttack(myCoord, destCoord, oppoCoord, client)) {
+					var responses = this.makeAttack(myCoord, destCoord, oppoCoord);  // attack in our local game and get results
+					var unit = this.hexgrid.getUnit(destCoord);
+					if (unit)
+						unit.setcd(3);
 					for (var i in this.players) {  // tell each player the result of attack
 						for (var j in responses)
 							this.sendMsg(this.players[i], responses[j]);
