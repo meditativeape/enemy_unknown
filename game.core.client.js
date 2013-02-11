@@ -34,7 +34,7 @@
 		// Container for all unit images and animations
 		// 0:crystal ball, 1:treasure box, 2:potion bottle, 3:TBD
 		this.sprites = [[], [], [], []];
-
+		this.last_click_coord = null;
 		this.background = null;
 		this.camera = null;
 		this.minimap = null;
@@ -121,6 +121,7 @@
 					break;
 				case "move":
 					this.hexgrid.move(new Coordinate(parseInt(keywords[2]),parseInt(keywords[3])),new Coordinate(parseInt(keywords[4]),parseInt(keywords[5])))
+					this.matrix[dest.X][dest.Y].piece.setcd(3);
 					break;
 				case "attack":
 					this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece.hp = parseInt(keywords[4]);
@@ -191,7 +192,7 @@
 			}
 		});
 			
-		var last_click_coord = null;
+		
 		document.addEventListener('click', function(event) {  // left click event listener
 			if (gc.minimap.checkClick(event)) {
 				gc.minimap.click(event); // pass to minimap
@@ -222,6 +223,7 @@
 							if(gc.hexgrid.getUnit(coord).cooldown<=0){
 								last_click_coord = coord;
 								gc.hexgrid.markReachable(coord);
+								gc.hexgrid.markAttackable(coord);
 							}
 						}
 

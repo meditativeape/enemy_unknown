@@ -17,6 +17,7 @@ var BuildMap = function(/*double*/ side,/*double*/ratio,/*int*/ x, /*int*/y,/*do
 	
 	this.matrix = [];
 	this.reachables = [];
+	this.attackables = [];
 	
 	var spec = findHexSpecs(side,ratio);
 	var xpos = offset;
@@ -78,8 +79,7 @@ var BuildMap = function(/*double*/ side,/*double*/ratio,/*int*/ x, /*int*/y,/*do
 	this.move = function(/*Coordinate*/ origin, /*Coordinate*/dest) {
 		var toMove = this.matrix[origin.X][origin.Y].piece;
 		this.matrix[origin.X][origin.Y].piece = null;
-		this.matrix[dest.X][dest.Y].piece = toMove;
-		this.matrix[dest.X][dest.Y].piece.setcd(3);
+		this.matrix[dest.X][dest.Y].piece = toMove;this.matrix[dest.X][dest.Y].piece.setcd(3);
 	};
 	
 	this.attack = function(/*coordinate*/ attacker, /*coordinate*/gothit){
@@ -114,27 +114,43 @@ var BuildMap = function(/*double*/ side,/*double*/ratio,/*int*/ x, /*int*/y,/*do
 							this.matrix[x][y].reachable = true;
 							this.reachables.push(this.matrix[x][y]);
 						}
-						if (this.hexDist(selectedHex, this.matrix[x][y]) <= 1 && this.matrix[x][y].piece && (selectedHex !=this.matrix[x][y])) { // in range and occupied by enemys
-							if(selectedHex.piece.team!=this.matrix[x][y].piece.team){
-								this.matrix[x][y].attackable = true;
-								this.reachables.push(this.matrix[x][y]);
-							}
-						}
+					
 					}
 				}
 	
 	};
 	
+	this.markAttakable = function(/*Coordinate*/coord){
+		var selectedHex = this.matrix[coord.X][coord.Y];
+		for(var x in this.matrix){ // brute force!
+			for(var y in this.matrix[x]){
+				if (this.hexDist(selectedHex, this.matrix[x][y]) <= 1 && this.matrix[x][y].piece && (selectedHex !=this.matrix[x][y])) { // in range and occupied by enemys
+					if(selectedHex.piece.team!=this.matrix[x][y].piece.team){
+						this.matrix[x][y].attackable = true;
+						this.attackables.push(this.matrix[x][y]);
+					}
+				}
+			}
+		}
+	};
 	
 	
 	this.clearReachable = function(){
 		for (var i in this.reachables){  // clear reachables
 				var check = this.reachables[i];
 				check.reachable = false;
-				check.attackable = false;
 		}
 		this.reachables = [];
 	};
+	
+	this.clearAttackable = function(){
+		for (var i in this.attackables){  // clear reachables
+				var check = this.attackables[i];
+				check.attackables = false;
+		}
+		this.attackables = [];
+	};
+					
 	
 	this.isReachable = function(/*Coordinate*/coord){
 		return this.matrix[coord.X][coord.Y].reachable;
