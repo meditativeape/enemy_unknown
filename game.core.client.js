@@ -161,12 +161,16 @@
 		if(this.last_click_coord){
 			this.hexgrid.clearReachable();
 			this.hexgrid.clearAttackable();
+			if (!this.hexgrid.getUnit(this.last_click_coord)) {
+				this.last_click_coord = null;
+				return;
+			}
 			if(this.moveAndAttack){
 				if(this.hexgrid.getUnit(this.moveAndAttack)){
 					this.last_click_coord = null;
 					this.moveAndAttack = null;
 				}else{
-					this.hexgrid.markAttackable(coord,this.last_click_coord);
+					this.hexgrid.markAttackable(this.moveAndAttack,this.last_click_coord);
 				}
 			}else{
 				this.hexgrid.markReachable(this.last_click_coord);

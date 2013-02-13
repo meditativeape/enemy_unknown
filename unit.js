@@ -59,7 +59,6 @@ Unit.prototype.draw = function(/*Point*/p, /*int*/height) {
 	ctx.beginPath();
 	ctx.moveTo(Math.floor(p.X - this.image.width/4), Math.floor(p.Y + height/4 + 4));
 	ctx.lineTo(Math.floor(p.X - this.image.width/4 + this.image.width/2 * this.hp / 100), Math.floor(p.Y + height/4 + 4));
-	alert((p.X + this.image.width/4) * this.hp / 100);
 	ctx.stroke();
 	ctx.lineWidth = 1;
 	ctx.strokeStyle = "orange";
@@ -71,7 +70,7 @@ Unit.prototype.gotHit = function(/*Unit*/enemy){
 	//Earth beats fire and air
 	//Fire beats air and wood
 	//Air beats wood and water
-	var damage = 100;
+	var damage = 10;
 	//Calculate type advantage
     var flag = (this.type-enemy.type)%5;
 	//Enemy advantage
