@@ -191,14 +191,14 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 	};
 	
 	game_core_server.prototype.sendMsg = function(recipient, message){
-		console.log(":: " + this.id.substring(0,8) + " :: gamecore :: send message: " + message);
+		console.log(":: " + this.id.substring(0,8) + " :: send message: " + message);
 		recipient.send(message);
 	};
 
 	game_core_server.prototype.startGame = function(){
 	
 		this.started = true;
-		console.log(":: " + this.id.substring(0,8) + " :: gamecore :: Initializing game...");
+		console.log(":: " + this.id.substring(0,8) + " :: Initializing game...");
 		for (var i in this.players) {
 			this.sendMsg(this.players[i], "0 init 0 " + i);
 		}
@@ -242,7 +242,7 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 			}
 		}
 		
-		console.log(":: " + this.id.substring(0,8) + " :: gamecore :: Game started!");
+		console.log(":: " + this.id.substring(0,8) + " :: Game started!");
 		for (var i in this.players) {
 			this.sendMsg(this.players[i], "0 start {0} {1}".format([pieces[2*i].x, pieces[2*i].y]));
 		}
@@ -258,12 +258,12 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 				}
 				break;
 			}
-		console.log(":: " + this.id.substring(0,8) + " :: gamecore :: player " + client.userid.substring(0,8) + " has left the game.");
+		console.log(":: " + this.id.substring(0,8) + " :: player " + client.userid.substring(0,8) + " has left the game.");
 		// if this game has no more than one player, end it
 		if (this.players.length == 1) {
 			this.sendMsg(this.players[0], "0 end " + this.players[0].userid);
 			this.players[0].game = null;
 		}
 		if (this.players.length <= 1)
-			this.server.endGame();
+			this.server.endGame(this.id);
 	};

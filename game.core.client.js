@@ -50,7 +50,6 @@
 	game_core_client.prototype.load_assets = function() {
 
 		var files_loaded = 0;
-		var gc = this;
 		
 		var load_image = function(url) {
 			var img = new Image();
@@ -124,25 +123,25 @@
 				case "add":
 					var sprite = this.sprites[parseInt(keywords[2])][parseInt(keywords[4])];
 					this.hexgrid.matrix[parseInt(keywords[5])][parseInt(keywords[6])].piece = new Unit(parseInt(keywords[2]),parseInt(keywords[3]),1,parseInt(keywords[4]),new Coordinate(parseInt(keywords[5]),parseInt(keywords[6])),0,sprite);
-					gc.updateRA();
+					this.updateRA();
 					break;
 				case "move":
 					this.hexgrid.move(new Coordinate(parseInt(keywords[2]),parseInt(keywords[3])),new Coordinate(parseInt(keywords[4]),parseInt(keywords[5])))
 					this.hexgrid.matrix[parseInt(keywords[4])][parseInt(keywords[5])].piece.setcd(3);
-					gc.updateRA();
+					this.updateRA();
 					break;
 				case "attack":
 					this.hexgrid.move(new Coordinate(parseInt(keywords[2]),parseInt(keywords[3])),new Coordinate(parseInt(keywords[4]),parseInt(keywords[5])))
 					this.hexgrid.matrix[parseInt(keywords[4])][parseInt(keywords[5])].piece.hp = parseInt(keywords[6]);
 					this.hexgrid.matrix[parseInt(keywords[7])][parseInt(keywords[8])].piece.hp = parseInt(keywords[9]);
 					this.hexgrid.matrix[parseInt(keywords[4])][parseInt(keywords[5])].piece.setcd(3);
-					gc.updateRA();
+					this.updateRA();
 					break;
 				case "die":
 					this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece.type = parseInt(keywords[4]);
 					// this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece.die();
 					this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece = null;
-					gc.updateRA();
+					this.updateRA();
 					break;
 				}
 				break;
@@ -160,18 +159,18 @@
 	
 	game_core_client.prototype.updateRA = function(){
 		if(this.last_click_coord){
-			gc.hexgrid.clearReachable();
-			gc.hexgrid.clearAttackable();
+			this.hexgrid.clearReachable();
+			this.hexgrid.clearAttackable();
 			if(this.moveAndAttack){
-				if(gc.hexgrid.getUnit(this.moveAndAttack)){
+				if(this.hexgrid.getUnit(this.moveAndAttack)){
 					this.last_click_coord = null;
 					this.moveAndAttack = null;
 				}else{
-					gc.hexgrid.markAttackable(coord,this.last_click_coord);
+					this.hexgrid.markAttackable(coord,this.last_click_coord);
 				}
 			}else{
-				gc.hexgrid.markReachable(this.last_click_coord);
-				gc.hexgrid.markAttackable(this.last_click_coord,this.last_click_coord);
+				this.hexgrid.markReachable(this.last_click_coord);
+				this.hexgrid.markAttackable(this.last_click_coord,this.last_click_coord);
 			}
 		}
 	} 
@@ -239,35 +238,35 @@
 					var isReachable = gc.hexgrid.isReachable(coord);
 					var isAttackable = gc.hexgrid.isAttackable(coord);
 					//After unit has moved
-					if (this.last_click_coord && isReachable) {
-						this.moveAndAttack = coord // move a unit to a reachable coord
+					if (gc.last_click_coord && isReachable) {
+						gc.moveAndAttack = coord // move a unit to a reachable coord
 						gc.hexgrid.clearReachable();
 						gc.hexgrid.clearAttackable();
-						gc.hexgrid.markAttackable(coord,this.last_click_coord);
+						gc.hexgrid.markAttackable(coord,gc.last_click_coord);
 						if(gc.hexgrid.attackables.length==0){
-							gc.socket.send('1 move ' + this.last_click_coord.X +' ' + this.last_click_coord.Y + ' ' + this.moveAndAttack.X +' ' + this.moveAndAttack.Y);
-							this.moveAndAttack = null;
-							this.last_click_coord = null;
+							gc.socket.send('1 move ' + gc.last_click_coord.X +' ' + gc.last_click_coord.Y + ' ' + gc.moveAndAttack.X +' ' + gc.moveAndAttack.Y);
+							gc.moveAndAttack = null;
+							gc.last_click_coord = null;
 							gc.hexgrid.clearAttackable();
 						}
 					}
 					//After unit has attacked
-					else if (this.last_click_coord && isAttackable){
-						if(this.moveAndAttack){
-							gc.socket.send('1 attack ' + this.last_click_coord.X +' ' + this.last_click_coord.Y + ' ' + this.moveAndAttack.X +' ' + this.moveAndAttack.Y + ' ' + coord.X + ' ' + coord.Y);
+					else if (gc.last_click_coord && isAttackable){
+						if(gc.moveAndAttack){
+							gc.socket.send('1 attack ' + gc.last_click_coord.X +' ' + gc.last_click_coord.Y + ' ' + gc.moveAndAttack.X +' ' + gc.moveAndAttack.Y + ' ' + coord.X + ' ' + coord.Y);
 						}
 						else{
-							gc.socket.send('1 attack ' + this.last_click_coord.X +' ' + this.last_click_coord.Y + ' ' + this.last_click_coord.X +' ' + this.last_click_coord.Y + ' ' + coord.X + ' ' + coord.Y);
+							gc.socket.send('1 attack ' + gc.last_click_coord.X +' ' + gc.last_click_coord.Y + ' ' + gc.last_click_coord.X +' ' + gc.last_click_coord.Y + ' ' + coord.X + ' ' + coord.Y);
 						}
-						this.last_click_coord = null;
-						this.moveAndAttack = null;
+						gc.last_click_coord = null;
+						gc.moveAndAttack = null;
 						gc.hexgrid.clearReachable();
 						gc.hexgrid.clearAttackable();
 					//Before unit has been selected
-					} else if (!this.last_click_coord && (unitplayer == gc.player)) { // select a unit
+					} else if (!gc.last_click_coord && (unitplayer == gc.player)) { // select a unit
 						if (gc.hexgrid.getUnit(coord)) { // this coordinate has a unit
 							if(gc.hexgrid.getUnit(coord).cooldown<=0){
-								this.last_click_coord = coord;
+								gc.last_click_coord = coord;
 								gc.hexgrid.markReachable(coord);
 								gc.hexgrid.markAttackable(coord,coord);
 							}
@@ -283,10 +282,10 @@
 			var canvasY = event.pageY - canvas.offsetTop;
 			if (canvasX <= canvas.width && canvasY <= canvas.height) {
 				event.preventDefault();
-				if (this.last_click_coord && this.moveAndAttack){
-					gc.socket.send('1 move ' + this.last_click_coord.X +' ' + this.last_click_coord.Y + ' ' + this.moveAndAttack.X +' ' + this.moveAndAttack.Y);
+				if (gc.last_click_coord && gc.moveAndAttack){
+					gc.socket.send('1 move ' + gc.last_click_coord.X +' ' + gc.last_click_coord.Y + ' ' + gc.moveAndAttack.X +' ' + gc.moveAndAttack.Y);
 				}
-				this.last_click_coord = null;
+				gc.last_click_coord = null;
 				gc.hexgrid.clearReachable();
 				gc.hexgrid.clearAttackable();
 			}
