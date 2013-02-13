@@ -48,6 +48,21 @@ Unit.prototype.draw = function(/*Point*/p, /*int*/height) {
 	var ctx = document.getElementById('gameCanvas').getContext('2d');
 	ctx.drawImage(this.image, Math.floor(p.X - this.image.width/2), Math.floor(p.Y + height/4 - this.image.height), 
 			this.image.width, this.image.height);
+	// hp bar
+	ctx.lineWidth = 3;
+	ctx.strokeStyle = "white";
+	ctx.beginPath();
+	ctx.moveTo(Math.floor(p.X - this.image.width/4), Math.floor(p.Y + height/4 + 4));
+	ctx.lineTo(Math.floor(p.X + this.image.width/4), Math.floor(p.Y + height/4 + 4));
+	ctx.stroke();
+	ctx.strokeStyle = "red";
+	ctx.beginPath();
+	ctx.moveTo(Math.floor(p.X - this.image.width/4), Math.floor(p.Y + height/4 + 4));
+	ctx.lineTo(Math.floor(p.X - this.image.width/4 + this.image.width/2 * this.hp / 100), Math.floor(p.Y + height/4 + 4));
+	alert((p.X + this.image.width/4) * this.hp / 100);
+	ctx.stroke();
+	ctx.lineWidth = 1;
+	ctx.strokeStyle = "orange";
 };
 
 Unit.prototype.gotHit = function(/*Unit*/enemy){
