@@ -63,7 +63,7 @@
         player.send('0 join 1 ' + player.userid);
         player.game = thegame;
 		
-        this.log('Player ' + player.userid.substring(0,8) + ' created a game with id '
+        this.log(':: server :: Player ' + player.userid.substring(0,8) + ' created a game with id '
 		+ player.game.id.substring(0,8));
 
         // return it
@@ -78,7 +78,7 @@
 			if (this.games[i].gameid == gameid) {
 				this.games.splice(i, i+1);
 				this.game_count--;
-				this.log('Game removed. There are now ' + this.game_count + ' games' );
+				this.log(':: server :: Game removed. There are now ' + this.game_count + ' games' );
 				break;
 			}
 		}
@@ -100,7 +100,7 @@
 		 if(type == 3){
 			 needed = 4;
 		 }
-        this.log('Looking for a game. We have : ' + this.game_count);
+        this.log(':: server :: Looking for a game. We have : ' + this.game_count);
 
             //so there are games active,
             //lets see if one needs another player
@@ -118,7 +118,7 @@
                     //If the game is a player short
 				var player_count = game_instance.players.length;
                 if(player_count < needed) {
-					this.log('found a game....');
+					this.log(':: server :: found a game....');
                         //someone wants us to join!
                     joined_a_game = true;
                         //increase the player count and store
@@ -130,7 +130,7 @@
                         //start running the game on the server,
                         //which will tell them to respawn/start
 					if (player_count+1 == needed){
-						this.log('game.server starts the game....');
+						this.log(':: server :: Starting game....');
                     	game_instance.startGame();
 						this.games.splice(gameid, gameid+1);
 					}

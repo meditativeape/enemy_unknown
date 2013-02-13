@@ -99,7 +99,7 @@
         game_server.findGame(client, gametype);
 
             //Useful to know when someone connects
-        console.log(':: socket.io :: player ' + client.userid + ' connected');
+        console.log(':: socket.io :: player ' + client.userid.substring(0,8) + ' connected');
 
             //Now we want to handle some of the messages that clients will send.
             //They send messages here, and we send them to the game_server to handle.
