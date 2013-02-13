@@ -68,31 +68,36 @@
 		
 		var isAppLoaded = function() {
 			files_loaded++;
-			if (files_loaded >= 10) {
+			if (files_loaded >= 13) {
 				gc.initiate();
 			}
 		}
 		
 		this.background = load_image("sprites\\bg_temp.jpg");
-		this.sprites[0][1] = load_image("sprites\\ball_water.png");
-		this.sprites[0][3] = load_image("sprites\\ball_fire.png");
-		this.sprites[0][5] = load_image("sprites\\ball_unknown.png");
-		this.sprites[1][1] = load_image("sprites\\box_water.png");
-		this.sprites[1][3] = load_image("sprites\\ball_fire.png");
-		this.sprites[1][5] = load_image("sprites\\box_unknown.png");
-		this.sprites[2][1] = load_image("sprites\\potion_water.png");
-		this.sprites[2][3] = load_image("sprites\\potion_fire.png");
-		this.sprites[2][5] = load_image("sprites\\potion_unknown.png");
+		this.sprites[0][1] = load_image("sprites\\water_blue.png");
+		this.sprites[0][3] = load_image("sprites\\fire_blue.png");
+		this.sprites[0][5] = load_image("sprites\\unlit_blue.png");
+		this.sprites[1][1] = load_image("sprites\\water_yellow.png");
+		this.sprites[1][3] = load_image("sprites\\fire_yellow.png");
+		this.sprites[1][5] = load_image("sprites\\unlit_yellow.png");
+		this.sprites[2][1] = load_image("sprites\\water_red.png");
+		this.sprites[2][3] = load_image("sprites\\fire_red.png");
+		this.sprites[2][5] = load_image("sprites\\unlit_red.png");
+		this.sprites[3][1] = load_image("sprites\\water_red.png");
+		this.sprites[3][3] = load_image("sprites\\fire_red.png");
+		this.sprites[3][5] = load_image("sprites\\unlit_red.png");
 		
-//		this.sprites[0][1] = load_image("sprites\\frank_water.png");
-//		this.sprites[0][3] = load_image("sprites\\frank_fire.png");
-//		this.sprites[0][5] = load_image("sprites\\frank_unknown.png");
-//		this.sprites[1][1] = load_image("sprites\\beck_water.png");
-//		this.sprites[1][3] = load_image("sprites\\beck_fire.png");
-//		this.sprites[1][5] = load_image("sprites\\beck_unknown.png");
-//		this.sprites[2][1] = load_image("sprites\\hawaii_water.png");
-//		this.sprites[2][3] = load_image("sprites\\hawaii_fire.png");
-//		this.sprites[2][5] = load_image("sprites\\hawaii_unknown.png");
+		// this.background = load_image("sprites\\bg_temp.jpg");
+		// this.sprites[0][1] = load_image("sprites\\ball_water.png");
+		// this.sprites[0][3] = load_image("sprites\\ball_fire.png");
+		// this.sprites[0][5] = load_image("sprites\\ball_unknown.png");
+		// this.sprites[1][1] = load_image("sprites\\box_water.png");
+		// this.sprites[1][3] = load_image("sprites\\ball_fire.png");
+		// this.sprites[1][5] = load_image("sprites\\box_unknown.png");
+		// this.sprites[2][1] = load_image("sprites\\potion_water.png");
+		// this.sprites[2][3] = load_image("sprites\\potion_fire.png");
+		// this.sprites[2][5] = load_image("sprites\\potion_unknown.png");
+
 	};
 
 	game_core_client.prototype.onnetmessage = function(data){
