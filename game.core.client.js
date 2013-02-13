@@ -124,21 +124,25 @@
 				case "add":
 					var sprite = this.sprites[parseInt(keywords[2])][parseInt(keywords[4])];
 					this.hexgrid.matrix[parseInt(keywords[5])][parseInt(keywords[6])].piece = new Unit(parseInt(keywords[2]),parseInt(keywords[3]),1,parseInt(keywords[4]),new Coordinate(parseInt(keywords[5]),parseInt(keywords[6])),0,sprite);
+					gc.updateRA();
 					break;
 				case "move":
 					this.hexgrid.move(new Coordinate(parseInt(keywords[2]),parseInt(keywords[3])),new Coordinate(parseInt(keywords[4]),parseInt(keywords[5])))
 					this.hexgrid.matrix[parseInt(keywords[4])][parseInt(keywords[5])].piece.setcd(3);
+					gc.updateRA();
 					break;
 				case "attack":
 					this.hexgrid.move(new Coordinate(parseInt(keywords[2]),parseInt(keywords[3])),new Coordinate(parseInt(keywords[4]),parseInt(keywords[5])))
 					this.hexgrid.matrix[parseInt(keywords[4])][parseInt(keywords[5])].piece.hp = parseInt(keywords[6]);
 					this.hexgrid.matrix[parseInt(keywords[7])][parseInt(keywords[8])].piece.hp = parseInt(keywords[9]);
 					this.hexgrid.matrix[parseInt(keywords[4])][parseInt(keywords[5])].piece.setcd(3);
+					gc.updateRA();
 					break;
 				case "die":
 					this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece.type = parseInt(keywords[4]);
 					// this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece.die();
 					this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece = null;
+					gc.updateRA();
 					break;
 				}
 				break;
@@ -153,7 +157,25 @@
 
 	game_core_client.prototype.onconnected = function(data){
 	};
-
+	
+	game_core_client.prototype.updateRA = function(){
+		if(this.last_click_coord){
+			gc.hexgrid.clearReachable();
+			gc.hexgrid.clearAttackable();
+			if(this.moveAndAttack){
+				if(gc.hexgrid.getUnit(this.moveAndAttack)){
+					this.last_click_coord = null;
+					this.moveAndAttack = null;
+				}else{
+					gc.hexgrid.markAttackable(coord,this.last_click_coord);
+				}
+			}else{
+				gc.hexgrid.markReachable(this.last_click_coord);
+				gc.hexgrid.markAttackable(this.last_click_coord,this.last_click_coord);
+			}
+		}
+	} 
+	
 	game_core_client.prototype.initiate = function(){
 	
 	//Sever connection functionallity..
