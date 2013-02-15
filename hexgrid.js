@@ -68,12 +68,20 @@ var BuildMap = function(/*double*/ side,/*double*/ratio,/*int*/ x, /*int*/y,/*do
 		return ((Math.abs(deltaX) + Math.abs(deltaY) + Math.abs(deltaX + deltaY)) / 2);		
 	};
 	
-	this.draw = function draw(/*Camera*/camera,/*ctx*/ctx){
+	this.draw = function draw(/*Camera*/camera){
 		for(var x in this.matrix){
 			for(var y in this.matrix[x]){
-				this.matrix[x][y].draw(camera,ctx);
+				this.matrix[x][y].draw(camera);
 			}
 		}	
+		for(var x in this.matrix){
+			for(var y in this.matrix[x]){
+				if(this.matrix[x][y].piece){
+					var midPoint = new Point(this.matrix[x][y].MidPoint.X-camera.x,this.matrix[x][y].MidPoint.Y-camera.y);
+					this.matrix[x][y].piece.drawHP(midPoint,this.matrix[x][y].spec.height);
+				}
+			}		
+		}
 	};
 	
 	this.move = function(/*Coordinate*/ origin, /*Coordinate*/dest) {
@@ -304,6 +312,7 @@ Hexagon.prototype.draw = function(/*Camera*/camera) {
 	if(this.piece!=null){
 		var midPoint = new Point(this.MidPoint.X-camera.x,this.MidPoint.Y-camera.y);
 		this.piece.draw(midPoint,this.spec.height);
+
 	}
 	
 };

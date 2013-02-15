@@ -132,8 +132,8 @@
 					break;
 				case "attack":
 					this.hexgrid.move(new Coordinate(parseInt(keywords[2]),parseInt(keywords[3])),new Coordinate(parseInt(keywords[4]),parseInt(keywords[5])))
-					this.hexgrid.matrix[parseInt(keywords[4])][parseInt(keywords[5])].piece.hp = parseInt(keywords[6]);
-					this.hexgrid.matrix[parseInt(keywords[7])][parseInt(keywords[8])].piece.hp = parseInt(keywords[9]);
+					this.hexgrid.matrix[parseInt(keywords[4])][parseInt(keywords[5])].piece.minusHP(parseInt(keywords[6]));
+					this.hexgrid.matrix[parseInt(keywords[7])][parseInt(keywords[8])].piece.minusHP(parseInt(keywords[9]));
 					this.hexgrid.matrix[parseInt(keywords[4])][parseInt(keywords[5])].piece.setcd(3);
 					this.updateRA();
 					break;

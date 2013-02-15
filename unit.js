@@ -19,6 +19,9 @@ var Unit = function(/*int*/player,/*int*/ team,/*int*/hp,/*int*/ type, /*Coordin
 	this.attacking = false;
 	this.damaged = false;
 	this.death = null;
+	this.lostHP = 0;
+	this.losingHP = false;
+	this.hpfloat = 0;
 }
 
 // server side we export Unit.
@@ -48,21 +51,43 @@ Unit.prototype.draw = function(/*Point*/p, /*int*/height) {
 	var ctx = document.getElementById('gameCanvas').getContext('2d');
 	ctx.drawImage(this.image, Math.floor(p.X - this.image.width/2), Math.floor(p.Y + height/4 - this.image.height), 
 			this.image.width, this.image.height);
-	// hp bar
+};
+
+Unit.prototype.drawHP = function(/*Point*/p, /*int*/height) {
+	var ctx = document.getElementById('gameCanvas').getContext('2d');
 	ctx.lineWidth = 3;
 	ctx.strokeStyle = "white";
 	ctx.beginPath();
-	ctx.moveTo(Math.floor(p.X - this.image.width/4), Math.floor(p.Y + height/4 + 4));
-	ctx.lineTo(Math.floor(p.X + this.image.width/4), Math.floor(p.Y + height/4 + 4));
+	ctx.moveTo(Math.floor(p.X - this.image.width/4), Math.floor(p.Y - this.image.height/2 - 4));
+	ctx.lineTo(Math.floor(p.X + this.image.width/4), Math.floor(p.Y - this.image.height/2 - 4));
 	ctx.stroke();
 	ctx.strokeStyle = "red";
 	ctx.beginPath();
-	ctx.moveTo(Math.floor(p.X - this.image.width/4), Math.floor(p.Y + height/4 + 4));
-	ctx.lineTo(Math.floor(p.X - this.image.width/4 + this.image.width/2 * this.hp / 100), Math.floor(p.Y + height/4 + 4));
+	ctx.moveTo(Math.floor(p.X - this.image.width/4), Math.floor(p.Y - this.image.height/2 - 4));
+	ctx.lineTo(Math.floor(p.X - this.image.width/4 + this.image.width/2 * this.hp / 100), Math.floor(p.Y - this.image.height/2 - 4));
 	ctx.stroke();
 	ctx.lineWidth = 1;
 	ctx.strokeStyle = "orange";
+	if(this.losingHP){
+		var text = "-" + this.lostHP;
+		ctx.fillStyle = "white";
+		ctx.font = "16px Arial";
+		ctx.fillText(text, p.X - this.image.width/8, p.Y - this.hpfloat);
+		this.hpfloat += 0.5;
+		if(this.hpfloat>= this.image.width/2 -20){
+			this.losingHP = false;
+			this.hpfloat = 0;
+		}
+	}
 };
+
+Unit.prototype.minusHP = function(/*int*/hp){
+	this.lostHP = this.hp - hp;
+	this.hp = hp;
+	var self = this;
+	this.losingHP = true;
+	this.hpfloat = 0;
+}
 
 Unit.prototype.gotHit = function(/*Unit*/enemy){
 	//Wood beats water and earth
