@@ -98,16 +98,17 @@ Unit.prototype.gotHit = function(/*Unit*/enemy){
 	var damage = 10;
 	//Calculate type advantage
     var flag = (this.type-enemy.type)%5;
-	//Enemy advantage
+	//My advantage
     if (flag>2){
-    	this.hp = this.hp - damage; 
+    	this.hp = this.hp - Math.floor(damage/2); 
 		//enemy.hp = enemy.hp - floor(damage/2);
 	}
-	//My advantage
+	//Enemy advantage
     else if (flag!=0){
-        this.hp = this.hp - Math.floor(damage/2);
+        this.hp = this.hp - damage*2;
 		//enemy.hp = enemy.hp - damage;
 	}
+	//Tie
     else{
         this.hp = this.hp - damage;
 		//enemy.hp = enemy.hp - damage;

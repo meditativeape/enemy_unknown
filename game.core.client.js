@@ -231,6 +231,7 @@
 						gc.socket.send('1 move ' + gc.last_click_coord.X +' ' + gc.last_click_coord.Y + ' ' + coord.X +' ' + coord.Y);
 						gc.hexgrid.clearReachable();
 						gc.hexgrid.clearAttackable();
+						
 					}
 					//After unit has attacked
 					else if (gc.last_click_coord && isAttackable){
