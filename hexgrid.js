@@ -127,12 +127,12 @@ var BuildMap = function(/*double*/ side,/*double*/ratio,/*int*/ x, /*int*/y,/*do
 	
 	};
 	
-	this.markAttackable = function(/*Coordinate*/coord,/*Coord*/attackerCoord){
+	this.markAttackable = function(/*Coordinate*/coord){
 		var selectedHex = this.matrix[coord.X][coord.Y];
 		for(var x in this.matrix){ // brute force!
 			for(var y in this.matrix[x]){
-				if (this.hexDist(selectedHex, this.matrix[x][y]) <= 1 && this.matrix[x][y].piece && (selectedHex !=this.matrix[x][y])) { // in range and occupied by enemys
-					if(this.matrix[attackerCoord.X][attackerCoord.Y].piece.team!=this.matrix[x][y].piece.team){
+				if (this.hexDist(selectedHex, this.matrix[x][y]) <= selectedHex.piece.range && this.matrix[x][y].piece && (selectedHex !=this.matrix[x][y])) { // in range and occupied by enemys
+					if(this.matrix[coord.X][coord.Y].piece.team!=this.matrix[x][y].piece.team){
 						this.matrix[x][y].attackable = true;
 						this.attackables.push(this.matrix[x][y]);
 					}

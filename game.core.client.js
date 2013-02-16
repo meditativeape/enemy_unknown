@@ -35,7 +35,6 @@
 		// 0:crystal ball, 1:treasure box, 2:potion bottle, 3:TBD
 		this.sprites = [[], [], [], []];
 		this.last_click_coord = null;
-		this.moveAndAttack = null;
 		this.background = null;
 		this.camera = null;
 		this.minimap = null;
@@ -122,7 +121,7 @@
 				switch (keywords[1]) {
 				case "add":
 					var sprite = this.sprites[parseInt(keywords[2])][parseInt(keywords[4])];
-					this.hexgrid.matrix[parseInt(keywords[5])][parseInt(keywords[6])].piece = new Unit(parseInt(keywords[2]),parseInt(keywords[3]),50,parseInt(keywords[4]),new Coordinate(parseInt(keywords[5]),parseInt(keywords[6])),0,sprite);
+					this.hexgrid.matrix[parseInt(keywords[5])][parseInt(keywords[6])].piece = new Unit(parseInt(keywords[2]),parseInt(keywords[3]),100,parseInt(keywords[4]),new Coordinate(parseInt(keywords[5]),parseInt(keywords[6])),0,sprite);
 					this.updateRA();
 					break;
 				case "move":
@@ -131,10 +130,9 @@
 					this.updateRA();
 					break;
 				case "attack":
-					this.hexgrid.move(new Coordinate(parseInt(keywords[2]),parseInt(keywords[3])),new Coordinate(parseInt(keywords[4]),parseInt(keywords[5])))
-					this.hexgrid.matrix[parseInt(keywords[4])][parseInt(keywords[5])].piece.minusHP(parseInt(keywords[6]));
-					this.hexgrid.matrix[parseInt(keywords[7])][parseInt(keywords[8])].piece.minusHP(parseInt(keywords[9]));
-					this.hexgrid.matrix[parseInt(keywords[4])][parseInt(keywords[5])].piece.setcd(3);
+					this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece.minusHP(parseInt(keywords[4]));
+					this.hexgrid.matrix[parseInt(keywords[5])][parseInt(keywords[6])].piece.minusHP(parseInt(keywords[7]));
+					this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece.setcd(3);
 					this.updateRA();
 					break;
 				case "die":
@@ -161,21 +159,8 @@
 		if(this.last_click_coord){
 			this.hexgrid.clearReachable();
 			this.hexgrid.clearAttackable();
-			if (!this.hexgrid.getUnit(this.last_click_coord)) {
-				this.last_click_coord = null;
-				return;
-			}
-			if(this.moveAndAttack){
-				if(this.hexgrid.getUnit(this.moveAndAttack)){
-					this.last_click_coord = null;
-					this.moveAndAttack = null;
-				}else{
-					this.hexgrid.markAttackable(this.moveAndAttack,this.last_click_coord);
-				}
-			}else{
-				this.hexgrid.markReachable(this.last_click_coord);
-				this.hexgrid.markAttackable(this.last_click_coord,this.last_click_coord);
-			}
+			this.hexgrid.markReachable(this.last_click_coord);
+			this.hexgrid.markAttackable(this.last_click_coord);
 		}
 	} 
 	
@@ -243,27 +228,13 @@
 					var isAttackable = gc.hexgrid.isAttackable(coord);
 					//After unit has moved
 					if (gc.last_click_coord && isReachable) {
-						gc.moveAndAttack = coord // move a unit to a reachable coord
+						gc.socket.send('1 move ' + gc.last_click_coord.X +' ' + gc.last_click_coord.Y + ' ' + coord.X +' ' + coord.Y);
 						gc.hexgrid.clearReachable();
 						gc.hexgrid.clearAttackable();
-						gc.hexgrid.markAttackable(coord,gc.last_click_coord);
-						if(gc.hexgrid.attackables.length==0){
-							gc.socket.send('1 move ' + gc.last_click_coord.X +' ' + gc.last_click_coord.Y + ' ' + gc.moveAndAttack.X +' ' + gc.moveAndAttack.Y);
-							gc.moveAndAttack = null;
-							gc.last_click_coord = null;
-							gc.hexgrid.clearAttackable();
-						}
 					}
 					//After unit has attacked
 					else if (gc.last_click_coord && isAttackable){
-						if(gc.moveAndAttack){
-							gc.socket.send('1 attack ' + gc.last_click_coord.X +' ' + gc.last_click_coord.Y + ' ' + gc.moveAndAttack.X +' ' + gc.moveAndAttack.Y + ' ' + coord.X + ' ' + coord.Y);
-						}
-						else{
-							gc.socket.send('1 attack ' + gc.last_click_coord.X +' ' + gc.last_click_coord.Y + ' ' + gc.last_click_coord.X +' ' + gc.last_click_coord.Y + ' ' + coord.X + ' ' + coord.Y);
-						}
-						gc.last_click_coord = null;
-						gc.moveAndAttack = null;
+						gc.socket.send('1 attack ' + gc.last_click_coord.X +' ' + gc.last_click_coord.Y + ' ' + coord.X + ' ' + coord.Y);
 						gc.hexgrid.clearReachable();
 						gc.hexgrid.clearAttackable();
 					//Before unit has been selected
@@ -286,9 +257,6 @@
 			var canvasY = event.pageY - canvas.offsetTop;
 			if (canvasX <= canvas.width && canvasY <= canvas.height) {
 				event.preventDefault();
-				if (gc.last_click_coord && gc.moveAndAttack){
-					gc.socket.send('1 move ' + gc.last_click_coord.X +' ' + gc.last_click_coord.Y + ' ' + gc.moveAndAttack.X +' ' + gc.moveAndAttack.Y);
-				}
 				gc.last_click_coord = null;
 				gc.hexgrid.clearReachable();
 				gc.hexgrid.clearAttackable();
