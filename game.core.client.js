@@ -32,7 +32,7 @@
 	var game_core_client = function() {
 	
 		// Container for all unit images and animations
-		// 0:crystal ball, 1:treasure box, 2:potion bottle, 3:TBD
+		// 0:blue, 1:yellow, 2:red, 3:green
 		this.sprites = [[], [], [], []];
 		this.last_click_coord = null;
 		this.background = null;
@@ -66,35 +66,40 @@
 		
 		var isAppLoaded = function() {
 			files_loaded++;
-			if (files_loaded >= 13) {
+			if (files_loaded >= 25) {
 				gc.initiate();
 			}
 		}
 		
 		this.background = load_image("sprites\\bg_temp.jpg");
-		this.sprites[0][1] = load_image("sprites\\water_blue.png");
-		this.sprites[0][3] = load_image("sprites\\fire_blue.png");
-		this.sprites[0][5] = load_image("sprites\\unlit_blue.png");
-		this.sprites[1][1] = load_image("sprites\\water_yellow.png");
-		this.sprites[1][3] = load_image("sprites\\fire_yellow.png");
-		this.sprites[1][5] = load_image("sprites\\unlit_yellow.png");
-		this.sprites[2][1] = load_image("sprites\\water_red.png");
-		this.sprites[2][3] = load_image("sprites\\fire_red.png");
-		this.sprites[2][5] = load_image("sprites\\unlit_red.png");
-		this.sprites[3][1] = load_image("sprites\\water_red.png");
-		this.sprites[3][3] = load_image("sprites\\fire_red.png");
-		this.sprites[3][5] = load_image("sprites\\unlit_red.png");
 		
-		// this.background = load_image("sprites\\bg_temp.jpg");
-		// this.sprites[0][1] = load_image("sprites\\ball_water.png");
-		// this.sprites[0][3] = load_image("sprites\\ball_fire.png");
-		// this.sprites[0][5] = load_image("sprites\\ball_unknown.png");
-		// this.sprites[1][1] = load_image("sprites\\box_water.png");
-		// this.sprites[1][3] = load_image("sprites\\ball_fire.png");
-		// this.sprites[1][5] = load_image("sprites\\box_unknown.png");
-		// this.sprites[2][1] = load_image("sprites\\potion_water.png");
-		// this.sprites[2][3] = load_image("sprites\\potion_fire.png");
-		// this.sprites[2][5] = load_image("sprites\\potion_unknown.png");
+		this.sprites[0][0] = load_image("sprites\\wood_blue.png");
+		this.sprites[0][1] = load_image("sprites\\water_blue.png");
+		this.sprites[0][2] = load_image("sprites\\earth_blue.png");
+		this.sprites[0][3] = load_image("sprites\\fire_blue.png");
+		this.sprites[0][4] = load_image("sprites\\air_blue.png");
+		this.sprites[0][5] = load_image("sprites\\unlit_blue.png");
+		
+		this.sprites[1][0] = load_image("sprites\\wood_yellow.png");
+		this.sprites[1][1] = load_image("sprites\\water_yellow.png");
+		this.sprites[1][2] = load_image("sprites\\earth_yellow.png");
+		this.sprites[1][3] = load_image("sprites\\fire_yellow.png");
+		this.sprites[1][4] = load_image("sprites\\air_yellow.png");
+		this.sprites[1][5] = load_image("sprites\\unlit_yellow.png");
+		
+		this.sprites[2][0] = load_image("sprites\\wood_red.png");
+		this.sprites[2][1] = load_image("sprites\\water_red.png");
+		this.sprites[2][2] = load_image("sprites\\earth_red.png");
+		this.sprites[2][3] = load_image("sprites\\fire_red.png");
+		this.sprites[2][4] = load_image("sprites\\air_red.png");
+		this.sprites[2][5] = load_image("sprites\\unlit_red.png");
+		
+		this.sprites[3][0] = load_image("sprites\\wood_green.png");
+		this.sprites[3][1] = load_image("sprites\\water_green.png");
+		this.sprites[3][2] = load_image("sprites\\earth_green.png");
+		this.sprites[3][3] = load_image("sprites\\fire_green.png");
+		this.sprites[3][4] = load_image("sprites\\air_green.png");
+		this.sprites[3][5] = load_image("sprites\\unlit_green.png");
 
 	};
 
@@ -126,13 +131,13 @@
 					break;
 				case "move":
 					this.hexgrid.move(new Coordinate(parseInt(keywords[2]),parseInt(keywords[3])),new Coordinate(parseInt(keywords[4]),parseInt(keywords[5])))
-					this.hexgrid.matrix[parseInt(keywords[4])][parseInt(keywords[5])].piece.setcd(3);
+					this.hexgrid.matrix[parseInt(keywords[4])][parseInt(keywords[5])].piece.setcd(0);
 					this.updateRA();
 					break;
 				case "attack":
 					this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece.minusHP(parseInt(keywords[4]));
 					this.hexgrid.matrix[parseInt(keywords[5])][parseInt(keywords[6])].piece.minusHP(parseInt(keywords[7]));
-					this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece.setcd(3);
+					this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece.setcd(0);
 					this.updateRA();
 					break;
 				case "die":
@@ -231,12 +236,14 @@
 						gc.socket.send('1 move ' + gc.last_click_coord.X +' ' + gc.last_click_coord.Y + ' ' + coord.X +' ' + coord.Y);
 						gc.hexgrid.clearReachable();
 						gc.hexgrid.clearAttackable();
+						gc.last_click_coord = null;
 					}
 					//After unit has attacked
 					else if (gc.last_click_coord && isAttackable){
 						gc.socket.send('1 attack ' + gc.last_click_coord.X +' ' + gc.last_click_coord.Y + ' ' + coord.X + ' ' + coord.Y);
 						gc.hexgrid.clearReachable();
 						gc.hexgrid.clearAttackable();
+						gc.last_click_coord = null;
 					//Before unit has been selected
 					} else if (!gc.last_click_coord && (unitplayer == gc.player)) { // select a unit
 						if (gc.hexgrid.getUnit(coord)) { // this coordinate has a unit

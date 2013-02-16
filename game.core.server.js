@@ -66,7 +66,7 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 		var myUnit = this.hexgrid.getUnit(coord1);
 		var theirUnit = this.hexgrid.getUnit(coord2);
 		if (myUnit.team == player.team && theirUnit && theirUnit.team != player.team)
-			if (this.hexgrid.hexDist(this.hexgrid.matrix[coord1.X][coord1.Y], this.hexgrid.matrix[coord2.X][coord2.Y]) == 1)
+			if (this.hexgrid.hexDist(this.hexgrid.matrix[coord1.X][coord1.Y], this.hexgrid.matrix[coord2.X][coord2.Y]) <= myUnit.range)
 				return true;
 		return false;
 	
@@ -129,7 +129,7 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 				var coord2 = new helper.Coordinate(parseInt(keywords[4]), parseInt(keywords[5]));
 				if (this.canMove(coord1, coord2, client)) {
 					this.makeMove(coord1, coord2);  // move in our local game
-					this.hexgrid.getUnit(coord2).setcd(3);
+					this.hexgrid.getUnit(coord2).setcd(0);
 					for (var i in this.players) {  // tell each player the result of move
 						this.sendMsg(this.players[i], message);
 					}
@@ -142,7 +142,7 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 					var responses = this.makeAttack(myCoord, oppoCoord);  // attack in our local game and get results
 					var unit = this.hexgrid.getUnit(myCoord);
 					if (unit)
-						unit.setcd(3);
+						unit.setcd(0);
 					for (var i in this.players) {  // tell each player the result of attack
 						for (var j in responses)
 							this.sendMsg(this.players[i], responses[j]);
@@ -195,31 +195,45 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 			this.sendMsg(this.players[i], "0 init 0 " + i);
 		}
 		
-		// helper function to get a random type
-		var randomType = function() {
-			if (Math.random() <= 0.5)
-				return 1;
-			else
-				return 3;
-		};
+		// helper function to shuffle an array
+		var shuffle = function(myArray) {
+			var i = myArray.length, j, tempi, tempj;
+			if ( i == 0 ) return false;
+			while ( --i ) {
+			 j = Math.floor( Math.random() * ( i + 1 ) );
+			 tempi = myArray[i];
+			 tempj = myArray[j];
+			 myArray[i] = tempj;
+			 myArray[j] = tempi;
+			}
+		}
 		
-		// hardcoded game instance for test!
+		// hardcoded game instance for demo!
 		var pieces = [];
 		this.hexgrid = new BuildMap(40,2.0,1500,1200,40);
 		// 2 players
-		pieces.push(this.hexgrid.matrix[0][1].piece = new Unit(0, 0, 50, randomType(), new helper.Coordinate(0, 1), 0, null));
-		pieces.push(this.hexgrid.matrix[1][0].piece = new Unit(0, 0, 50, randomType(), new helper.Coordinate(1, 0), 0, null));
-		pieces.push(this.hexgrid.matrix[4][5].piece = new Unit(1, 1, 50, randomType(), new helper.Coordinate(4, 5), 0, null));
-		pieces.push(this.hexgrid.matrix[5][4].piece = new Unit(1, 1, 50, randomType(), new helper.Coordinate(5, 4), 0, null));
+		var types = [0, 1, 2, 3, 4];
+		shuffle(types);
+		pieces.push(this.hexgrid.matrix[0][4].piece = new Unit(0, 0, 100, types[0], new helper.Coordinate(0, 4), 0, null));
+		pieces.push(this.hexgrid.matrix[1][3].piece = new Unit(0, 0, 100, types[1], new helper.Coordinate(1, 3), 0, null));
+		pieces.push(this.hexgrid.matrix[2][2].piece = new Unit(0, 0, 100, types[2], new helper.Coordinate(2, 2), 0, null));
+		pieces.push(this.hexgrid.matrix[3][1].piece = new Unit(0, 0, 100, types[3], new helper.Coordinate(3, 1), 0, null));
+		pieces.push(this.hexgrid.matrix[4][0].piece = new Unit(0, 0, 100, types[4], new helper.Coordinate(4, 0), 0, null));
+		shuffle(types);
+		pieces.push(this.hexgrid.matrix[6][10].piece = new Unit(1, 1, 100, types[0], new helper.Coordinate(6, 10), 0, null));
+		pieces.push(this.hexgrid.matrix[7][9].piece = new Unit(1, 1, 100, types[1], new helper.Coordinate(7, 9), 0, null));
+		pieces.push(this.hexgrid.matrix[8][8].piece = new Unit(1, 1, 100, types[2], new helper.Coordinate(8, 8), 0, null));
+		pieces.push(this.hexgrid.matrix[9][7].piece = new Unit(1, 1, 100, types[3], new helper.Coordinate(9, 7), 0, null));
+		pieces.push(this.hexgrid.matrix[10][6].piece = new Unit(1, 1, 100, types[4], new helper.Coordinate(10, 6), 0, null));
 		// 3 players
 		if (this.type == 1) {
-			pieces.push(this.hexgrid.matrix[0][5].piece = new Unit(2, 2, 50, randomType(), new helper.Coordinate(0, 5), 0, null));
-			pieces.push(this.hexgrid.matrix[1][4].piece = new Unit(2, 2, 50, randomType(), new helper.Coordinate(1, 4), 0, null));
+			pieces.push(this.hexgrid.matrix[0][5].piece = new Unit(2, 2, 100, randomType(), new helper.Coordinate(0, 5), 0, null));
+			pieces.push(this.hexgrid.matrix[1][4].piece = new Unit(2, 2, 100, randomType(), new helper.Coordinate(1, 4), 0, null));
 		}
 		// 4 players
 		if (this.type == 2) {
-			pieces.push(this.hexgrid.matrix[5][1].piece = new Unit(3, 3, 50, randomType(), new helper.Coordinate(5, 1), 0, null));
-			pieces.push(this.hexgrid.matrix[6][0].piece = new Unit(3, 3, 50, randomType(), new helper.Coordinate(6, 0), 0, null));
+			pieces.push(this.hexgrid.matrix[5][1].piece = new Unit(3, 3, 100, randomType(), new helper.Coordinate(5, 1), 0, null));
+			pieces.push(this.hexgrid.matrix[6][0].piece = new Unit(3, 3, 100, randomType(), new helper.Coordinate(6, 0), 0, null));
 		}
 		
 		// do not work for 2v2 yet
