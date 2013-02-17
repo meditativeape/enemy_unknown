@@ -41,6 +41,10 @@
 		this.hexgrid = null;
 		this.started = false;
 		this.player = 0;
+		this.team = null;
+		this.type = null;
+		this.alive = true;
+		this.winner = null;
 		
 		// load assets
 		this.load_assets();
@@ -113,12 +117,24 @@
 				switch (keywords[1]) {
 				case "init":  // game starts
 					this.player = parseInt(keywords[3]);
+					this.team = parseInt(keywords[4]);
+					this.type = parseInt(keywords[5]);
 					this.initGame();
 					break;
 				case "start":
+					this.starting = true;
+					var self = this;
+					window.setTimeout(function(){
+							self.starting = false;
+						}
+						,2000);
+
 					this.started = true;
 					var p = this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].MidPoint;
 					this.camera.setPos(new Point(p.X-this.camera.canvas.width/2,p.Y-this.camera.canvas.height/2))
+					break;
+				case "end":
+					this.winner = parseInt(keywords[2]);
 					break;
 				}
 				break;
@@ -286,13 +302,33 @@
 	// animate function
 	var animate = function(){
 		requestAnimationFrame(animate);
-		
+		var canvas = document.getElementById('gameCanvas');
+		var ctx = document.getElementById('gameCanvas').getContext('2d');
 		if (gc.started) {
 			gc.camera.draw(gc.background);
 			gc.hexgrid.draw(gc.camera);
 			gc.minimap.draw(gc.background);
+			if (gc.starting){
+				ctx.font = '60px Calibri';
+				ctx.fillStyle = 'white';
+				ctx.fillText("Game has started",  canvas.width/4,canvas.height/2);
+				ctx.font = '30px Calibri';	
+				ctx.fillText("Objective: Kill all enemy units.", canvas.width/4 + 60, canvas.height/2 + 60);			
+			}
+			if (!gc.alive){
+				
+			}
+			if (gc.winner){
+				ctx.font = '60px Calibri';
+				ctx.fillStyle = 'white';
+				if (gc.winner == gc.team){
+					ctx.fillText("You have won!",  canvas.width/4,canvas.height/2);
+				}
+				else{
+					ctx.fillText("You have lost.",  canvas.width/4,canvas.height/2);
+				}
+			}
 		} else {
-			var ctx = document.getElementById('gameCanvas').getContext('2d');
 			ctx.font = 'italic 60px Calibri';
 			ctx.fillStyle = 'rgba(127, 155, 0, 0.5)';;
 			ctx.fillText("Waiting for other players...", 80, 260);		

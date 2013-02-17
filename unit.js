@@ -97,7 +97,10 @@ Unit.prototype.gotHit = function(/*Unit*/enemy){
 	//Air beats wood and water
 	var damage = 10;
 	//Calculate type advantage
-    var flag = Math.abs(this.type-enemy.type)%5;
+    var flag = (this.type-enemy.type)%5;
+	if(flag<0){
+		flag = flag + 5;
+	}
 	//My advantage
     if (flag>2){
     	this.hp = this.hp - Math.floor(damage/2); 
