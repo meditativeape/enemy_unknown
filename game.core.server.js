@@ -192,11 +192,12 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 	game_core_server.prototype.checkGameStatus = function(){
 		var winningTeam = -1;
 		for (var i in this.units) {
-			if (this.units[i] > 0)
-				if (winningTeam == -1)
+			if (this.units[i] > 0) {
+				if (winningTeam != -1)
 					return;
 				else
 					winningTeam = i;
+			}
 		}
 		this.endGame(winningTeam);  // some team wins
 	};
@@ -211,7 +212,7 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 		this.started = true;
 		console.log(":: " + this.id.substring(0,8) + " :: Initializing game...");
 		for (var i in this.players) {
-			this.sendMsg(this.players[i], "0 init 0 " + i);
+			this.sendMsg(this.players[i], "0 init 0 " + i + " " + i + " " + this.type);  // TODO: does not work for 2v2
 		}
 		
 		// helper function to shuffle an array
@@ -271,7 +272,7 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 		
 		console.log(":: " + this.id.substring(0,8) + " :: Game started!");
 		for (var i in this.players) {
-			this.sendMsg(this.players[i], "0 start {0} {1} {2}".format([pieces[5*i].x, pieces[5*i].y]), this.type);
+			this.sendMsg(this.players[i], "0 start {0} {1}".format([pieces[5*i].x, pieces[5*i].y]));
 		}
 	};
 	
