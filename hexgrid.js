@@ -57,9 +57,8 @@ var BuildMap = function(/*double*/ side,/*double*/ratio,/*int*/ x, /*int*/y,/*do
 		return null;
 	};
 	
-	this.toScreen = function toScreen(/*Coordinate*/ coord,/*Camera*/camera){
-		var mapPoint = this.matix[coord.X][coord.Y].MidPoint;
-		return Point(mapPoint.X-camera.x,mapPoint.Y-camera.y);
+	this.toMap = function toMap(/*Coordinate*/ coord){
+		return this.matrix[coord.X][coord.Y].MidPoint;
 	};
 	
 	this.hexDist = function hexDist(/*Hexagon*/ h1, /*Hexagon*/ h2) {

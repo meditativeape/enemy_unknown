@@ -121,6 +121,7 @@
 					this.camera.setPos(new Point(p.X-this.camera.canvas.width/2,p.Y-this.camera.canvas.height/2))
 					break;
 				}
+				break;
 			
 			case 1:  // game control messages
 				switch (keywords[1]) {
@@ -128,11 +129,18 @@
 					var sprite = this.sprites[parseInt(keywords[2])][parseInt(keywords[4])];
 					this.hexgrid.matrix[parseInt(keywords[5])][parseInt(keywords[6])].piece = new Unit(parseInt(keywords[2]),parseInt(keywords[3]),100,parseInt(keywords[4]),new Coordinate(parseInt(keywords[5]),parseInt(keywords[6])),0,sprite);
 					this.updateRA();
+					// update minimap
+					var pointOnMap = this.hexgrid.toMap(new Coordinate(parseInt(keywords[5]), parseInt(keywords[6])));
+					this.minimap.addUnit(pointOnMap, parseInt(keywords[2]));
 					break;
 				case "move":
 					this.hexgrid.move(new Coordinate(parseInt(keywords[2]),parseInt(keywords[3])),new Coordinate(parseInt(keywords[4]),parseInt(keywords[5])))
 					this.hexgrid.matrix[parseInt(keywords[4])][parseInt(keywords[5])].piece.setcd(0);
 					this.updateRA();
+					// update minimap
+					var oldPointOnMap = this.hexgrid.toMap(new Coordinate(parseInt(keywords[2]), parseInt(keywords[3])));
+					var newPointOnMap = this.hexgrid.toMap(new Coordinate(parseInt(keywords[4]), parseInt(keywords[5])));
+					this.minimap.moveUnit(oldPointOnMap, newPointOnMap);
 					break;
 				case "attack":
 					this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece.minusHP(parseInt(keywords[4]));
@@ -143,8 +151,12 @@
 				case "die":
 					this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece.type = parseInt(keywords[4]);
 					// this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece.die();
+					if (this.last_click_coord && this.last_click_coord.X == parseInt(keywords[2]) && this.last_click_coord.Y == parseInt(keywords[3]))
+						this.last_click_coord = null;
 					this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece = null;
-					this.updateRA();
+					// update minimap
+					var pointOnMap = this.hexgrid.toMap(new Coordinate(parseInt(keywords[2]), parseInt(keywords[3])));
+					this.minimap.removeUnit(pointOnMap);
 					break;
 				}
 				break;
@@ -198,18 +210,18 @@
 
 	game_core_client.prototype.initGame = function(){
 		// hard-coded game instance for demo!!!
-		this.camera = new BuildCamera([this.background.width, this.background.height], new Point(0, 0), 5);
+		this.camera = new BuildCamera([this.background.width, this.background.height], new Point(0, 0), 15);
 		this.minimap = new BuildMiniMap(this.camera, [this.background.width, this.background.height], 200);
 		this.hexgrid = new BuildMap(40,2.0,1500,1200,40);
 		
 		document.addEventListener('keydown', function(event) {  // key pressing event listener
-			if (event.keyCode == 37) { // left
+			if (event.keyCode == 37 || event.keyCode == 65) { // left
 				gc.camera.moveLeft();
-			} else if (event.keyCode == 39) { // right
+			} else if (event.keyCode == 39 || event.keyCode == 68) { // right
 				gc.camera.moveRight();
-			} else if (event.keyCode == 38) { // up
+			} else if (event.keyCode == 38 || event.keyCode == 87) { // up
 				gc.camera.moveUp();
-			} else if (event.keyCode == 40) { // down
+			} else if (event.keyCode == 40 || event.keyCode == 83) { // down
 				gc.camera.moveDown();
 			}
 		});

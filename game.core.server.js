@@ -250,7 +250,7 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 		
 		console.log(":: " + this.id.substring(0,8) + " :: Game started!");
 		for (var i in this.players) {
-			this.sendMsg(this.players[i], "0 start {0} {1}".format([pieces[2*i].x, pieces[2*i].y]));
+			this.sendMsg(this.players[i], "0 start {0} {1}".format([pieces[5*i].x, pieces[5*i].y]));
 		}
 	};
 	

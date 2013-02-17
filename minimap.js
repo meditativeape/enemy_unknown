@@ -18,6 +18,7 @@
 	this.mapSize = mapSize;
 	this.width = width;
 	this.height = Math.floor(mapSize[1]/(mapSize[0]/width));
+	this.units = [];
 	
 	// methods
 	this.draw = function(img){
@@ -41,6 +42,55 @@
 		var boxSize = [Math.floor(this.width*this.canvas.width/mapSize[0]), Math.floor(this.height*this.canvas.height/mapSize[1])];
 		var boxPos = new Point(Math.floor(camera.x*this.width/mapSize[0]), Math.floor(camera.y*this.height/mapSize[1]));
 		ctx.strokeRect(boxPos.X, boxPos.Y, boxSize[0], boxSize[1]);
+		// draw the units
+		for (var i in this.units) {
+			var x = this.units[i][0] / this.mapSize[0] * this.width;
+			var y = this.units[i][1] / this.mapSize[1] * this.height;
+			var color;
+			switch (this.units[i][2]) {
+			
+			case 0:
+				color = "lightskyblue";
+				break;
+				
+			case 1:
+				color = "yellow";
+				break;
+				
+			case 2:
+				color = "red";
+				break;
+				
+			case 3:
+				color = "green";
+				break;
+			}
+			ctx.fillStyle = color;
+			ctx.beginPath();
+			ctx.arc(x, y, 3, 0, 2 * Math.PI, true);
+			ctx.fill();
+		}
+	};
+	
+	this.addUnit = function(p, player){
+		this.units.push([p.X, p.Y, player]);
+	};
+	
+	this.moveUnit = function(p1, p2){
+		for (var i in this.units)
+			if (this.units[i][0] == p1.X && this.units[i][1] == p1.Y) {
+				this.units[i][0] = p2.X;
+				this.units[i][1] = p2.Y;
+				return;
+			}
+	};
+	
+	this.removeUnit = function(p){
+		for (var i in this.units)
+			if (this.units[i][0] == p.X && this.units[i][1] == p.Y) {
+				this.units.splice(i, 1);
+				return;
+			}
 	};
 	
 	this.click = function(event){
