@@ -173,6 +173,14 @@
 					// update minimap
 					var pointOnMap = this.hexgrid.toMap(new Coordinate(parseInt(keywords[2]), parseInt(keywords[3])));
 					this.minimap.removeUnit(pointOnMap);
+					this.alive = false;
+					for(var x in this.matrix){
+						for(var y in this.matrix[x]){
+							if(this.matrix[x][y].piece.team == this.team){
+								this.alive = true;
+							}
+						}
+					}	
 					break;
 				}
 				break;
@@ -247,6 +255,9 @@
 			if (gc.minimap.checkClick(event)) {
 				gc.minimap.click(event); // pass to minimap
 			} else {
+				if(!gc.alive){
+					return;
+				}
 				var canvas = document.getElementById("gameCanvas");
 				var canvasX = event.pageX - canvas.offsetLeft;
 				var canvasY = event.pageY - canvas.offsetTop;
@@ -315,8 +326,10 @@
 				ctx.font = '30px Calibri';	
 				ctx.fillText("Objective: Kill all enemy units.", canvas.width/4 + 60, canvas.height/2 + 60);			
 			}
-			if (!gc.alive){
-				
+			if (!gc.alive && !gc.winner){
+				ctx.font = '60px Calibri';
+				ctx.fillStyle = 'white';
+				ctx.fillText("All your units are dead!",  canvas.width/4,canvas.height/2);
 			}
 			if (gc.winner){
 				ctx.font = '60px Calibri';
