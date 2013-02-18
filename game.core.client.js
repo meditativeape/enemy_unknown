@@ -174,9 +174,9 @@
 					var pointOnMap = this.hexgrid.toMap(new Coordinate(parseInt(keywords[2]), parseInt(keywords[3])));
 					this.minimap.removeUnit(pointOnMap);
 					this.alive = false;
-					for(var x in this.matrix){
-						for(var y in this.matrix[x]){
-							if(this.matrix[x][y].piece.team == this.team){
+					for(var x in this.hexgrid.matrix){
+						for(var y in this.hexgrid.matrix[x]){
+							if(this.hexgrid.matrix[x][y].piece && this.hexgrid.matrix[x][y].piece.team == this.team){
 								this.alive = true;
 							}
 						}
