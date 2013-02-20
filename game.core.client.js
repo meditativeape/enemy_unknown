@@ -181,6 +181,7 @@
 							}
 						}
 					}	
+					this.updateRA();
 					break;
 				}
 				break;
@@ -197,11 +198,13 @@
 	};
 	
 	game_core_client.prototype.updateRA = function(){
+		this.hexgrid.clearReachable();
+		this.hexgrid.clearAttackable();
 		if(this.last_click_coord){
-			this.hexgrid.clearReachable();
-			this.hexgrid.clearAttackable();
-			this.hexgrid.markReachable(this.last_click_coord);
-			this.hexgrid.markAttackable(this.last_click_coord);
+			if(this.hexgrid.getUnit(this.last_click_coord)){
+				this.hexgrid.markReachable(this.last_click_coord);
+				this.hexgrid.markAttackable(this.last_click_coord);
+			}
 		}
 	} 
 	
