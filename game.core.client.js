@@ -273,8 +273,18 @@
 					
 					var isReachable = gc.hexgrid.isReachable(coord);
 					var isAttackable = gc.hexgrid.isAttackable(coord);
+					//Select a unit
+					if (unitplayer == gc.player) { // select a unit
+						if(gc.hexgrid.getUnit(coord).cooldown<=0){
+								gc.last_click_coord = coord;
+								gc.hexgrid.clearReachable();
+								gc.hexgrid.clearAttackable();
+								gc.hexgrid.markReachable(coord);
+								gc.hexgrid.markAttackable(coord,coord);
+						}
+					}
 					//After unit has moved
-					if (gc.last_click_coord && isReachable) {
+					else if (gc.last_click_coord && isReachable) {
 						gc.socket.send('1 move ' + gc.last_click_coord.X +' ' + gc.last_click_coord.Y + ' ' + coord.X +' ' + coord.Y);
 						gc.hexgrid.clearReachable();
 						gc.hexgrid.clearAttackable();
@@ -286,17 +296,16 @@
 						gc.hexgrid.clearReachable();
 						gc.hexgrid.clearAttackable();
 						gc.last_click_coord = null;
-					//Before unit has been selected
-					} else if (!gc.last_click_coord && (unitplayer == gc.player)) { // select a unit
-						if (gc.hexgrid.getUnit(coord)) { // this coordinate has a unit
-							if(gc.hexgrid.getUnit(coord).cooldown<=0){
-								gc.last_click_coord = coord;
-								gc.hexgrid.markReachable(coord);
-								gc.hexgrid.markAttackable(coord,coord);
-							}
-						}
-
+					}else{
+						gc.hexgrid.clearReachable();
+						gc.hexgrid.clearAttackable();
+						gc.last_click_coord = null;
 					}
+					
+				}else{
+					gc.hexgrid.clearReachable();
+					gc.hexgrid.clearAttackable();
+					gc.last_click_coord = null;
 				}
 			}
 		});
