@@ -324,7 +324,6 @@ var msgLayer = new Kinetic.Layer(); // layer for messages, such as start and end
 					// if(gc.hexgrid.getUnit(coord)!=null){
 						// unitplayer = gc.hexgrid.getUnit(coord).player;
 					// }
-					
 					// var isReachable = gc.hexgrid.isReachable(coord);
 					// var isAttackable = gc.hexgrid.isAttackable(coord);
 					// //After unit has moved
