@@ -6,7 +6,6 @@ if( 'undefined' != typeof global ) {
 	var CONSTANTS = helper.CONSTANTS;
 }
 
-// JavaScript Document
 var Terrain = function(/*int*/attackBuff,/*int*/ defenseBuff,/*int*/rangeBuff,/*boolean*/ moveable, /*string*/objectiveType, 
 	/*int*/ objectiveTime,/*int*/ resource,/*int*/ gatheringSpeed,/*image*/image){
 	this.buff = new Buff(attackBuff,defenseBuff,rangeBuff);
@@ -24,10 +23,26 @@ var Buff = function(/*int*/attackBuff,/*int*/ defenseBuff,/*int*/rangeBuff){
 	this.rangeBuff = rangeBuff;
 }
 
-Terrain.prototype.draw = function(/*Point*/p, /*int*/height) {
-	var ctx = document.getElementById('gameCanvas').getContext('2d');
-	ctx.drawImage(this.image, Math.floor(p.X - this.image.width/2), Math.floor(p.Y + height/4 - this.image.height), 
-			this.image.width, this.image.height);
+/**
+ * Terrain Method: return a Kinetic.Image to be put into the terrain group.
+ * If oldTerrain is provided, update on oldTerrain.
+ * @this {Terrain}
+ */
+Terrain.prototype.draw = function(/*Point*/p, /*int*/height, /*Kinetic.Image*/ oldTerrain) {
+	if (this.image) {
+		if (oldTerrain) {
+			oldTerrain.setX(Math.floor(p.X - this.image.width/2));
+			oldTerrain.setY(Math.floor(p.Y + height/4 - this.image.height));
+			return oldTerrain;
+		} else {
+			var terrainToDraw = new Kinetic.Image({
+				image: this.image,
+				x: Math.floor(p.X - this.image.width/2),
+				y: Math.floor(p.Y + height/4 - this.image.height)
+			});
+			return terrainToDraw;
+		}
+	}
 };
 
 CONSTANTS.waterTerrain = new Terrain(0,0,0,false,null,0,0,0,null);

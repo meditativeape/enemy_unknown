@@ -234,9 +234,9 @@ function findHexSpecs(/*double*/side, /*double*/ratio){
 * camera could be null on server side, since no visualization is needed.
 * @constructor
 */
-function Hexagon(id, mx, my, x, y, spec, camera, map, callback) {
+function Hexagon(id, mx, my, x, y, spec, terrain, camera, map, callback) {
 	this.piece = null;
-	this.terrain = null;
+	this.terrain = terrain;
 	this.map = map;
 	this.matrixx = mx;
 	this.matrixy = my;
@@ -296,9 +296,6 @@ function Hexagon(id, mx, my, x, y, spec, camera, map, callback) {
 			});
 		}
 		this.map.hexGroup.add(this.hexagonToDraw);
-		
-		// TODO: add terrain
-		this.terrainToDraw = null;
 	}
 };
 
@@ -353,6 +350,18 @@ Hexagon.prototype.update = function() {
 		this.hexagonToDraw.setFill('rgba(130, 238, 130, 0.3)');
 	}
 	
+	// add/update terrain
+	if (this.terrain) {
+		if (this.terrainToDraw) {
+			var midPoint = new Point(this.MidPoint.X - this.camera.x, this.MidPoint.Y - this.camera.y);
+			this.terrain.draw(midPoint, this.spec.height, this.terrainToDraw);
+		} else {
+			var midPoint = new Point(this.MidPoint.X - this.camera.x, this.MidPoint.Y - this.camera.y);
+			this.terrainToDraw = this.terrain.draw(midPoint, this.spec.height);
+			this.map.terrainGroup.add(this.terrainToDraw);
+		}
+	}
+	
 	// add/update unit and hp
 	if (this.unitToDraw)
 		this.unitToDraw.destroy();
@@ -360,9 +369,9 @@ Hexagon.prototype.update = function() {
 		this.hpToDraw.destroy();
 	if (this.piece != null) {
 		var midPoint = new Point(this.MidPoint.X - this.camera.x, this.MidPoint.Y - this.camera.y);
-		this.unitToDraw = this.piece.draw(midPoint,this.spec.height);
+		this.unitToDraw = this.piece.draw(midPoint, this.spec.height);
 		this.map.unitGroup.add(this.unitToDraw);
-		this.hpToDraw = this.piece.drawHP(midPoint,this.spec.height);
+		this.hpToDraw = this.piece.drawHP(midPoint, this.spec.height);
 		this.map.hpGroup.add(this.hpToDraw);
 	}
 };
