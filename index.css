@@ -6,7 +6,7 @@ html , body {
 	padding: 0;
 }
 
-#gameCanvas {
+#container {
 	border:solid 1px #333;
 	height : 600px;
 	margin: auto;

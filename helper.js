@@ -18,8 +18,15 @@ function Coordinate(x, y) {
 	this.Y = y;
 };
 
+var CONSTANTS = {
+	width: 800,
+	height: 600,
+	init_resource: 100,
+};
+
 // server side we export Point and Coordinate.
 if( 'undefined' != typeof global ) {
     exports.Point = Point;
 	exports.Coordinate = Coordinate;
+	exports.CONSTANTS = CONSTANTS;
 }
