@@ -103,26 +103,36 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 	};
 
 	game_core_server.prototype.checkObjectives = function(){
-		var self = this;
-		if(this.hexgrid.matrix[5][5].piece && !this.winCountdownFlag){
-			this.winner = self.hexgrid.matrix[5][5].piece.team;
-			for (var i in this.players) {
-				this.sendMsg(this.players[i], "0 countdown " + this.winner);
+		for(var x in this.hexgrid.matrix){ // brute force!
+			for(var y in this.hexgrid.matrix[x]){
+				if(this.hexgrid.matrix[x][y].terrain){
+					if(this.hexgrid.matrix[x][y].terrain.objectiveType){
+						if(this.hexgrid.matrix[x][y].terrain.objectiveType = 'flag'){
+							var self = this;
+							if(this.hexgrid.matrix[x][y].piece && !this.winCountdownFlag){
+								this.winner = self.hexgrid.matrix[x][y].piece.team;
+								for (var i in this.players) {
+									this.sendMsg(this.players[i], "0 countdown " + this.winner);
+								}
+								this.winCountdown = window.setTimeout(function(){
+									self.endGame(self.winner);
+									},this.hexgrid.matrix[x][y].terrain.objectiveTime*1000);
+								this.winCountdownFlag = true;
+							}
+							else if(!this.hexgrid.matrix[x][y].piece && this.winCountdownFlag){
+								this.winner = null;
+								window.clearTimeout(this.winCountdown);
+								for (var i in this.players) {
+									this.sendMsg(this.players[i], "0 countdown " + -1);
+								}
+								this.winCountdownFlag = false;
+							}
+						}
+					}
+				}
 			}
-			this.winCountdown = window.setTimeout(function(){
-				self.endGame(self.winner);
-				},60000);
-			this.winCountdownFlag = true;
 		}
-		else if(!this.hexgrid.matrix[5][5].piece && this.winCountdownFlag){
-			this.winner = null;
-			window.clearTimeout(this.winCountdown);
-			for (var i in this.players) {
-				this.sendMsg(this.players[i], "0 countdown " + -1);
-			}
-			this.winCountdownFlag = false;
-		}
-	}
+	};
 	
 	game_core_server.prototype.handleClientInput = function(client, message){
 		
