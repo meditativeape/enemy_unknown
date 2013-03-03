@@ -107,7 +107,7 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 			for(var y in this.hexgrid.matrix[x]){
 				if(this.hexgrid.matrix[x][y].terrain){
 					if(this.hexgrid.matrix[x][y].terrain.objectiveType){
-						if(this.hexgrid.matrix[x][y].terrain.objectiveType = 'flag'){
+						if(this.hexgrid.matrix[x][y].terrain.objectiveType == 'flag'){
 							var self = this;
 							if(this.hexgrid.matrix[x][y].piece && !this.winCountdownFlag){
 								this.winner = self.hexgrid.matrix[x][y].piece.team;
@@ -116,7 +116,7 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 								}
 								this.winCountdown = window.setTimeout(function(){
 									self.endGame(self.winner);
-									},this.hexgrid.matrix[x][y].terrain.objectiveTime*1000);
+									},self.hexgrid.matrix[x][y].terrain.objectiveTime*1000);
 								this.winCountdownFlag = true;
 							}
 							else if(!this.hexgrid.matrix[x][y].piece && this.winCountdownFlag){

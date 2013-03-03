@@ -85,13 +85,14 @@ var msgLayer = new Kinetic.Layer(); // layer for messages, such as start and end
 		
 		var isAppLoaded = function() {
 			files_loaded++;
-			if (files_loaded >= 26) {
+			if (files_loaded >= 27) {
 				gc.initiate();
 			}
 		}
 		
 		this.background = load_image("sprites\\bg_temp.jpg");
 		this.flagImg = load_image("sprites\\flag.png");
+		this.waterImg = load_image("sprites\\water.png");
 		this.sprites[0][0] = load_image("sprites\\wood_blue.png");
 		this.sprites[0][1] = load_image("sprites\\water_blue.png");
 		this.sprites[0][2] = load_image("sprites\\earth_blue.png");
@@ -119,6 +120,11 @@ var msgLayer = new Kinetic.Layer(); // layer for messages, such as start and end
 		this.sprites[3][3] = load_image("sprites\\fire_green.png");
 		this.sprites[3][4] = load_image("sprites\\air_green.png");
 		this.sprites[3][5] = load_image("sprites\\unlit_green.png");
+		
+				//Add terrain images.
+		
+		CONSTANTS.waterTerrain.image = this.waterImg;
+		CONSTANTS.flagTerrain.image = this.flagImg;
 
 	};
 
@@ -137,6 +143,13 @@ var msgLayer = new Kinetic.Layer(); // layer for messages, such as start and end
 				this.team = parseInt(keywords[4]);
 				this.type = parseInt(keywords[5]);
 				this.initGame();
+				if(parseInt(keywords[2])==0){
+						this.hexgrid.matrix[5][5].terrain = CONSTANTS.flagTerrain;
+						this.hexgrid.matrix[4][5].terrain = CONSTANTS.waterTerrain;
+						this.hexgrid.matrix[5][4].terrain = CONSTANTS.waterTerrain;
+						this.hexgrid.matrix[5][6].terrain = CONSTANTS.waterTerrain;
+						this.hexgrid.matrix[6][5].terrain = CONSTANTS.waterTerrain;
+				}
 				break;
 			case "start":
 				this.starting = true;
