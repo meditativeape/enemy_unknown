@@ -103,26 +103,36 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 	};
 
 	game_core_server.prototype.checkObjectives = function(){
-		var self = this;
-		if(this.hexgrid.matrix[5][5].piece && !this.winCountdownFlag){
-			this.winner = self.hexgrid.matrix[5][5].piece.team;
-			for (var i in this.players) {
-				this.sendMsg(this.players[i], "0 countdown " + this.winner);
+		for(var x in this.hexgrid.matrix){ // brute force!
+			for(var y in this.hexgrid.matrix[x]){
+				if(this.hexgrid.matrix[x][y].terrain){
+					if(this.hexgrid.matrix[x][y].terrain.objectiveType){
+						if(this.hexgrid.matrix[x][y].terrain.objectiveType = 'flag'){
+							var self = this;
+							if(this.hexgrid.matrix[x][y].piece && !this.winCountdownFlag){
+								this.winner = self.hexgrid.matrix[x][y].piece.team;
+								for (var i in this.players) {
+									this.sendMsg(this.players[i], "0 countdown " + this.winner);
+								}
+								this.winCountdown = window.setTimeout(function(){
+									self.endGame(self.winner);
+									},this.hexgrid.matrix[x][y].terrain.objectiveTime*1000);
+								this.winCountdownFlag = true;
+							}
+							else if(!this.hexgrid.matrix[x][y].piece && this.winCountdownFlag){
+								this.winner = null;
+								window.clearTimeout(this.winCountdown);
+								for (var i in this.players) {
+									this.sendMsg(this.players[i], "0 countdown " + -1);
+								}
+								this.winCountdownFlag = false;
+							}
+						}
+					}
+				}
 			}
-			this.winCountdown = window.setTimeout(function(){
-				self.endGame(self.winner);
-				},60000);
-			this.winCountdownFlag = true;
 		}
-		else if(!this.hexgrid.matrix[5][5].piece && this.winCountdownFlag){
-			this.winner = null;
-			window.clearTimeout(this.winCountdown);
-			for (var i in this.players) {
-				this.sendMsg(this.players[i], "0 countdown " + -1);
-			}
-			this.winCountdownFlag = false;
-		}
-	}
+	};
 	
 	game_core_server.prototype.handleClientInput = function(client, message){
 		
@@ -265,6 +275,12 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 		// hardcoded game instance for demo!
 		var pieces = [];
 		this.hexgrid = new BuildMap(40, 2.0, 1500, 1200, 40);
+		//Map 0.
+						this.hexgrid.matrix[5][5].terrain = CONSTANTS.flagTerrain;
+						this.hexgrid.matrix[4][5].terrain = CONSTANTS.waterTerrain;
+						this.hexgrid.matrix[5][4].terrain = CONSTANTS.waterTerrain;
+						this.hexgrid.matrix[5][6].terrain = CONSTANTS.waterTerrain;
+						this.hexgrid.matrix[6][5].terrain = CONSTANTS.waterTerrain;
 		// 2 players
 		var types = [0, 1, 2, 3, 4];
 		shuffle(types);
