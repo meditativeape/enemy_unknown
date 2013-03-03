@@ -275,6 +275,12 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 		// hardcoded game instance for demo!
 		var pieces = [];
 		this.hexgrid = new BuildMap(40, 2.0, 1500, 1200, 40);
+		//Map 0.
+						this.hexgrid.matrix[5][5].terrain = CONSTANTS.flagTerrain;
+						this.hexgrid.matrix[4][5].terrain = CONSTANTS.waterTerrain;
+						this.hexgrid.matrix[5][4].terrain = CONSTANTS.waterTerrain;
+						this.hexgrid.matrix[5][6].terrain = CONSTANTS.waterTerrain;
+						this.hexgrid.matrix[6][5].terrain = CONSTANTS.waterTerrain;
 		// 2 players
 		var types = [0, 1, 2, 3, 4];
 		shuffle(types);
