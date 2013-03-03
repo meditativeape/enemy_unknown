@@ -22,6 +22,7 @@ var CONSTANTS = {
 	width: 800,
 	height: 600,
 	init_resource: 100,
+	
 };
 
 // server side we export Point and Coordinate.
