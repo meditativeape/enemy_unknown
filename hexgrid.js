@@ -234,9 +234,8 @@ function findHexSpecs(/*double*/side, /*double*/ratio){
 * camera could be null on server side, since no visualization is needed.
 * @constructor
 */
-function Hexagon(id, mx, my, x, y, spec, terrain, camera, map, callback) {
+function Hexagon(id, mx, my, x, y, spec, camera, map, callback) {
 	this.piece = null;
-	this.terrain = terrain;
 	this.map = map;
 	this.matrixx = mx;
 	this.matrixy = my;
