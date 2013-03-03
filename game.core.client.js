@@ -44,7 +44,10 @@
 		this.team = null;
 		this.type = null;
 		this.alive = true;
-		this.winner = null;
+		this.winner = false;
+		this.countdown = 60;
+		this.capping = 0;
+		this.countdownTimer = null;
 		
 		// load assets
 		this.load_assets();
@@ -70,13 +73,13 @@
 		
 		var isAppLoaded = function() {
 			files_loaded++;
-			if (files_loaded >= 25) {
+			if (files_loaded >= 26) {
 				gc.initiate();
 			}
 		}
 		
 		this.background = load_image("sprites\\bg_temp.jpg");
-		
+		this.flagImg = load_image("sprites\\flag.png");
 		this.sprites[0][0] = load_image("sprites\\wood_blue.png");
 		this.sprites[0][1] = load_image("sprites\\water_blue.png");
 		this.sprites[0][2] = load_image("sprites\\earth_blue.png");
@@ -133,8 +136,32 @@
 					var p = this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].MidPoint;
 					this.camera.setPos(new Point(p.X-this.camera.canvas.width/2,p.Y-this.camera.canvas.height/2))
 					break;
+				case "countdown":
+					var capteam = parseInt(keywords[2]);
+					if(!(keywords[2]==-1)){
+						if(this.team == capteam){
+							this.capping = 1;
+						}else{
+							this.capping = -1;
+						}
+						var self = this;
+						this.countdownTimer = window.setInterval(function(){
+							self.countdown--;
+						}
+						,1000);
+					}else{
+						window.clearInterval(this.countdownTimer);
+						this.countdown = 60;
+						this.capping = 0;
+					}
+					break;
 				case "end":
+					if (this.countdownTimer){
+						window.clearInterval(this.countdownTimer);
+					}
+					this.capping = 0;
 					this.winner = parseInt(keywords[2]);
+					this.alive = false;
 					break;
 				}
 				break;
@@ -331,19 +358,33 @@
 			gc.camera.draw(gc.background);
 			gc.hexgrid.draw(gc.camera);
 			gc.minimap.draw(gc.background);
+			ctx.drawImage(gc.flagImg, Math.floor(gc.hexgrid.matrix[5][5].MidPoint.X - gc.camera.x - gc.flagImg.width/2), Math.floor(gc.hexgrid.matrix[5][5].MidPoint.Y - gc.camera.y- gc.flagImg.height/2), 
+			gc.flagImg.width, gc.flagImg.height);
+			//____________________________
+			if(gc.capping){
+				if(gc.capping ==1){
+					ctx.font = '30px Calibri';
+					ctx.fillStyle = 'white';
+					ctx.fillText("Caputring flag: " + gc.countdown + " seconds until win.",  canvas.width/4,canvas.height/2);
+				}else{
+					ctx.font = '30px Calibri';
+					ctx.fillStyle = 'white';
+					ctx.fillText("Defend flag: " + gc.countdown + " seconds until lose.",  canvas.width/4,canvas.height/2);
+				}
+			}
 			if (gc.starting){
 				ctx.font = '60px Calibri';
 				ctx.fillStyle = 'white';
 				ctx.fillText("Game has started",  canvas.width/4,canvas.height/2);
 				ctx.font = '30px Calibri';	
-				ctx.fillText("Objective: Kill all enemy units.", canvas.width/4 + 60, canvas.height/2 + 60);			
+				ctx.fillText("Objective: Capture the flag.", canvas.width/4 + 60, canvas.height/2 + 60);			
 			}
-			if (!gc.alive && !gc.winner){
+			if (!gc.alive && gc.winner===false){
 				ctx.font = '60px Calibri';
 				ctx.fillStyle = 'white';
 				ctx.fillText("All your units are dead!",  canvas.width/4,canvas.height/2);
 			}
-			if (gc.winner){
+			if (!(gc.winner===false)){
 				ctx.font = '60px Calibri';
 				ctx.fillStyle = 'white';
 				if (gc.winner == gc.team){

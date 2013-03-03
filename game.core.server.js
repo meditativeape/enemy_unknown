@@ -44,6 +44,8 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 		this.started = false;
 		// Our local game
 		this.hexgrid = null;
+		this.winCountdownFlag = false;
+		this.winCountdown = null;
 
     };
 	
@@ -52,7 +54,13 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 		var unit = this.hexgrid.getUnit(coord1);
 		if (unit && unit.team == player.team && !this.hexgrid.getUnit(coord2)){ // coord1 has player's unit and coord2 is empty
 			if (this.hexgrid.hexDist(this.hexgrid.matrix[coord1.X][coord1.Y], this.hexgrid.matrix[coord2.X][coord2.Y]) <= unit.range)
-				return true;
+						if(this.hexgrid.matrix[coord2.X][coord2.Y].terrain){
+								if(this.hexgrid.matrix[coord2.X][coord2.Y].terrain.moveable){
+									return true;
+								}
+							}else{
+								return true;
+							}
 		}
 		
 		return false;
@@ -93,6 +101,28 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 		
 	};
 
+	game_core_server.prototype.checkObjectives = function(){
+		var self = this;
+		if(this.hexgrid.matrix[5][5].piece && !this.winCountdownFlag){
+			this.winner = self.hexgrid.matrix[5][5].piece.team;
+			for (var i in this.players) {
+				this.sendMsg(this.players[i], "0 countdown " + this.winner);
+			}
+			this.winCountdown = window.setTimeout(function(){
+				self.endGame(self.winner);
+				},60000);
+			this.winCountdownFlag = true;
+		}
+		else if(!this.hexgrid.matrix[5][5].piece && this.winCountdownFlag){
+			this.winner = null;
+			window.clearTimeout(this.winCountdown);
+			for (var i in this.players) {
+				this.sendMsg(this.players[i], "0 countdown " + -1);
+			}
+			this.winCountdownFlag = false;
+		}
+	}
+	
 	game_core_server.prototype.handleClientInput = function(client, message){
 		
 		var keywords = message.split(" ");
@@ -140,6 +170,7 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 						this.sendMsg(this.players[i], message);
 					}
 				}
+				this.checkObjectives();
 				break;
 			case "attack":
 				var myCoord = new helper.Coordinate(parseInt(keywords[2]), parseInt(keywords[3]));
@@ -155,6 +186,7 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 					}
 					this.checkGameStatus();
 				}
+				this.checkObjectives();
 				break;
 			default:
 				// TODO: send response about invalid message
@@ -234,18 +266,28 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 		// 2 players
 		var types = [0, 1, 2, 3, 4];
 		shuffle(types);
-		pieces.push(this.hexgrid.matrix[0][4].piece = new Unit(0, 0, 100, types[0], new helper.Coordinate(0, 4), 0, null));
-		pieces.push(this.hexgrid.matrix[1][3].piece = new Unit(0, 0, 100, types[1], new helper.Coordinate(1, 3), 0, null));
-		pieces.push(this.hexgrid.matrix[2][2].piece = new Unit(0, 0, 100, types[2], new helper.Coordinate(2, 2), 0, null));
-		pieces.push(this.hexgrid.matrix[3][1].piece = new Unit(0, 0, 100, types[3], new helper.Coordinate(3, 1), 0, null));
-		pieces.push(this.hexgrid.matrix[4][0].piece = new Unit(0, 0, 100, types[4], new helper.Coordinate(4, 0), 0, null));
+		pieces.push(this.hexgrid.matrix[0][4].piece = new Unit(0, 0, 100, types[0], new helper.Coordinate(0,4),0, null));
+		this.hexgrid.matrix[0][4].piece.buff = this.hexgrid.matrix[0][4].terrain?this.hexgrid.matrix[0][4].terrain.buff:null;
+		pieces.push(this.hexgrid.matrix[1][3].piece = new Unit(0, 0, 100, types[1], new helper.Coordinate(1,3),0, null));
+		this.hexgrid.matrix[1][3].piece.buff = this.hexgrid.matrix[1][3].terrain?this.hexgrid.matrix[1][3].terrain.buff:null;
+		pieces.push(this.hexgrid.matrix[2][2].piece = new Unit(0, 0, 100, types[2], new helper.Coordinate(2,2),0, null));
+		this.hexgrid.matrix[2][2].piece.buff = this.hexgrid.matrix[2][2].terrain?this.hexgrid.matrix[2][2].terrain.buff:null;
+		pieces.push(this.hexgrid.matrix[3][1].piece = new Unit(0, 0, 100, types[3],new helper.Coordinate(3,1), 0, null));
+		this.hexgrid.matrix[3][1].piece.buff = this.hexgrid.matrix[3][1].terrain?this.hexgrid.matrix[3][1].terrain.buff:null;
+		pieces.push(this.hexgrid.matrix[4][0].piece = new Unit(0, 0, 100, types[4],new helper.Coordinate(4,0), 0, null));
+		this.hexgrid.matrix[4][0].piece.buff = this.hexgrid.matrix[4][0].terrain?this.hexgrid.matrix[4][0].terrain.buff:null;
 		this.units.push(5);
 		shuffle(types);
-		pieces.push(this.hexgrid.matrix[6][10].piece = new Unit(1, 1, 100, types[0], new helper.Coordinate(6, 10), 0, null));
-		pieces.push(this.hexgrid.matrix[7][9].piece = new Unit(1, 1, 100, types[1], new helper.Coordinate(7, 9), 0, null));
-		pieces.push(this.hexgrid.matrix[8][8].piece = new Unit(1, 1, 100, types[2], new helper.Coordinate(8, 8), 0, null));
-		pieces.push(this.hexgrid.matrix[9][7].piece = new Unit(1, 1, 100, types[3], new helper.Coordinate(9, 7), 0, null));
-		pieces.push(this.hexgrid.matrix[10][6].piece = new Unit(1, 1, 100, types[4], new helper.Coordinate(10, 6), 0, null));
+		pieces.push(this.hexgrid.matrix[6][10].piece = new Unit(1, 1, 100, types[0],new helper.Coordinate(6,10), 0, null));
+		this.hexgrid.matrix[6][10].piece.buff = this.hexgrid.matrix[6][10].terrain?this.hexgrid.matrix[6][10].terrain.buff:null;
+		pieces.push(this.hexgrid.matrix[7][9].piece = new Unit(1, 1, 100, types[1], new helper.Coordinate(7,9),0, null));
+		this.hexgrid.matrix[7][9].piece.buff = this.hexgrid.matrix[7][9].terrain?this.hexgrid.matrix[7][9].terrain.buff:null;
+		pieces.push(this.hexgrid.matrix[8][8].piece = new Unit(1, 1, 100, types[2], new helper.Coordinate(8,8),0, null));
+		this.hexgrid.matrix[8][8].piece.buff = this.hexgrid.matrix[8][8].terrain?this.hexgrid.matrix[8][8].terrain.buff:null;
+		pieces.push(this.hexgrid.matrix[9][7].piece = new Unit(1, 1, 100, types[3],new helper.Coordinate(9,7), 0, null));
+		this.hexgrid.matrix[9][7].piece.buff = this.hexgrid.matrix[9][7].terrain?this.hexgrid.matrix[9][7].terrain.buff:null;
+		pieces.push(this.hexgrid.matrix[10][6].piece = new Unit(1, 1, 100,types[4], new helper.Coordinate(10,6), 0, null));
+		this.hexgrid.matrix[10][6].piece.buff = this.hexgrid.matrix[10][6].terrain?this.hexgrid.matrix[10][6].terrain.buff:null;
 		this.units.push(5);
 		// 3 players
 		// if (this.type == 1) {

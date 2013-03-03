@@ -87,6 +87,7 @@ var BuildMap = function(/*double*/ side,/*double*/ratio,/*int*/ x, /*int*/y,/*do
 		var toMove = this.matrix[origin.X][origin.Y].piece;
 		this.matrix[origin.X][origin.Y].piece = null;
 		this.matrix[dest.X][dest.Y].piece = toMove;
+		this.matrix[dest.X][dest.Y].piece.buff = this.matrix[dest.X][dest.Y].terrain?this.matrix[dest.X][dest.Y].terrain.buff:null;
 	};
 	
 	this.attack = function(/*coordinate*/ attacker, /*coordinate*/gothit){
@@ -107,8 +108,9 @@ var BuildMap = function(/*double*/ side,/*double*/ratio,/*int*/ x, /*int*/y,/*do
 
 	};
 	
-	this.addUnit = function(/*Unit*/ toAdd, /*Coordinate*/dest){
+	this.addUnit = function(/* */ toAdd, /*Coordinate*/dest){
 		this.matrix[dest.X][dest.Y].piece = toAdd;
+		this.matrix[dest.X][dest.Y].piece.buff = this.matrix[dest.X][dest.Y].terrain?this.matrix[dest.X][dest.Y].terrain.buff:null; 
 	};
 	
 	this.markReachable = function(/*Coordinate*/coord){
@@ -116,9 +118,17 @@ var BuildMap = function(/*double*/ side,/*double*/ratio,/*int*/ x, /*int*/y,/*do
 				var selectedHex = this.matrix[coord.X][coord.Y];
 				for(var x in this.matrix){ // brute force!
 					for(var y in this.matrix[x]){
-						if (this.hexDist(selectedHex, this.matrix[x][y]) <= selectedHex.piece.range && !this.matrix[x][y].piece) { // in range and not occupied
-							this.matrix[x][y].reachable = true;
-							this.reachables.push(this.matrix[x][y]);
+						var range = selectedHex.piece.buff?selectedHex.piece.range+selectedHex.piece.buff.rangeBuff:selectedHex.piece.range;
+						if (this.hexDist(selectedHex, this.matrix[x][y]) <= range && !this.matrix[x][y].piece) { // in range and not occupied
+							if(this.matrix[x][y].terrain){
+								if(this.matrix[x][y].terrain.moveable){
+									this.matrix[x][y].reachable = true;
+									this.reachables.push(this.matrix[x][y]);
+								}
+							}else{
+								this.matrix[x][y].reachable = true;
+								this.reachables.push(this.matrix[x][y]);
+							}
 						}
 					
 					}
@@ -130,7 +140,8 @@ var BuildMap = function(/*double*/ side,/*double*/ratio,/*int*/ x, /*int*/y,/*do
 		var selectedHex = this.matrix[coord.X][coord.Y];
 		for(var x in this.matrix){ // brute force!
 			for(var y in this.matrix[x]){
-				if (this.hexDist(selectedHex, this.matrix[x][y]) <= selectedHex.piece.range && this.matrix[x][y].piece && (selectedHex !=this.matrix[x][y])) { // in range and occupied by enemys
+				var range = selectedHex.piece.buff?selectedHex.piece.range+selectedHex.piece.buff.rangeBuff:selectedHex.piece.range;
+				if (this.hexDist(selectedHex, this.matrix[x][y]) <= range && this.matrix[x][y].piece && (selectedHex !=this.matrix[x][y])) { // in range and occupied by enemys
 					if(this.matrix[coord.X][coord.Y].piece.team!=this.matrix[x][y].piece.team){
 						this.matrix[x][y].attackable = true;
 						this.attackables.push(this.matrix[x][y]);
@@ -201,6 +212,7 @@ function findHexSpecs(/*double*/side,/*double*/ratio){
 */
 function Hexagon(id, mx,my,x, y,spec,piece) {
 	this.piece = null;
+	this.terrain = null;
 	this.matrixx = mx;
 	this.matrixy = my;
 	this.reachable = false;

@@ -4,14 +4,14 @@
 * Prototype for a unit
 * @constructor
 */
-var Unit = function(/*int*/player,/*int*/ team,/*int*/hp,/*int*/ type, /*Coordinate*/cord, /*int*/ cooldown, /*image*/pic){
+var Unit = function(/*int*/player,/*int*/ team,/*int*/hp,/*int*/ type, /*Coordinate*/startCoord, /*int*/ cooldown, /*image*/pic){
 	this.player = player; //Starts from 0
 	this.team = team; //Starts from 0
 	this.hp = hp;
 	this.type = type; //0. Wood 1. Water. 2.Earth. 3.Fire 4.Air undefined.Unknown
 	this.range = 2;
-	this.x = cord.X;
-	this.y = cord.Y;
+	this.x = startCoord.X;
+	this.y = startCoord.Y;
 	this.cooldown = cooldown;
 	this.moved = false;
 	this.attacked = false;
@@ -22,6 +22,10 @@ var Unit = function(/*int*/player,/*int*/ team,/*int*/hp,/*int*/ type, /*Coordin
 	this.lostHP = 0;
 	this.losingHP = false;
 	this.hpfloat = 0;
+	this.terrain = null;
+	this.buff = null;
+	this.attack = 10;
+	this.defence = 0;
 }
 
 // server side we export Unit.
@@ -95,25 +99,27 @@ Unit.prototype.gotHit = function(/*Unit*/enemy){
 	//Earth beats fire and air
 	//Fire beats air and wood
 	//Air beats wood and water
-	var damage = 10;
+	var damage = enemy.buff?enemy.attack+enemy.buff.attackbuff:enemy.attack;
+	var defense = this.buff?this.defense+this.buff.defensebuff:this.defense;
 	//Calculate type advantage
     var flag = (this.type-enemy.type)%5;
 	if(flag<0){
 		flag = flag + 5;
+		
 	}
 	//My advantage
     if (flag>2){
-    	this.hp = this.hp - Math.floor(damage/2); 
+    	this.hp = this.hp - Math.floor(damage/2) * defense; 
 		//enemy.hp = enemy.hp - floor(damage/2);
 	}
 	//Enemy advantage
     else if (flag!=0){
-        this.hp = this.hp - damage*2;
+        this.hp = this.hp - damage * 2 * defense;
 		//enemy.hp = enemy.hp - damage;
 	}
 	//Tie
     else{
-        this.hp = this.hp - damage;
+        this.hp = this.hp - damage * defense;
 		//enemy.hp = enemy.hp - damage;
 	}
 	if(this.hp < 0){
