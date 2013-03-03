@@ -1,7 +1,7 @@
 /*
 	Server-side code.
 */
-
+require('./terrain.js');
 var helper = require('./helper.js');
 var BuildMap = require('./hexgrid.js');
 var Unit = require('./unit.js');
@@ -106,7 +106,6 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 		for(var x in this.hexgrid.matrix){ // brute force!
 			for(var y in this.hexgrid.matrix[x]){
 				if(this.hexgrid.matrix[x][y].terrain){
-					if(this.hexgrid.matrix[x][y].terrain.objectiveType){
 						if(this.hexgrid.matrix[x][y].terrain.objectiveType == 'flag'){
 							var self = this;
 							if(this.hexgrid.matrix[x][y].piece && !this.winCountdownFlag){
@@ -128,7 +127,6 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 								this.winCountdownFlag = false;
 							}
 						}
-					}
 				}
 			}
 		}
