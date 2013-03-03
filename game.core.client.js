@@ -476,7 +476,7 @@ var centerMsgAnim = new Kinetic.Animation(function(frame) {
 			if (!msgLayer.isAncestorOf(centerMsg)) {
 				msgLayer.add(centerMsg);
 			}
-		} else if (gc.winner === true){
+		} else if (!(gc.winner===false)){
 			if (gc.winner == gc.team){
 				centerMsg.setText("You have won!");
 			} else {
