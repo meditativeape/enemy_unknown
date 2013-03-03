@@ -10,10 +10,20 @@ if( 'undefined' != typeof global ) {
 }
 
 /**
-*Constructor for a Map. Automatically builds map of hexagons.
+* Constructor for a Map. Automatically builds map of hexagons.
+* camera and layer could be null on server, since no visualization is needed there.
+* callback could be null on server, since no click event will be fired there.
 * @constructor
 */
-var BuildMap = function(/*double*/ side,/*double*/ratio,/*int*/ x, /*int*/y,/*double*/offset){
+var BuildMap = function(/*double*/side, /*double*/ratio,/*int*/ x, /*int*/y, /*double*/offset, /*camera*/camera, /*layer*/layer, /*function*/callback){
+	
+	if (camera && layer) {
+		this.layer = layer;
+		this.hexGroup = new Kinetic.Group();  // only hexagons listen to events
+		this.terrainGroup = new Kinetic.Group({listening: false});
+		this.unitGroup = new Kinetic.Group({listening: false});
+		this.hpGroup = new Kinetic.Group({listening: false});
+	}
 	
 	this.matrix = [];
 	this.reachables = [];
@@ -34,7 +44,8 @@ var BuildMap = function(/*double*/ side,/*double*/ratio,/*int*/ x, /*int*/y,/*do
 					rows =  rows + 1;
 				}			
 			}
-			this.matrix[matrixx][matrixy] = new Hexagon(id, matrixx,matrixy,xpos, ypos,spec);
+			var hexagon = new Hexagon(id, matrixx, matrixy, xpos, ypos, spec, camera, this, callback);
+			this.matrix[matrixx][matrixy] = hexagon;
 			ypos = ypos + spec.height/2;
 			xpos = xpos + spec.width/2 + spec.side/2;
 			matrixx = matrixx + 1;
@@ -45,9 +56,26 @@ var BuildMap = function(/*double*/ side,/*double*/ratio,/*int*/ x, /*int*/y,/*do
 		xpos = offset+ (spec.width/2 + spec.side/2)*matrixy;
 	}
 	
-	this.toHex = function toHex(/*Point*/ p, /*Camera*/camera){
-		p.X += camera.x;
-		p.Y += camera.y;
+	// draw hexagons, terrains, units, and hp bars, then update them
+	if (camera && layer) {
+		layer.add(this.terrainGroup);
+		layer.add(this.hexGroup);
+		layer.add(this.unitGroup);
+		layer.add(this.hpGroup);
+		var me = this;
+		var anim = new Kinetic.Animation(function(frame) {
+			for(var x in me.matrix){
+				for(var y in me.matrix[x]){
+					me.matrix[x][y].update();
+				}
+			}
+		}, layer);
+		anim.start();
+	}
+	
+	this.toHex = function toHex(/*Point*/ p){
+		p.X += this.camera.x;
+		p.Y += this.camera.y;
 		for(var x in this.matrix){
 			for(var y in this.matrix[x]){
 				if (this.matrix[x][y].contains(p))
@@ -67,21 +95,21 @@ var BuildMap = function(/*double*/ side,/*double*/ratio,/*int*/ x, /*int*/y,/*do
 		return ((Math.abs(deltaX) + Math.abs(deltaY) + Math.abs(deltaX + deltaY)) / 2);		
 	};
 	
-	this.draw = function draw(/*Camera*/camera){
-		for(var x in this.matrix){
-			for(var y in this.matrix[x]){
-				this.matrix[x][y].draw(camera);
-			}
-		}	
-		for(var x in this.matrix){
-			for(var y in this.matrix[x]){
-				if(this.matrix[x][y].piece){
-					var midPoint = new Point(this.matrix[x][y].MidPoint.X-camera.x,this.matrix[x][y].MidPoint.Y-camera.y);
-					this.matrix[x][y].piece.drawHP(midPoint,this.matrix[x][y].spec.height);
-				}
-			}		
-		}
-	};
+	// this.draw = function draw(/*Camera*/camera){
+		// for(var x in this.matrix){
+			// for(var y in this.matrix[x]){
+				// this.matrix[x][y].draw(camera);
+			// }
+		// }	
+		// for(var x in this.matrix){
+			// for(var y in this.matrix[x]){
+				// if(this.matrix[x][y].piece){
+					// var midPoint = new Point(this.matrix[x][y].MidPoint.X-camera.x,this.matrix[x][y].MidPoint.Y-camera.y);
+					// this.matrix[x][y].piece.drawHP(midPoint,this.matrix[x][y].spec.height);
+				// }
+			// }		
+		// }
+	// };
 	
 	this.move = function(/*Coordinate*/ origin, /*Coordinate*/dest) {
 		var toMove = this.matrix[origin.X][origin.Y].piece;
@@ -89,7 +117,7 @@ var BuildMap = function(/*double*/ side,/*double*/ratio,/*int*/ x, /*int*/y,/*do
 		this.matrix[dest.X][dest.Y].piece = toMove;
 	};
 	
-	this.attack = function(/*coordinate*/ attacker, /*coordinate*/gothit){
+	this.attack = function(/*Coordinate*/ attacker, /*Coordinate*/gothit){
 		this.matrix[gothit.X][gothit.Y].piece.gotHit(this.matrix[attacker.X][attacker.Y].piece);
 		if(this.matrix[gothit.X][gothit.Y].piece.hp<=0){
 			this.matrix[gothit.X][gothit.Y].piece = null;
@@ -99,8 +127,6 @@ var BuildMap = function(/*double*/ side,/*double*/ratio,/*int*/ x, /*int*/y,/*do
 		}
 		
 	}
-	
-
 	
 	this.getUnit = function(/*Coordinate*/toCheck){
 		return this.matrix[toCheck.X][toCheck.Y].piece;
@@ -112,18 +138,15 @@ var BuildMap = function(/*double*/ side,/*double*/ratio,/*int*/ x, /*int*/y,/*do
 	};
 	
 	this.markReachable = function(/*Coordinate*/coord){
-
-				var selectedHex = this.matrix[coord.X][coord.Y];
-				for(var x in this.matrix){ // brute force!
-					for(var y in this.matrix[x]){
-						if (this.hexDist(selectedHex, this.matrix[x][y]) <= selectedHex.piece.range && !this.matrix[x][y].piece) { // in range and not occupied
-							this.matrix[x][y].reachable = true;
-							this.reachables.push(this.matrix[x][y]);
-						}
-					
-					}
+		var selectedHex = this.matrix[coord.X][coord.Y];
+		for(var x in this.matrix){ // brute force!
+			for(var y in this.matrix[x]){
+				if (this.hexDist(selectedHex, this.matrix[x][y]) <= selectedHex.piece.range && !this.matrix[x][y].piece) { // in range and not occupied
+					this.matrix[x][y].reachable = true;
+					this.reachables.push(this.matrix[x][y]);
 				}
-	
+			}
+		}
 	};
 	
 	this.markAttackable = function(/*Coordinate*/coord){
@@ -143,20 +166,19 @@ var BuildMap = function(/*double*/ side,/*double*/ratio,/*int*/ x, /*int*/y,/*do
 	
 	this.clearReachable = function(){
 		for (var i in this.reachables){  // clear reachables
-				var check = this.reachables[i];
-				check.reachable = false;
+			var check = this.reachables[i];
+			check.reachable = false;
 		}
 		this.reachables = [];
 	};
 	
 	this.clearAttackable = function(){
 		for (var i in this.attackables){  // clear reachables
-				var check = this.attackables[i];
-				check.attackable = false;
+			var check = this.attackables[i];
+			check.attackable = false;
 		}
 		this.attackables = [];
 	};
-					
 	
 	this.isReachable = function(/*Coordinate*/coord){
 		return this.matrix[coord.X][coord.Y].reachable;
@@ -176,7 +198,7 @@ if( 'undefined' != typeof global ) {
 * Helper function to calculate the specs of a hexagon.
 * @return The specs for all hexagons
 */
-function findHexSpecs(/*double*/side,/*double*/ratio){
+function findHexSpecs(/*double*/side, /*double*/ratio){
 	var z = side
 	var r = ratio
 	
@@ -191,16 +213,18 @@ function findHexSpecs(/*double*/side,/*double*/ratio){
 	spec.width = ((2.0*x)+z);
 	spec.height = (2.0*y);
 	spec.side = side;
-	return spec
+	return spec;
 	
 }
 
 /**
 * Constructs a hexagon.
+* camera could be null on server side, since no visualization is needed.
 * @constructor
 */
-function Hexagon(id, mx,my,x, y,spec,piece) {
+function Hexagon(id, mx, my, x, y, spec, camera, map, callback) {
 	this.piece = null;
+	this.map = map;
 	this.matrixx = mx;
 	this.matrixy = my;
 	this.reachable = false;
@@ -230,6 +254,39 @@ function Hexagon(id, mx,my,x, y,spec,piece) {
 	this.P1 = new Point(x + x1, y + y1);
 	
 	this.selected = false;
+	
+	if (callback) {
+		this.callback = callback;
+	}
+	
+	if (camera) {
+		this.camera = camera;
+		
+		// add hexagon
+		var hexagonConfig = {
+			points:[],
+			stroke:'rgb(255, 165, 0)',
+		};
+		for (var i = 0; i < this.Points.length; i++) {
+			hexagonConfig.points.push([this.Points[i].X-this.camera.x, this.Points[i].Y-this.camera.y]);
+		}
+		if (this.reachable) {
+			hexagonConfig.fill = 'rgba(238, 130, 238, 0.3)';
+		} else if (this.attackable) {
+			hexagonConfig.fill = 'rgba(130, 238, 130, 0.3)';
+		}
+		this.hexagonToDraw = new Kinetic.Polygon(hexagonConfig);
+		if (this.callback) {
+			var me = this;
+			this.hexagonToDraw.on('click', function(event){
+				me.callback(new Coordinate(me.matrixx, me.matrixy));
+			});
+		}
+		this.map.hexGroup.add(this.hexagonToDraw);
+		
+		// TODO: add terrain
+		this.terrainToDraw = null;
+	}
 };
 
 /**
@@ -264,54 +321,35 @@ Hexagon.prototype.contains = function(/*Point*/ p) {
 	return isIn;
 };
 
-
-
 /**
- * Hexagon Method: Draws this Hexagon to the canvas
+ * Hexagon Method: Update this hexagon and its unit on its layer
  * @this {Hexagon}
  */
-Hexagon.prototype.draw = function(/*Camera*/camera) {
-
-	var ctx = document.getElementById("gameCanvas").getContext('2d');
+Hexagon.prototype.update = function() {
 	
-	ctx.beginPath();
-	ctx.moveTo(this.Points[0].X-camera.x, this.Points[0].Y-camera.y);
-	for(var i = 1; i < this.Points.length; i++)
-	{
-		var p = this.Points[i];
-		ctx.lineTo(p.X-camera.x, p.Y-camera.y);
+	// update hexagon
+	var points = [];
+	for (var i = 0; i < this.Points.length; i++) {
+		points.push([this.Points[i].X-this.camera.x, this.Points[i].Y-this.camera.y]);
 	}
-	ctx.closePath();
-	ctx.stroke();
-	
+	this.hexagonToDraw.setPoints(points);
+	this.hexagonToDraw.setFill('transparent');
 	if (this.reachable) {
-		ctx.beginPath();
-		ctx.moveTo(this.Points[0].X-camera.x, this.Points[0].Y-camera.y);
-		for(var i = 1; i < this.Points.length; i++)
-		{
-			var p = this.Points[i];
-			ctx.lineTo(p.X-camera.x, p.Y-camera.y);
-		}
-		ctx.fillStyle = 'rgba(238, 130, 238, 0.3)';
-		ctx.fill();
+		this.hexagonToDraw.setFill('rgba(238, 130, 238, 0.3)');
+	} else if (this.attackable) {
+		this.hexagonToDraw.setFill('rgba(130, 238, 130, 0.3)');
 	}
 	
-	else if (this.attackable) {
-		ctx.beginPath();
-		ctx.moveTo(this.Points[0].X-camera.x, this.Points[0].Y-camera.y);
-		for(var i = 1; i < this.Points.length; i++)
-		{
-			var p = this.Points[i];
-			ctx.lineTo(p.X-camera.x, p.Y-camera.y);
-		}
-		ctx.fillStyle = 'rgba(130, 238, 130, 0.3)';
-		ctx.fill();
+	// add/update unit and hp
+	if (this.unitToDraw)
+		this.unitToDraw.destroy();
+	if (this.hpToDraw)
+		this.hpToDraw.destroy();
+	if (this.piece != null) {
+		var midPoint = new Point(this.MidPoint.X - this.camera.x, this.MidPoint.Y - this.camera.y);
+		this.unitToDraw = this.piece.draw(midPoint,this.spec.height);
+		this.map.unitGroup.add(this.unitToDraw);
+		this.hpToDraw = this.piece.drawHP(midPoint,this.spec.height);
+		this.map.hpGroup.add(this.hpToDraw);
 	}
-	
-	if(this.piece!=null){
-		var midPoint = new Point(this.MidPoint.X-camera.x,this.MidPoint.Y-camera.y);
-		this.piece.draw(midPoint,this.spec.height);
-
-	}
-	
 };

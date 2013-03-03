@@ -5,6 +5,7 @@
 var helper = require('./helper.js');
 var BuildMap = require('./hexgrid.js');
 var Unit = require('./unit.js');
+var CONSTANTS = helper.CONSTANTS;
 
 // helper function for string format
 String.prototype.format = function (args) {
@@ -213,6 +214,7 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 		console.log(":: " + this.id.substring(0,8) + " :: Initializing game...");
 		for (var i in this.players) {
 			this.sendMsg(this.players[i], "0 init 0 " + i + " " + i + " " + this.type);  // TODO: does not work for 2v2
+			// this.sendMsg(this.players[i], "resource " + CONSTANTS.init_resource);
 		}
 		
 		// helper function to shuffle an array
@@ -230,7 +232,7 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 		
 		// hardcoded game instance for demo!
 		var pieces = [];
-		this.hexgrid = new BuildMap(40,2.0,1500,1200,40);
+		this.hexgrid = new BuildMap(40, 2.0, 1500, 1200, 40);
 		// 2 players
 		var types = [0, 1, 2, 3, 4];
 		shuffle(types);
@@ -262,6 +264,7 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 		var k = 0;
 		for (var i in this.players) {
 			this.players[i].team = k++;
+			// this.players[i].resource = CONSTANTS.init_resource;
 			for (var j in pieces) {
 				if (this.players[i].team == pieces[j].team)
 					this.sendMsg(this.players[i], "1 add {0} {1} {2} {3} {4}".format([pieces[j].player, pieces[j].team, pieces[j].type, pieces[j].x, pieces[j].y]));

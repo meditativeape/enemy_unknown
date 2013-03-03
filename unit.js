@@ -44,41 +44,53 @@ Unit.prototype.setcd = function(/*int*/ time){
 }
 
 /**
- * Unit Method: Draws this unit to the canvas
+ * Unit Method: return a Kinetic.Image to be put into the unit group.
  * @this {Unit}
  */
 Unit.prototype.draw = function(/*Point*/p, /*int*/height) {
-	var ctx = document.getElementById('gameCanvas').getContext('2d');
-	ctx.drawImage(this.image, Math.floor(p.X - this.image.width/2), Math.floor(p.Y + height/4 - this.image.height), 
-			this.image.width, this.image.height);
+	var unitToDraw = new Kinetic.Image({
+		image: this.image,
+		x: Math.floor(p.X - this.image.width/2),
+		y: Math.floor(p.Y + height/4 - this.image.height)
+	});
+	return unitToDraw;
 };
 
+/**
+ * Unit Method: return a Kinetic.Group to be put into the hp group.
+ * @this {Unit}
+ */
 Unit.prototype.drawHP = function(/*Point*/p, /*int*/height) {
-	var ctx = document.getElementById('gameCanvas').getContext('2d');
-	ctx.lineWidth = 3;
-	ctx.strokeStyle = "white";
-	ctx.beginPath();
-	ctx.moveTo(Math.floor(p.X - this.image.width/4), Math.floor(p.Y - this.image.height/2 - 4));
-	ctx.lineTo(Math.floor(p.X + this.image.width/4), Math.floor(p.Y - this.image.height/2 - 4));
-	ctx.stroke();
-	ctx.strokeStyle = "red";
-	ctx.beginPath();
-	ctx.moveTo(Math.floor(p.X - this.image.width/4), Math.floor(p.Y - this.image.height/2 - 4));
-	ctx.lineTo(Math.floor(p.X - this.image.width/4 + this.image.width/2 * this.hp / 100), Math.floor(p.Y - this.image.height/2 - 4));
-	ctx.stroke();
-	ctx.lineWidth = 1;
-	ctx.strokeStyle = "orange";
-	if(this.losingHP){
-		var text = "-" + this.lostHP;
-		ctx.fillStyle = "white";
-		ctx.font = "16px Arial";
-		ctx.fillText(text, p.X - this.image.width/8, p.Y - this.hpfloat);
+
+	var hpToDraw = new Kinetic.Group({listening: false});
+	
+	hpToDraw.add(new Kinetic.Line({
+		points: [Math.floor(p.X - this.image.width/4), Math.floor(p.Y - this.image.height/2 - 4), Math.floor(p.X + this.image.width/4), Math.floor(p.Y - this.image.height/2 - 4)],
+		stroke: "white",
+		strokeWidth: 3
+	}));
+	hpToDraw.add(new Kinetic.Line({
+		points: [Math.floor(p.X - this.image.width/4), Math.floor(p.Y - this.image.height/2 - 4), Math.floor(p.X - this.image.width/4 + this.image.width/2 * this.hp / 100), Math.floor(p.Y - this.image.height/2 - 4)],
+		stroke: "red",
+		strokeWidth: 3
+	}));
+	if (this.losingHP) {
+		hpToDraw.add(new Kinetic.Text({
+			text: "-" + this.lostHP,
+			fill: "white",
+			fontFamily: "Arial",
+			fontSize: 16,
+			x: p.X - this.image.width/8,
+			y: p.Y - this.hpfloat
+		}));
 		this.hpfloat += 0.5;
-		if(this.hpfloat>= this.image.width/2 -20){
+		if(this.hpfloat >= this.image.width/2-20){
 			this.losingHP = false;
 			this.hpfloat = 0;
 		}
 	}
+	
+	return hpToDraw;
 };
 
 Unit.prototype.minusHP = function(/*int*/hp){

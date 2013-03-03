@@ -7,31 +7,30 @@
 		<!-- Load style sheet -->
 		<link href="index.css" media="screen" rel="stylesheet" type="text/css">
 
-	<!-- Library code -->
+		<!-- Library code -->
 			 	
-        	<!-- Notice the URL, this is handled by socket.io on the server automatically, via express -->
+        <!-- Notice the URL, this is handled by socket.io on the server automatically, via express -->
 		<script type="text/javascript" src="/socket.io/socket.io.js"></script>
 		
+		<script type="text/javascript" src="lib/kinetic-v4.3.3.js"></script>
+
+	</head>
+
+	<body>
+		<!-- <canvas id="gameCanvas">
+		</canvas> -->
+		<div id="container"></div>
+		
+		<!-- Game code -->
+	
 		<script type="text/javascript" src="helper.js"></script>
 		
 		<script type="text/javascript" src="minimap.js"></script>
 		<script type="text/javascript" src="camera.js"></script>
 		<script type="text/javascript" src="hexgrid.js"></script>
 		<script type="text/javascript" src="unit.js"></script>
-		
+
 		<script type="text/javascript" src="game.core.client.js"></script>
-
-
- 
-	<!-- Game code -->
-
-		
-
-	</head>
-
-	<body>
-		<canvas id="gameCanvas">
-		</canvas>
 	</body>
 
 </html>

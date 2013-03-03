@@ -3,21 +3,43 @@
 	Build a new camera object.
 	
 	mapSize: an array of length 2, indicating the size of the map
-	pos: a point, indicating the coordinates of top-left corner of the camera on the map
-	movingSpeed: the distance that the camera should move when user presses an arrow key once
+	// pos: a point, indicating the coordinates of top-left corner of the camera on the map
+	movingSpeed: the distance that the camera should move when user presses an arrow key once.
+	img: background image for the minimap.
+	layer: the kinetic layer that miniMap will be drawn on.
 	
  **/
  
-var BuildCamera = function(mapSize, p, movingSpeed) {
+var BuildCamera = function(mapSize, movingSpeed, img, layer) {
 
 	var me = this;
 
 	// fields
-	this.canvas = document.getElementById('gameCanvas');
 	this.mapSize = mapSize;
-	this.x = p.X;
-	this.y = p.Y;
+	this.x = 0;
+	this.y = 0;
 	this.speed = movingSpeed;
+	
+	// add background image
+	var bg = new Kinetic.Image({
+		x: 0,
+		y: 0,
+		image: img,
+		width: CONSTANTS.width,
+		height: CONSTANTS.height
+	});
+	layer.add(bg);
+	
+	// add animation to the background image
+	var anime = new Kinetic.Animation(function(frame){
+		bg.setCrop({
+			x: me.x,
+			y: me.y,
+			width: CONSTANTS.width,
+			height: CONSTANTS.height
+		});
+	}, layer);
+	anime.start();
 	
 	// methods
 	
@@ -25,20 +47,20 @@ var BuildCamera = function(mapSize, p, movingSpeed) {
 		var newX = p.X;
 		var newY = p.Y;
 		if (newX < 0) newX = 0;
-		if (newX + this.canvas.width > this.mapSize[0])
-			newX = this.mapSize[0] - this.canvas.width;
+		if (newX + CONSTANTS.width > this.mapSize[0])
+			newX = this.mapSize[0] - CONSTANTS.width;
 		if (newY < 0) newY = 0;
-		if (newY + this.canvas.height > this.mapSize[1])
-			newY = this.mapSize[1] - this.canvas.height;
+		if (newY + CONSTANTS.height > this.mapSize[1])
+			newY = this.mapSize[1] - CONSTANTS.height;
 		this.x = newX;
 		this.y = newY;
 	};
 	
-	this.draw = function(img){
-		var ctx = this.canvas.getContext('2d');
-		ctx.drawImage(img, this.x, this.y, this.canvas.width, this.canvas.height, 
-			0, 0, this.canvas.width, this.canvas.height);
-	};
+	// this.draw = function(img){
+		// var ctx = CONSTANTS.getContext('2d');
+		// ctx.drawImage(img, this.x, this.y, CONSTANTS.width, CONSTANTS.height, 
+			// 0, 0, CONSTANTS.width, CONSTANTS.height);
+	// };
 	
 	this.moveLeft = function(){
 		var i = me.x - me.speed;
@@ -48,7 +70,7 @@ var BuildCamera = function(mapSize, p, movingSpeed) {
 	
 	this.moveRight = function(){
 		var i = me.x + me.speed;
-		if (i + me.canvas.width <= me.mapSize[0])
+		if (i + CONSTANTS.width <= me.mapSize[0])
 			me.x = i;
 	};
 	
@@ -60,7 +82,7 @@ var BuildCamera = function(mapSize, p, movingSpeed) {
 	
 	this.moveDown = function(){
 		var i = me.y + me.speed;
-		if (i + me.canvas.height <= me.mapSize[1])
+		if (i + CONSTANTS.height <= me.mapSize[1])
 			me.y = i;
 	};
 };
