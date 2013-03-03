@@ -428,6 +428,30 @@ var centerMsgAnim = new Kinetic.Animation(function(frame) {
 			if (!msgLayer.isAncestorOf(centerMsg)) {
 				msgLayer.add(centerMsg);
 			}
+		} else if (gc.capping){
+			if (gc.capping == 1){
+				centerMsg.setText("Caputring flag: " + gc.countdown + " seconds until win.");
+				centerMsg.setFill('white');
+				centerMsg.setX(CONSTANTS.width/4);
+				centerMsg.setY(CONSTANTS.height/2);
+				centerMsg.setFontSize(30);
+				centerMsg.setFontStyle('normal');
+				centerMsg.setFontFamily('Calibri');
+				if (!msgLayer.isAncestorOf(centerMsg)) {
+					msgLayer.add(centerMsg);
+				}
+			} else {
+				centerMsg.setText("Defend flag: " + gc.countdown + " seconds until lose.");
+				centerMsg.setFill('white');
+				centerMsg.setX(CONSTANTS.width/4);
+				centerMsg.setY(CONSTANTS.height/2);
+				centerMsg.setFontSize(30);
+				centerMsg.setFontStyle('normal');
+				centerMsg.setFontFamily('Calibri');
+				if (!msgLayer.isAncestorOf(centerMsg)) {
+					msgLayer.add(centerMsg);
+				}
+			}
 		} else if (!gc.alive && gc.winner === false){
 			centerMsg.setText("All your units are dead!");
 			centerMsg.setFill('white');
@@ -455,7 +479,6 @@ var centerMsgAnim = new Kinetic.Animation(function(frame) {
 				msgLayer.add(centerMsg);
 			}
 		} else {
-			console.log(msgLayer.isAncestorOf(centerMsg));
 			if (msgLayer.isAncestorOf(centerMsg)) {
 				centerMsg.remove();
 			}
