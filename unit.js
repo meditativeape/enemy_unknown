@@ -25,7 +25,7 @@ var Unit = function(/*int*/player,/*int*/ team,/*int*/hp,/*int*/ type, /*Coordin
 	this.terrain = null;
 	this.buff = null;
 	this.attack = 10;
-	this.defence = 0;
+	this.defense = 1;
 }
 
 // server side we export Unit.
@@ -121,17 +121,17 @@ Unit.prototype.gotHit = function(/*Unit*/enemy){
 	}
 	//My advantage
     if (flag>2){
-    	this.hp = this.hp - Math.floor(damage/2) * defense; 
+    	this.hp = this.hp - Math.floor(damage/2 * defense); 
 		//enemy.hp = enemy.hp - floor(damage/2);
 	}
 	//Enemy advantage
     else if (flag!=0){
-        this.hp = this.hp - damage * 2 * defense;
+        this.hp = this.hp - Math.floor(damage * 2 * defense);
 		//enemy.hp = enemy.hp - damage;
 	}
 	//Tie
     else{
-        this.hp = this.hp - damage * defense;
+        this.hp = this.hp - Math.floor(damage * defense);
 		//enemy.hp = enemy.hp - damage;
 	}
 	if(this.hp < 0){
