@@ -55,7 +55,7 @@ Unit.prototype.draw = function(/*Point*/p, /*int*/height) {
 	var unitToDraw = new Kinetic.Image({
 		image: this.image,
 		x: Math.floor(p.X - this.image.width/2),
-		y: Math.floor(p.Y + height/4 - this.image.height)
+		y: Math.floor(p.Y + height*2/5 - this.image.height)
 	});
 	return unitToDraw;
 };
@@ -69,12 +69,12 @@ Unit.prototype.drawHP = function(/*Point*/p, /*int*/height) {
 	var hpToDraw = new Kinetic.Group({listening: false});
 	
 	hpToDraw.add(new Kinetic.Line({
-		points: [Math.floor(p.X - this.image.width/4), Math.floor(p.Y - this.image.height/2 - 4), Math.floor(p.X + this.image.width/4), Math.floor(p.Y - this.image.height/2 - 4)],
+		points: [Math.floor(p.X - this.image.width/4), Math.floor(p.Y - this.image.height/2 + 8), Math.floor(p.X + this.image.width/4), Math.floor(p.Y - this.image.height/2 + 8)],
 		stroke: "white",
 		strokeWidth: 3
 	}));
 	hpToDraw.add(new Kinetic.Line({
-		points: [Math.floor(p.X - this.image.width/4), Math.floor(p.Y - this.image.height/2 - 4), Math.floor(p.X - this.image.width/4 + this.image.width/2 * this.hp / 100), Math.floor(p.Y - this.image.height/2 - 4)],
+		points: [Math.floor(p.X - this.image.width/4), Math.floor(p.Y - this.image.height/2 + 8), Math.floor(p.X - this.image.width/4 + this.image.width/2 * this.hp / 100), Math.floor(p.Y - this.image.height/2 + 8)],
 		stroke: "red",
 		strokeWidth: 3
 	}));

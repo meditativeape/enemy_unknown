@@ -90,39 +90,39 @@ var msgLayer = new Kinetic.Layer(); // layer for messages, such as start and end
 			}
 		}
 		
-		this.background = load_image("sprites\\bg_temp.jpg");
+		// load sprites
+		this.background = load_image("sprites\\bg_temp2.jpg");
 		this.flagImg = load_image("sprites\\flag.png");
 		this.waterImg = load_image("sprites\\water.png");
-		this.sprites[0][0] = load_image("sprites\\wood_blue.png");
-		this.sprites[0][1] = load_image("sprites\\water_blue.png");
-		this.sprites[0][2] = load_image("sprites\\earth_blue.png");
-		this.sprites[0][3] = load_image("sprites\\fire_blue.png");
-		this.sprites[0][4] = load_image("sprites\\air_blue.png");
-		this.sprites[0][5] = load_image("sprites\\unlit_blue.png");
+		this.sprites[0][0] = load_image("sprites\\hunter2_blue.png");
+		this.sprites[0][1] = load_image("sprites\\wolf2_blue.png");
+		this.sprites[0][2] = load_image("sprites\\zombie2_blue.png");
+		this.sprites[0][3] = load_image("sprites\\wizard2_blue.png");
+		this.sprites[0][4] = load_image("sprites\\vampire2_blue.png");
+		this.sprites[0][5] = load_image("sprites\\unknown2_blue.png");
 		
-		this.sprites[1][0] = load_image("sprites\\wood_yellow.png");
-		this.sprites[1][1] = load_image("sprites\\water_yellow.png");
-		this.sprites[1][2] = load_image("sprites\\earth_yellow.png");
-		this.sprites[1][3] = load_image("sprites\\fire_yellow.png");
-		this.sprites[1][4] = load_image("sprites\\air_yellow.png");
-		this.sprites[1][5] = load_image("sprites\\unlit_yellow.png");
+		this.sprites[1][0] = load_image("sprites\\hunter2_yellow.png");
+		this.sprites[1][1] = load_image("sprites\\wolf2_yellow.png");
+		this.sprites[1][2] = load_image("sprites\\zombie2_yellow.png");
+		this.sprites[1][3] = load_image("sprites\\wizard2_yellow.png");
+		this.sprites[1][4] = load_image("sprites\\vampire2_yellow.png");
+		this.sprites[1][5] = load_image("sprites\\unknown2_yellow.png");
 		
-		this.sprites[2][0] = load_image("sprites\\wood_red.png");
-		this.sprites[2][1] = load_image("sprites\\water_red.png");
-		this.sprites[2][2] = load_image("sprites\\earth_red.png");
-		this.sprites[2][3] = load_image("sprites\\fire_red.png");
-		this.sprites[2][4] = load_image("sprites\\air_red.png");
-		this.sprites[2][5] = load_image("sprites\\unlit_red.png");
+		this.sprites[2][0] = load_image("sprites\\hunter2_red.png");
+		this.sprites[2][1] = load_image("sprites\\wolf2_red.png");
+		this.sprites[2][2] = load_image("sprites\\zombie2_red.png");
+		this.sprites[2][3] = load_image("sprites\\wizard2_red.png");
+		this.sprites[2][4] = load_image("sprites\\vampire2_red.png");
+		this.sprites[2][5] = load_image("sprites\\unknown2_red.png");
 		
-		this.sprites[3][0] = load_image("sprites\\wood_green.png");
-		this.sprites[3][1] = load_image("sprites\\water_green.png");
-		this.sprites[3][2] = load_image("sprites\\earth_green.png");
-		this.sprites[3][3] = load_image("sprites\\fire_green.png");
-		this.sprites[3][4] = load_image("sprites\\air_green.png");
-		this.sprites[3][5] = load_image("sprites\\unlit_green.png");
+		this.sprites[3][0] = load_image("sprites\\hunter2_green.png");
+		this.sprites[3][1] = load_image("sprites\\wolf2_green.png");
+		this.sprites[3][2] = load_image("sprites\\zombie2_green.png");
+		this.sprites[3][3] = load_image("sprites\\wizard2_green.png");
+		this.sprites[3][4] = load_image("sprites\\vampire2_green.png");
+		this.sprites[3][5] = load_image("sprites\\unknown2_green.png");
 		
-				//Add terrain images.
-		
+		//Add terrain images.
 		CONSTANTS.waterTerrain.image = this.waterImg;
 		CONSTANTS.flagTerrain.image = this.flagImg;
 
@@ -330,22 +330,42 @@ var msgLayer = new Kinetic.Layer(); // layer for messages, such as start and end
 			}
 		};
 		
+		document.addEventListener('keydown', function(event) {  // keydown event listener
+			if (event.keyCode == 37 || event.keyCode == 65) { // left
+				gc.camera.isMovingLeft = true;
+			} else if (event.keyCode == 39 || event.keyCode == 68) { // right
+				gc.camera.isMovingRight = true;
+			} else if (event.keyCode == 38 || event.keyCode == 87) { // up
+				gc.camera.isMovingUp = true;
+			} else if (event.keyCode == 40 || event.keyCode == 83) { // down
+				gc.camera.isMovingDown = true;
+			}
+			if (gc.camera.isMovingLeft)
+				gc.camera.moveLeft();
+			if (gc.camera.isMovingRight)
+				gc.camera.moveRight();
+			if (gc.camera.isMovingUp)
+				gc.camera.moveUp();
+			if (gc.camera.isMovingDown)
+				gc.camera.moveDown();
+		});
+		
+		document.addEventListener('keyup', function(event) {  // keyup event listener
+			if (event.keyCode == 37 || event.keyCode == 65) { // left
+				gc.camera.isMovingLeft = false;
+			} else if (event.keyCode == 39 || event.keyCode == 68) { // right
+				gc.camera.isMovingRight = false;
+			} else if (event.keyCode == 38 || event.keyCode == 87) { // up
+				gc.camera.isMovingUp = false;
+			} else if (event.keyCode == 40 || event.keyCode == 83) { // down
+				gc.camera.isMovingDown = false;
+			}
+		});
+		
 		// hard-coded game instance for demo!!!
 		this.camera = new BuildCamera([this.background.width, this.background.height], 15, this.background, mapLayer);
 		this.minimap = new BuildMiniMap(this.camera, [this.background.width, this.background.height], 200, this.background, UILayer, stage);
 		this.hexgrid = new BuildMap(40, 2.0, 1500, 1200, 40, this.camera, mapLayer, clickCallback);
-		
-		document.addEventListener('keydown', function(event) {  // key pressing event listener
-			if (event.keyCode == 37 || event.keyCode == 65) { // left
-				gc.camera.moveLeft();
-			} else if (event.keyCode == 39 || event.keyCode == 68) { // right
-				gc.camera.moveRight();
-			} else if (event.keyCode == 38 || event.keyCode == 87) { // up
-				gc.camera.moveUp();
-			} else if (event.keyCode == 40 || event.keyCode == 83) { // down
-				gc.camera.moveDown();
-			}
-		});
 
 		// document.addEventListener('click', function(event) {  // left click event listener
 			// if (gc.minimap.checkClick(event)) {
