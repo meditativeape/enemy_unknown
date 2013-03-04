@@ -32,13 +32,13 @@ Terrain.prototype.draw = function(/*Point*/p, /*int*/height, /*Kinetic.Image*/ o
 	if (this.image) {
 		if (oldTerrain) {
 			oldTerrain.setX(Math.floor(p.X - this.image.width/2));
-			oldTerrain.setY(Math.floor(p.Y + height/4 - this.image.height));
+			oldTerrain.setY(Math.floor(p.Y + height/2 - this.image.height));
 			return oldTerrain;
 		} else {
 			var terrainToDraw = new Kinetic.Image({
 				image: this.image,
 				x: Math.floor(p.X - this.image.width/2),
-				y: Math.floor(p.Y + height/4 - this.image.height)
+				y: Math.floor(p.Y + height/2 - this.image.height)
 			});
 			return terrainToDraw;
 		}

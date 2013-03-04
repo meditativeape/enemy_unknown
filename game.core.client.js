@@ -293,41 +293,39 @@ var msgLayer = new Kinetic.Layer(); // layer for messages, such as start and end
 		// callback function for click events on a hexagon
 		var clickCallback = function(coord){
 		
-			if(!gc.alive){
+			if (!gc.alive) {
 				return;
 			}
 			
 			var unitplayer = -1;
-			if(gc.hexgrid.getUnit(coord)!=null){
+			if (gc.hexgrid.getUnit(coord)!=null) {
 				unitplayer = gc.hexgrid.getUnit(coord).player;
 			}
 			
 			var isReachable = gc.hexgrid.isReachable(coord);
 			var isAttackable = gc.hexgrid.isAttackable(coord);
 			
-			//After unit has moved
-			if (gc.last_click_coord && isReachable) {
-				gc.socket.send('1 move ' + gc.last_click_coord.X +' ' + gc.last_click_coord.Y + ' ' + coord.X +' ' + coord.Y);
+			// some unit has been selected, and some hexagon without this player's unit has been clicked
+			if (gc.last_click_coord && (unitplayer != gc.player)) {
+				if (isReachable) {  // Move unit
+					gc.socket.send('1 move ' + gc.last_click_coord.X +' ' + gc.last_click_coord.Y + ' ' + coord.X +' ' + coord.Y);
+				} else if (isAttackable) {  // Attack unit
+					gc.socket.send('1 attack ' + gc.last_click_coord.X +' ' + gc.last_click_coord.Y + ' ' + coord.X + ' ' + coord.Y);
+				}
 				gc.hexgrid.clearReachable();
 				gc.hexgrid.clearAttackable();
 				gc.last_click_coord = null;
 			}
 			
-			//After unit has attacked
-			else if (gc.last_click_coord && isAttackable){
-				gc.socket.send('1 attack ' + gc.last_click_coord.X +' ' + gc.last_click_coord.Y + ' ' + coord.X + ' ' + coord.Y);
+			// some hexagon with this player's unit has been clicked, select that unit
+			else if (unitplayer == gc.player) {
+				console.log("aha");
 				gc.hexgrid.clearReachable();
 				gc.hexgrid.clearAttackable();
-				gc.last_click_coord = null;
-			
-			//Before unit has been selected
-			} else if (!gc.last_click_coord && (unitplayer == gc.player)) { // select a unit
-				if (gc.hexgrid.getUnit(coord)) { // this coordinate has a unit
-					if(gc.hexgrid.getUnit(coord).cooldown<=0){
-						gc.last_click_coord = coord;
-						gc.hexgrid.markReachable(coord);
-						gc.hexgrid.markAttackable(coord,coord);
-					}
+				if (gc.hexgrid.getUnit(coord).cooldown<=0) {
+					gc.last_click_coord = coord;
+					gc.hexgrid.markReachable(coord);
+					gc.hexgrid.markAttackable(coord,coord);
 				}
 			}
 		};

@@ -350,12 +350,11 @@ Hexagon.prototype.update = function() {
 	}
 	
 	// add/update terrain
+	var midPoint = new Point(this.MidPoint.X - this.camera.x, this.MidPoint.Y - this.camera.y);
 	if (this.terrain) {
 		if (this.terrainToDraw) {
-			var midPoint = new Point(this.MidPoint.X - this.camera.x, this.MidPoint.Y - this.camera.y);
 			this.terrain.draw(midPoint, this.spec.height, this.terrainToDraw);
 		} else {
-			var midPoint = new Point(this.MidPoint.X - this.camera.x, this.MidPoint.Y - this.camera.y);
 			this.terrainToDraw = this.terrain.draw(midPoint, this.spec.height);
 			this.map.terrainGroup.add(this.terrainToDraw);
 		}
@@ -367,7 +366,6 @@ Hexagon.prototype.update = function() {
 	if (this.hpToDraw)
 		this.hpToDraw.destroy();
 	if (this.piece != null) {
-		var midPoint = new Point(this.MidPoint.X - this.camera.x, this.MidPoint.Y - this.camera.y);
 		this.unitToDraw = this.piece.draw(midPoint, this.spec.height);
 		this.map.unitGroup.add(this.unitToDraw);
 		this.hpToDraw = this.piece.drawHP(midPoint, this.spec.height);
