@@ -21,8 +21,8 @@ function Coordinate(x, y) {
 var CONSTANTS = {
 	width: 800,
 	height: 600,
-	init_resource: 100,
-	
+	cd: 5,
+	init_resource: 100
 };
 
 // server side we export Point and Coordinate.

@@ -45,6 +45,7 @@ var msgLayer = new Kinetic.Layer(); // layer for messages, such as start and end
 		// Container for all unit images and animations
 		// 0:blue, 1:yellow, 2:red, 3:green
 		this.sprites = [[], [], [], []];
+		this.cooldown = [[], [], [], []];
 		this.last_click_coord = null;
 		this.background = null;
 		this.camera = null;
@@ -85,7 +86,7 @@ var msgLayer = new Kinetic.Layer(); // layer for messages, such as start and end
 		
 		var isAppLoaded = function() {
 			files_loaded++;
-			if (files_loaded >= 27) {
+			if (files_loaded >= 28) {
 				gc.initiate();
 			}
 		}
@@ -121,6 +122,9 @@ var msgLayer = new Kinetic.Layer(); // layer for messages, such as start and end
 		this.sprites[3][3] = load_image("sprites\\wizard2_green.png");
 		this.sprites[3][4] = load_image("sprites\\vampire2_green.png");
 		this.sprites[3][5] = load_image("sprites\\unknown2_green.png");
+		
+		// load cooldown spritesheets
+		this.cooldown[0][2] = load_image("sprites\\zombie_blue_cd2.png");
 		
 		//Add terrain images.
 		CONSTANTS.waterTerrain.image = this.waterImg;
@@ -196,7 +200,8 @@ var msgLayer = new Kinetic.Layer(); // layer for messages, such as start and end
 			switch (keywords[1]) {
 			case "add":
 				var sprite = this.sprites[parseInt(keywords[2])][parseInt(keywords[4])];
-				this.hexgrid.matrix[parseInt(keywords[5])][parseInt(keywords[6])].piece = new Unit(parseInt(keywords[2]),parseInt(keywords[3]),100,parseInt(keywords[4]),new Coordinate(parseInt(keywords[5]),parseInt(keywords[6])),0,sprite);
+				var cdImage = this.cooldown[parseInt(keywords[2])][parseInt(keywords[4])];
+				this.hexgrid.matrix[parseInt(keywords[5])][parseInt(keywords[6])].piece = new Unit(parseInt(keywords[2]),parseInt(keywords[3]),100,parseInt(keywords[4]),new Coordinate(parseInt(keywords[5]),parseInt(keywords[6])),sprite,cdImage);
 				this.updateRA();
 				// update minimap
 				var pointOnMap = this.hexgrid.toMap(new Coordinate(parseInt(keywords[5]), parseInt(keywords[6])));
@@ -207,7 +212,7 @@ var msgLayer = new Kinetic.Layer(); // layer for messages, such as start and end
 				break;
 			case "move":
 				this.hexgrid.move(new Coordinate(parseInt(keywords[2]),parseInt(keywords[3])),new Coordinate(parseInt(keywords[4]),parseInt(keywords[5])))
-				this.hexgrid.matrix[parseInt(keywords[4])][parseInt(keywords[5])].piece.setcd(0);
+				this.hexgrid.matrix[parseInt(keywords[4])][parseInt(keywords[5])].piece.setcd(CONSTANTS.cd);
 				this.updateRA();
 				// update minimap
 				var oldPointOnMap = this.hexgrid.toMap(new Coordinate(parseInt(keywords[2]), parseInt(keywords[3])));
@@ -217,7 +222,7 @@ var msgLayer = new Kinetic.Layer(); // layer for messages, such as start and end
 			case "attack":
 				this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece.minusHP(parseInt(keywords[4]));
 				this.hexgrid.matrix[parseInt(keywords[5])][parseInt(keywords[6])].piece.minusHP(parseInt(keywords[7]));
-				this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece.setcd(0);
+				this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece.setcd(CONSTANTS.cd);
 				this.updateRA();
 				break;
 			case "die":
@@ -319,7 +324,6 @@ var msgLayer = new Kinetic.Layer(); // layer for messages, such as start and end
 			
 			// some hexagon with this player's unit has been clicked, select that unit
 			else if (unitplayer == gc.player) {
-				console.log("aha");
 				gc.hexgrid.clearReachable();
 				gc.hexgrid.clearAttackable();
 				if (gc.hexgrid.getUnit(coord).cooldown<=0) {
