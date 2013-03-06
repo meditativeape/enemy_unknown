@@ -20,4 +20,6 @@ var selectLevel = function(){
 }
 
 var gameEnded = function(){
+	container.style.visibility = "hidden";
+	endGameMenu.style.visibility = "visible";
 }
