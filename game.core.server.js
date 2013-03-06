@@ -54,14 +54,14 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 		
 		var unit = this.hexgrid.getUnit(coord1);
 		if (unit && unit.team == player.team && !this.hexgrid.getUnit(coord2)){ // coord1 has player's unit and coord2 is empty
-			if (this.hexgrid.hexDist(this.hexgrid.matrix[coord1.X][coord1.Y], this.hexgrid.matrix[coord2.X][coord2.Y]) <= unit.range)
-						if(this.hexgrid.matrix[coord2.X][coord2.Y].terrain){
-								if(this.hexgrid.matrix[coord2.X][coord2.Y].terrain.moveable){
-									return true;
-								}
-							}else{
-								return true;
-							}
+			if (this.hexgrid.hexDist(this.hexgrid.matrix[coord1.X][coord1.Y], this.hexgrid.matrix[coord2.X][coord2.Y]) <= unit.range) {
+				if (!this.hexgrid.matrix[coord2.X][coord2.Y].terrain) {
+					return true;
+				} else {
+					if (this.hexgrid.matrix[coord2.X][coord2.Y].terrain.moveable)
+						return true;
+				}	
+			}
 		}
 		
 		return false;
@@ -106,27 +106,27 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 		for(var x in this.hexgrid.matrix){ // brute force!
 			for(var y in this.hexgrid.matrix[x]){
 				if(this.hexgrid.matrix[x][y].terrain){
-						if(this.hexgrid.matrix[x][y].terrain.objectiveType == 'flag'){
-							var self = this;
-							if(this.hexgrid.matrix[x][y].piece && !this.winCountdownFlag){
-								this.winner = self.hexgrid.matrix[x][y].piece.team;
-								for (var i in this.players) {
-									this.sendMsg(this.players[i], "0 countdown " + this.winner);
-								}
-								this.winCountdown = window.setTimeout(function(){
-									self.endGame(self.winner);
-									},self.hexgrid.matrix[x][y].terrain.objectiveTime*1000);
-								this.winCountdownFlag = true;
+					if(this.hexgrid.matrix[x][y].terrain.objectiveType == 'flag'){
+						var self = this;
+						if(this.hexgrid.matrix[x][y].piece && !this.winCountdownFlag){
+							this.winner = self.hexgrid.matrix[x][y].piece.team;
+							for (var i in this.players) {
+								this.sendMsg(this.players[i], "0 countdown " + this.winner);
 							}
-							else if(!this.hexgrid.matrix[x][y].piece && this.winCountdownFlag){
-								this.winner = null;
-								window.clearTimeout(this.winCountdown);
-								for (var i in this.players) {
-									this.sendMsg(this.players[i], "0 countdown " + -1);
-								}
-								this.winCountdownFlag = false;
-							}
+							this.winCountdown = window.setTimeout(function(){
+								self.endGame(self.winner);
+								},self.hexgrid.matrix[x][y].terrain.objectiveTime*1000);
+							this.winCountdownFlag = true;
 						}
+						else if(!this.hexgrid.matrix[x][y].piece && this.winCountdownFlag){
+							this.winner = null;
+							window.clearTimeout(this.winCountdown);
+							for (var i in this.players) {
+								this.sendMsg(this.players[i], "0 countdown " + -1);
+							}
+							this.winCountdownFlag = false;
+						}
+					}
 				}
 			}
 		}
@@ -253,7 +253,7 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 		this.started = true;
 		console.log(":: " + this.id.substring(0,8) + " :: Initializing game...");
 		for (var i in this.players) {
-			this.sendMsg(this.players[i], "0 init 0 " + i + " " + i + " " + this.type);  // TODO: does not work for 2v2
+			this.sendMsg(this.players[i], "0 init " + "default " + i + " " + i + " " + this.type);  // TODO: hardcoded!
 			// this.sendMsg(this.players[i], "resource " + CONSTANTS.init_resource);
 		}
 		
@@ -272,49 +272,41 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 		
 		// hardcoded game instance for demo!
 		var pieces = [];
-		this.hexgrid = new BuildMap(40, 2.0, 1500, 1200, 40);
-		//Map 0.
-						this.hexgrid.matrix[5][5].terrain = CONSTANTS.flagTerrain;
-						this.hexgrid.matrix[4][5].terrain = CONSTANTS.waterTerrain;
-						this.hexgrid.matrix[5][4].terrain = CONSTANTS.waterTerrain;
-						this.hexgrid.matrix[5][6].terrain = CONSTANTS.waterTerrain;
-						this.hexgrid.matrix[6][5].terrain = CONSTANTS.waterTerrain;
+		this.hexgrid = new BuildMap("default");
+		
+		// initialize terrain
+		var terrain = this.hexgrid.scenario.terrain;
+		for (var i = 0; i < terrain.length; i++)
+			for (var j = 0; j < terrain[i].length; j++) {
+				switch (terrain[i][j]) {
+				case "water":
+					this.hexgrid.addTerrain(CONSTANTS.waterTerrain, new helper.Coordinate(i, j));
+					break;
+				case "flag":
+					this.hexgrid.addTerrain(CONSTANTS.flagTerrain, new helper.Coordinate(i, j));
+					break;
+				}
+			}
+			
 		// 2 players
 		var types = [0, 1, 2, 3, 4];
+		var P1sp = this.hexgrid.scenario.startpoint[1];
 		shuffle(types);
-		pieces.push(this.hexgrid.matrix[0][4].piece = new Unit(0, 0, 100, types[0], new helper.Coordinate(0,4), null));
-		this.hexgrid.matrix[0][4].piece.buff = this.hexgrid.matrix[0][4].terrain?this.hexgrid.matrix[0][4].terrain.buff:null;
-		pieces.push(this.hexgrid.matrix[1][3].piece = new Unit(0, 0, 100, types[1], new helper.Coordinate(1,3), null));
-		this.hexgrid.matrix[1][3].piece.buff = this.hexgrid.matrix[1][3].terrain?this.hexgrid.matrix[1][3].terrain.buff:null;
-		pieces.push(this.hexgrid.matrix[2][2].piece = new Unit(0, 0, 100, types[2], new helper.Coordinate(2,2), null));
-		this.hexgrid.matrix[2][2].piece.buff = this.hexgrid.matrix[2][2].terrain?this.hexgrid.matrix[2][2].terrain.buff:null;
-		pieces.push(this.hexgrid.matrix[3][1].piece = new Unit(0, 0, 100, types[3],new helper.Coordinate(3,1), null));
-		this.hexgrid.matrix[3][1].piece.buff = this.hexgrid.matrix[3][1].terrain?this.hexgrid.matrix[3][1].terrain.buff:null;
-		pieces.push(this.hexgrid.matrix[4][0].piece = new Unit(0, 0, 100, types[4],new helper.Coordinate(4,0), null));
-		this.hexgrid.matrix[4][0].piece.buff = this.hexgrid.matrix[4][0].terrain?this.hexgrid.matrix[4][0].terrain.buff:null;
+		for (var i = 0; i < 5; i++) {
+			var u = new Unit(0, 0, 100, types[i], new helper.Coordinate(P1sp[i][0], P1sp[i][1]), null);
+			pieces.push(u);
+			this.hexgrid.addUnit(u, new helper.Coordinate(P1sp[i][0], P1sp[i][1]));
+		}
 		this.units.push(5);
+		
+		var P2sp = this.hexgrid.scenario.startpoint[2];
 		shuffle(types);
-		pieces.push(this.hexgrid.matrix[6][10].piece = new Unit(1, 1, 100, types[0],new helper.Coordinate(6,10), null));
-		this.hexgrid.matrix[6][10].piece.buff = this.hexgrid.matrix[6][10].terrain?this.hexgrid.matrix[6][10].terrain.buff:null;
-		pieces.push(this.hexgrid.matrix[7][9].piece = new Unit(1, 1, 100, types[1], new helper.Coordinate(7,9), null));
-		this.hexgrid.matrix[7][9].piece.buff = this.hexgrid.matrix[7][9].terrain?this.hexgrid.matrix[7][9].terrain.buff:null;
-		pieces.push(this.hexgrid.matrix[8][8].piece = new Unit(1, 1, 100, types[2], new helper.Coordinate(8,8), null));
-		this.hexgrid.matrix[8][8].piece.buff = this.hexgrid.matrix[8][8].terrain?this.hexgrid.matrix[8][8].terrain.buff:null;
-		pieces.push(this.hexgrid.matrix[9][7].piece = new Unit(1, 1, 100, types[3],new helper.Coordinate(9,7), null));
-		this.hexgrid.matrix[9][7].piece.buff = this.hexgrid.matrix[9][7].terrain?this.hexgrid.matrix[9][7].terrain.buff:null;
-		pieces.push(this.hexgrid.matrix[10][6].piece = new Unit(1, 1, 100,types[4], new helper.Coordinate(10,6), null));
-		this.hexgrid.matrix[10][6].piece.buff = this.hexgrid.matrix[10][6].terrain?this.hexgrid.matrix[10][6].terrain.buff:null;
+		for (var i = 0; i < 5; i++) {
+			var u = new Unit(1, 1, 100, types[i], new helper.Coordinate(P2sp[i][0], P2sp[i][1]), null);
+			pieces.push(u);
+			this.hexgrid.addUnit(u, new helper.Coordinate(P2sp[i][0], P2sp[i][1]));
+		}
 		this.units.push(5);
-		// 3 players
-		// if (this.type == 1) {
-			// pieces.push(this.hexgrid.matrix[0][5].piece = new Unit(2, 2, 100, randomType(), new helper.Coordinate(0, 5), 0, null));
-			// pieces.push(this.hexgrid.matrix[1][4].piece = new Unit(2, 2, 100, randomType(), new helper.Coordinate(1, 4), 0, null));
-		// }
-		// 4 players
-		// if (this.type == 2) {
-			// pieces.push(this.hexgrid.matrix[5][1].piece = new Unit(3, 3, 100, randomType(), new helper.Coordinate(5, 1), 0, null));
-			// pieces.push(this.hexgrid.matrix[6][0].piece = new Unit(3, 3, 100, randomType(), new helper.Coordinate(6, 0), 0, null));
-		// }
 		
 		// do not work for 2v2 yet
 		var k = 0;
