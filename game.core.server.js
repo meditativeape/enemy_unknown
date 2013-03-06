@@ -108,23 +108,25 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 		for(var x in this.hexgrid.matrix){ // brute force!
 			for(var y in this.hexgrid.matrix[x]){
 				if(this.hexgrid.matrix[x][y].terrain){
-					if(this.hexgrid.matrix[x][y].terrain.objectiveType == 'flag'){
-						var self = this;
-						if(this.hexgrid.matrix[x][y].piece && !this.winCountdownFlag){
-							this.winner = self.hexgrid.matrix[x][y].piece.team;
-							for (var i in this.players) {
-								this.sendMsg(this.players[i], "0 countdown " + this.winner);
+						if(this.hexgrid.matrix[x][y].terrain.objectiveType == 'flag'){
+							var self = this;
+							if(this.hexgrid.matrix[x][y].piece && !this.winCountdownFlag){
+								this.winner = self.hexgrid.matrix[x][y].piece.team;
+								for (var i in this.players) {
+									this.sendMsg(this.players[i], "1 countdown " + this.winner);
+								}
+								this.winCountdown = window.setTimeout(function(){
+									self.endGame(self.winner);
+									},self.hexgrid.matrix[x][y].terrain.objectiveTime*1000);
+								this.winCountdownFlag = true;
 							}
-							this.winCountdown = window.setTimeout(function(){
-								self.endGame(self.winner);
-								},self.hexgrid.matrix[x][y].terrain.objectiveTime*1000);
-							this.winCountdownFlag = true;
-						}
-						else if(!this.hexgrid.matrix[x][y].piece && this.winCountdownFlag){
-							this.winner = null;
-							window.clearTimeout(this.winCountdown);
-							for (var i in this.players) {
-								this.sendMsg(this.players[i], "0 countdown " + -1);
+							else if(!this.hexgrid.matrix[x][y].piece && this.winCountdownFlag){
+								this.winner = null;
+								window.clearTimeout(this.winCountdown);
+								for (var i in this.players) {
+									this.sendMsg(this.players[i], "1 countdown " + -1);
+								}
+								this.winCountdownFlag = false;
 							}
 							this.winCountdownFlag = false;
 						}
@@ -173,6 +175,12 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 		
 		case 1:  // game state messages
 			switch (keywords[1]) {
+			case "add":
+				var coord = new helper.Coordinate(parseInt(keywords[2]), parseInt(keywords[3]));
+				if(this.canAdd()){
+					this.hexgrid.addUnit(new Unit(parseInt(keywords[2]),parseInt(keywords[3]),100,parseInt(keywords[4]),new Coordinate(parseInt(keywords[5]),parseInt(keywords[6])),null,null),coord);
+				}
+				break;
 			case "move":
 				var coord1 = new helper.Coordinate(parseInt(keywords[2]), parseInt(keywords[3]));
 				var coord2 = new helper.Coordinate(parseInt(keywords[4]), parseInt(keywords[5]));

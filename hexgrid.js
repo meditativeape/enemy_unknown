@@ -127,7 +127,7 @@ var BuildMap = function(/*string*/mapName, /*camera*/camera, /*layer*/layer, /*f
 		return this.matrix[toCheck.X][toCheck.Y].piece;
 	};
 	
-	this.addUnit = function(/* */ toAdd, /*Coordinate*/dest){
+	this.addUnit = function(/*Unit */ toAdd, /*Coordinate*/dest){
 		this.matrix[dest.X][dest.Y].piece = toAdd;
 		this.matrix[dest.X][dest.Y].piece.buff = this.matrix[dest.X][dest.Y].terrain?this.matrix[dest.X][dest.Y].terrain.buff:null; 
 	};
