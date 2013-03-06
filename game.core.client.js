@@ -126,19 +126,19 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 
 		// load cooldown spritesheetss
 		
-		this.cooldown[0][0] = load_image("sprites\\hunter3_red_cd2.png");
-		this.cooldown[0][1] = load_image("sprites\\wolf3_red_cd2.png");
-		this.cooldown[0][2] = load_image("sprites\\zombie3_red_cd2.png");
-		this.cooldown[0][3] = load_image("sprites\\wizard3_red_cd2.png");
-		this.cooldown[0][4] = load_image("sprites\\vampire3_red_cd2.png");
-		this.cooldown[0][5] = load_image("sprites\\unknown3_red_cd2.png");
+		this.cooldown[0][0] = load_image("sprites\\HUNTER3_RED_CD2.png");
+		this.cooldown[0][1] = load_image("sprites\\WOLF3_RED_CD2.png");
+		this.cooldown[0][2] = load_image("sprites\\ZOMBIE3_RED_CD2.png");
+		this.cooldown[0][3] = load_image("sprites\\WIZARD3_RED_CD2.png");
+		this.cooldown[0][4] = load_image("sprites\\VAMPIRE3_RED_CD2.png");
+		this.cooldown[0][5] = load_image("sprites\\UNKNOWN3_RED_CD2.png");
 		
-		this.cooldown[1][0] = load_image("sprites\\hunter3_yellow_cd2.png");
-		this.cooldown[1][1] = load_image("sprites\\wolf3_yellow_cd2.png");
-		this.cooldown[1][2] = load_image("sprites\\zombie3_yellow_cd2.png");
-		this.cooldown[1][3] = load_image("sprites\\wizard3_yellow_cd2.png");
-		this.cooldown[1][4] = load_image("sprites\\vampire3_yellow_cd2.png");
-		this.cooldown[1][5] = load_image("sprites\\unknown3_yellow_cd2.png");
+		this.cooldown[1][0] = load_image("sprites\\HUNTER3_YELLOW_CD2.png");
+		this.cooldown[1][1] = load_image("sprites\\WOLF3_YELLOW_CD2.png");
+		this.cooldown[1][2] = load_image("sprites\\ZOMBIE3_YELLOW_CD2.png");
+		this.cooldown[1][3] = load_image("sprites\\WIZARD3_YELLOW_CD2.png");
+		this.cooldown[1][4] = load_image("sprites\\VAMPIRE3_YELLOW_CD2.png");
+		this.cooldown[1][5] = load_image("sprites\\UNKNOWN3_YELLOW_CD2.png");
 		
 		//Add terrain images.
 		CONSTANTS.waterTerrain.image = this.waterImg;
