@@ -179,6 +179,7 @@ var msgLayer = new Kinetic.Layer(); // layer for messages, such as start and end
 				this.started = true;
 				var p = this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].MidPoint;
 				this.camera.setPos(new Point(p.X-CONSTANTS.width/2,p.Y-CONSTANTS.height/2))
+				playSound('sounds\\forest.mp3');
 				break;
 			case "end":
 									if (this.countdownTimer){
@@ -187,6 +188,7 @@ var msgLayer = new Kinetic.Layer(); // layer for messages, such as start and end
 					this.capping = 0;
 					this.winner = parseInt(keywords[2]);
 					this.alive = false;
+					//gameEnded();
 				break;
 			}
 			break;
@@ -579,4 +581,8 @@ centerMsgAnim.start();
 		// }
 	// };
 
-
+//Helper function for playing sound
+function playSound(soundfile) {
+ document.getElementById("sound").innerHTML=
+ "<embed src=\""+soundfile+"\" hidden=\"true\" autostart=\"true\" loop=\"false\" />";
+ }
