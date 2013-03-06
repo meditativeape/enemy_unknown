@@ -22,7 +22,9 @@ var CONSTANTS = {
 	width: 800,
 	height: 600,
 	cd: 5,
-	init_resource: 100
+	init_resource: 100,
+	hexSideLength: 40,
+	hexRatio: 2.0
 };
 
 // server side we export Point and Coordinate.

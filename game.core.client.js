@@ -36,7 +36,7 @@ var stage = new Kinetic.Stage({
 });
 var mapLayer = new Kinetic.Layer(); // layer for background image, hexgrid, and units
 var UILayer = new Kinetic.Layer(); // layer for UI elements, such as minimap, buttons, and unit info
-var msgLayer = new Kinetic.Layer(); // layer for messages, such as start and end message
+var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, such as start and end message
 
 /* The game_core_client class. */
 
@@ -157,17 +157,11 @@ var msgLayer = new Kinetic.Layer(); // layer for messages, such as start and end
 		case 0:
 			switch (keywords[1]) {
 			case "init":  // game starts
+				this.mapName = keywords[2];
 				this.player = parseInt(keywords[3]);
 				this.team = parseInt(keywords[4]);
 				this.type = parseInt(keywords[5]);
 				this.initGame();
-				if(parseInt(keywords[2])==0){
-						this.hexgrid.matrix[5][5].terrain = CONSTANTS.flagTerrain;
-						this.hexgrid.matrix[4][5].terrain = CONSTANTS.waterTerrain;
-						this.hexgrid.matrix[5][4].terrain = CONSTANTS.waterTerrain;
-						this.hexgrid.matrix[5][6].terrain = CONSTANTS.waterTerrain;
-						this.hexgrid.matrix[6][5].terrain = CONSTANTS.waterTerrain;
-				}
 				break;
 			case "start":
 				this.starting = true;
@@ -351,6 +345,18 @@ var msgLayer = new Kinetic.Layer(); // layer for messages, such as start and end
 			}
 		};
 		
+		document.addEventListener('contextmenu', function(event) { // right click event listener
+			var x = event.pageX;
+			var y = event.pageY;
+			var offsetLeft = stage.getContainer().offsetLeft;
+			var offsetTop = stage.getContainer().offsetTop;
+			if (x >= offsetLeft && x <= offsetLeft+CONSTANTS.width && y >= offsetTop && y <= offsetTop+CONSTANTS.height) {
+				event.preventDefault();
+				gc.last_click_coord = null;
+				gc.hexgrid.clearReachable();
+				gc.hexgrid.clearAttackable();
+			}
+		});
 
 		document.addEventListener('keydown', function(event) {  // keydown event listener
 
@@ -388,64 +394,21 @@ var msgLayer = new Kinetic.Layer(); // layer for messages, such as start and end
 		// hard-coded game instance for demo!!!
 		this.camera = new BuildCamera([this.background.width, this.background.height], 15, this.background, mapLayer);
 		this.minimap = new BuildMiniMap(this.camera, [this.background.width, this.background.height], 200, this.background, UILayer, stage);
-		this.hexgrid = new BuildMap(40, 2.0, 1500, 1200, 40, this.camera, mapLayer, clickCallback);
-
-		// document.addEventListener('click', function(event) {  // left click event listener
-			// if (gc.minimap.checkClick(event)) {
-				// gc.minimap.click(event); // pass to minimap
-			// } else {
-				// if(!gc.alive){
-					// return;
-				// }
-				// var canvas = document.getElementById("gameCanvas");
-				// var canvasX = event.pageX - canvas.offsetLeft;
-				// var canvasY = event.pageY - canvas.offsetTop;
-				// var coord = gc.hexgrid.toHex(new Point(canvasX, canvasY), gc.camera);
-				// if (coord) {
-					// var unitplayer = -1;
-					// if(gc.hexgrid.getUnit(coord)!=null){
-						// unitplayer = gc.hexgrid.getUnit(coord).player;
-					// }
-					// var isReachable = gc.hexgrid.isReachable(coord);
-					// var isAttackable = gc.hexgrid.isAttackable(coord);
-					// //After unit has moved
-					// if (gc.last_click_coord && isReachable) {
-						// gc.socket.send('1 move ' + gc.last_click_coord.X +' ' + gc.last_click_coord.Y + ' ' + coord.X +' ' + coord.Y);
-						// gc.hexgrid.clearReachable();
-						// gc.hexgrid.clearAttackable();
-						// gc.last_click_coord = null;
-					// }
-					// //After unit has attacked
-					// else if (gc.last_click_coord && isAttackable){
-						// gc.socket.send('1 attack ' + gc.last_click_coord.X +' ' + gc.last_click_coord.Y + ' ' + coord.X + ' ' + coord.Y);
-						// gc.hexgrid.clearReachable();
-						// gc.hexgrid.clearAttackable();
-						// gc.last_click_coord = null;
-					// //Before unit has been selected
-					// } else if (!gc.last_click_coord && (unitplayer == gc.player)) { // select a unit
-						// if (gc.hexgrid.getUnit(coord)) { // this coordinate has a unit
-							// if(gc.hexgrid.getUnit(coord).cooldown<=0){
-								// gc.last_click_coord = coord;
-								// gc.hexgrid.markReachable(coord);
-								// gc.hexgrid.markAttackable(coord,coord);
-							// }
-						// }
-
-					// }
-				// }
-			// }
-		// });
-		// document.addEventListener('contextmenu', function(event) { // right click event listener
-			// var canvas = document.getElementById("gameCanvas");
-			// var canvasX = event.pageX - canvas.offsetLeft;
-			// var canvasY = event.pageY - canvas.offsetTop;
-			// if (canvasX <= canvas.width && canvasY <= canvas.height) {
-				// event.preventDefault();
-				// gc.last_click_coord = null;
-				// gc.hexgrid.clearReachable();
-				// gc.hexgrid.clearAttackable();
-			// }
-		// });
+		this.hexgrid = new BuildMap(this.mapName, this.camera, mapLayer, clickCallback);
+		
+		// initialize terrain
+		var terrain = this.hexgrid.scenario.terrain;
+		for (var i = 0; i < terrain.length; i++)
+			for (var j = 0; j < terrain[i].length; j++) {
+				switch (terrain[i][j]) {
+				case "water":
+					this.hexgrid.addTerrain(CONSTANTS.waterTerrain, new Coordinate(i, j));
+					break;
+				case "flag":
+					this.hexgrid.addTerrain(CONSTANTS.flagTerrain, new Coordinate(i, j));
+					break;
+				}
+			}
 	};
 	
 // draw the game
@@ -455,8 +418,6 @@ stage.add(msgLayer);
 
 // create game client
 var gc = new game_core_client();
-
-
 
 // animation to show text message at the center of canvas
 var centerMsg = new Kinetic.Text({
@@ -543,46 +504,9 @@ var centerMsgAnim = new Kinetic.Animation(function(frame) {
 }, msgLayer);
 centerMsgAnim.start();
 
-	// animate function
-	// var animate = function(){
-		// requestAnimationFrame(animate);
-		// var canvas = document.getElementById('gameCanvas');
-		// var ctx = document.getElementById('gameCanvas').getContext('2d');
-		// if (gc.started) {
-			// gc.camera.draw(gc.background);
-			// gc.hexgrid.draw(gc.camera);
-			// gc.minimap.draw(gc.background);
-			// if (gc.starting){
-				// ctx.font = '60px Calibri';
-				// ctx.fillStyle = 'white';
-				// ctx.fillText("Game has started",  canvas.width/4,canvas.height/2);
-				// ctx.font = '30px Calibri';	
-				// ctx.fillText("Objective: Kill all enemy units.", canvas.width/4 + 60, canvas.height/2 + 60);			
-			// }
-			// if (!gc.alive && !gc.winner){
-				// ctx.font = '60px Calibri';
-				// ctx.fillStyle = 'white';
-				// ctx.fillText("All your units are dead!",  canvas.width/4,canvas.height/2);
-			// }
-			// if (gc.winner){
-				// ctx.font = '60px Calibri';
-				// ctx.fillStyle = 'white';
-				// if (gc.winner == gc.team){
-					// ctx.fillText("You have won!",  canvas.width/4,canvas.height/2);
-				// }
-				// else{
-					// ctx.fillText("You have lost.",  canvas.width/4,canvas.height/2);
-				// }
-			// }
-		// } else {
-			// ctx.font = 'italic 60px Calibri';
-			// ctx.fillStyle = 'rgba(127, 155, 0, 0.5)';;
-			// ctx.fillText("Waiting for other players...", 80, 260);		
-		// }
-	// };
-
 //Helper function for playing sound
 function playSound(soundfile) {
  document.getElementById("sound").innerHTML=
  "<embed src=\""+soundfile+"\" hidden=\"true\" autostart=\"true\" loop=\"false\" />";
  }
+

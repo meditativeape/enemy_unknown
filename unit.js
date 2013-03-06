@@ -37,15 +37,21 @@ if( 'undefined' != typeof global ) {
 Unit.prototype.setcd = function(/*int*/ time){
 	this.cooldown = time;
 	var self = this;
+	var now, before = new Date();
 	var cding = window.setInterval(function(){
+			now = new Date();
 			if(self.cooldown>=0){
-				self.cooldown = self.cooldown - 0.1;
+				var elapsedTime = now.getTime() - before.getTime();
+				if (elapsedTime > 100)  // in case tab is not active in Chrome
+					self.cooldown = self.cooldown - Math.round(elapsedTime/100)/10;
+				else
+					self.cooldown = self.cooldown - 0.1;
 			}else{
+				self.cooldown = 0;
 				window.clearInterval(cding);
 			}
-		}
-		,100);
-
+			before = new Date();
+		} ,100);
 }
 
 /**
@@ -54,7 +60,7 @@ Unit.prototype.setcd = function(/*int*/ time){
  */
 Unit.prototype.draw = function(/*Point*/p, /*int*/height) {
 	var unitToDraw;
-	if (this.cooldown > 0 && this.cdImage) {
+	if (this.cooldown > 0.05 && this.cdImage) {
 		unitToDraw = new Kinetic.Image({
 			image: this.cdImage,
 			x: Math.floor(p.X - this.image.width/2),
@@ -62,8 +68,8 @@ Unit.prototype.draw = function(/*Point*/p, /*int*/height) {
 			width: this.image.width,
 			height: this.image.height
 		});
+		var offset = CONSTANTS.cd-this.cooldown;
 		unitToDraw.setCrop({x:Math.round(120*(CONSTANTS.cd-this.cooldown)*10), y:0, width:120, height:120});
-		//unitToDraw.setCrop({x:0, y:0, width:500, height:100});
 	} else {
 		unitToDraw = new Kinetic.Image({
 			image: this.image,

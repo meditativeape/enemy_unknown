@@ -7,6 +7,8 @@ if( 'undefined' != typeof global ) {
     var helper = require("./helper.js");
 	var Point = helper.Point;
 	var Coordinate = helper.Coordinate;
+	var CONSTANTS = helper.CONSTANTS;
+	var Scenarios = require("./scenarios.js").Scenarios;
 }
 
 /**
@@ -15,7 +17,14 @@ if( 'undefined' != typeof global ) {
 * callback could be null on server, since no click event will be fired there.
 * @constructor
 */
-var BuildMap = function(/*double*/side, /*double*/ratio,/*int*/ x, /*int*/y, /*double*/offset, /*camera*/camera, /*layer*/layer, /*function*/callback){
+var BuildMap = function(/*string*/mapName, /*camera*/camera, /*layer*/layer, /*function*/callback){
+	
+	var side = CONSTANTS.hexSideLength;
+	var ratio = CONSTANTS.hexRatio;
+	this.scenario = Scenarios[mapName];
+	var x = this.scenario.size.x;
+	var y = this.scenario.size.y;
+	var offset = this.scenario.offset;
 	
 	if (camera && layer) {
 		this.layer = layer;
@@ -95,22 +104,6 @@ var BuildMap = function(/*double*/side, /*double*/ratio,/*int*/ x, /*int*/y, /*d
 		return ((Math.abs(deltaX) + Math.abs(deltaY) + Math.abs(deltaX + deltaY)) / 2);		
 	};
 	
-	// this.draw = function draw(/*Camera*/camera){
-		// for(var x in this.matrix){
-			// for(var y in this.matrix[x]){
-				// this.matrix[x][y].draw(camera);
-			// }
-		// }	
-		// for(var x in this.matrix){
-			// for(var y in this.matrix[x]){
-				// if(this.matrix[x][y].piece){
-					// var midPoint = new Point(this.matrix[x][y].MidPoint.X-camera.x,this.matrix[x][y].MidPoint.Y-camera.y);
-					// this.matrix[x][y].piece.drawHP(midPoint,this.matrix[x][y].spec.height);
-				// }
-			// }		
-		// }
-	// };
-	
 	this.move = function(/*Coordinate*/ origin, /*Coordinate*/dest) {
 		var toMove = this.matrix[origin.X][origin.Y].piece;
 		this.matrix[origin.X][origin.Y].piece = null;
@@ -126,12 +119,10 @@ var BuildMap = function(/*double*/side, /*double*/ratio,/*int*/ x, /*int*/y, /*d
 		if(this.matrix[attacker.X][attacker.Y].piece.hp<=0){
 			this.matrix[attacker.X][attacker.Y].piece = null;
 		}
-		
 	}
 	
 	this.getUnit = function(/*Coordinate*/toCheck){
 		return this.matrix[toCheck.X][toCheck.Y].piece;
-
 	};
 	
 	this.addUnit = function(/*Unit */ toAdd, /*Coordinate*/dest){
@@ -139,25 +130,33 @@ var BuildMap = function(/*double*/side, /*double*/ratio,/*int*/ x, /*int*/y, /*d
 		this.matrix[dest.X][dest.Y].piece.buff = this.matrix[dest.X][dest.Y].terrain?this.matrix[dest.X][dest.Y].terrain.buff:null; 
 	};
 	
+	this.getTerrain = function(/*Coordinate*/toCheck){
+		return this.matrix[toCheck.X][toCheck.Y].terrain;
+	};
+	
+	this.addTerrain = function(toAdd, /*Coordinate*/dest){
+		this.matrix[dest.X][dest.Y].terrain = toAdd;
+	}
+	
 	this.markReachable = function(/*Coordinate*/coord){
-				var selectedHex = this.matrix[coord.X][coord.Y];
-				for(var x in this.matrix){ // brute force!
-					for(var y in this.matrix[x]){
-						var range = selectedHex.piece.buff?selectedHex.piece.range+selectedHex.piece.buff.rangeBuff:selectedHex.piece.range;
-						if (this.hexDist(selectedHex, this.matrix[x][y]) <= range && !this.matrix[x][y].piece) { // in range and not occupied
-							if(this.matrix[x][y].terrain){
-								if(this.matrix[x][y].terrain.moveable){
-									this.matrix[x][y].reachable = true;
-									this.reachables.push(this.matrix[x][y]);
-								}
-							}else{
-								this.matrix[x][y].reachable = true;
-								this.reachables.push(this.matrix[x][y]);
-							}
+		var selectedHex = this.matrix[coord.X][coord.Y];
+		for(var x in this.matrix){ // brute force!
+			for(var y in this.matrix[x]){
+				var range = selectedHex.piece.buff?selectedHex.piece.range+selectedHex.piece.buff.rangeBuff:selectedHex.piece.range;
+				if (this.hexDist(selectedHex, this.matrix[x][y]) <= range && !this.matrix[x][y].piece) { // in range and not occupied
+					if(this.matrix[x][y].terrain){
+						if(this.matrix[x][y].terrain.moveable){
+							this.matrix[x][y].reachable = true;
+							this.reachables.push(this.matrix[x][y]);
 						}
-					
+					}else{
+						this.matrix[x][y].reachable = true;
+						this.reachables.push(this.matrix[x][y]);
 					}
 				}
+			
+			}
+		}
 	};
 	
 	this.markAttackable = function(/*Coordinate*/coord){
@@ -174,7 +173,6 @@ var BuildMap = function(/*double*/side, /*double*/ratio,/*int*/ x, /*int*/y, /*d
 			}
 		}
 	};
-	
 	
 	this.clearReachable = function(){
 		for (var i in this.reachables){  // clear reachables
