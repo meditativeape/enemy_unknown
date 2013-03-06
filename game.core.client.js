@@ -45,6 +45,7 @@ var msgLayer = new Kinetic.Layer(); // layer for messages, such as start and end
 		// Container for all unit images and animations
 		// 0:blue, 1:yellow, 2:red, 3:green
 		this.sprites = [[], [], [], []];
+		this.cooldown = [[], [], [], []];
 		this.last_click_coord = null;
 		this.background = null;
 		this.camera = null;
@@ -85,14 +86,16 @@ var msgLayer = new Kinetic.Layer(); // layer for messages, such as start and end
 		
 		var isAppLoaded = function() {
 			files_loaded++;
-			if (files_loaded >= 27) {
+			if (files_loaded >= 28) {
 				gc.initiate();
 			}
 		}
 		
-		this.background = load_image("sprites\\bg_temp.jpg");
+		// load sprites
+		this.background = load_image("sprites\\bg_temp2.jpg");
 		this.flagImg = load_image("sprites\\flag.png");
 		this.waterImg = load_image("sprites\\water.png");
+<<<<<<< HEAD
 		this.sprites[0][0] = load_image("sprites\\hunter1_blue.png");
 		this.sprites[0][1] = load_image("sprites\\wolf1_blue.png");
 		this.sprites[0][2] = load_image("sprites\\zombie1_blue.png");
@@ -120,9 +123,40 @@ var msgLayer = new Kinetic.Layer(); // layer for messages, such as start and end
 		this.sprites[3][3] = load_image("sprites\\wizard1_green.png");
 		this.sprites[3][4] = load_image("sprites\\vampire1_green.png");
 		this.sprites[3][5] = load_image("sprites\\unknown1_green.png");
+=======
+		this.sprites[0][0] = load_image("sprites\\hunter2_blue.png");
+		this.sprites[0][1] = load_image("sprites\\wolf2_blue.png");
+		this.sprites[0][2] = load_image("sprites\\zombie2_blue.png");
+		this.sprites[0][3] = load_image("sprites\\wizard2_blue.png");
+		this.sprites[0][4] = load_image("sprites\\vampire2_blue.png");
+		this.sprites[0][5] = load_image("sprites\\unknown2_blue.png");
 		
-				//Add terrain images.
+		this.sprites[1][0] = load_image("sprites\\hunter2_yellow.png");
+		this.sprites[1][1] = load_image("sprites\\wolf2_yellow.png");
+		this.sprites[1][2] = load_image("sprites\\zombie2_yellow.png");
+		this.sprites[1][3] = load_image("sprites\\wizard2_yellow.png");
+		this.sprites[1][4] = load_image("sprites\\vampire2_yellow.png");
+		this.sprites[1][5] = load_image("sprites\\unknown2_yellow.png");
 		
+		this.sprites[2][0] = load_image("sprites\\hunter2_red.png");
+		this.sprites[2][1] = load_image("sprites\\wolf2_red.png");
+		this.sprites[2][2] = load_image("sprites\\zombie2_red.png");
+		this.sprites[2][3] = load_image("sprites\\wizard2_red.png");
+		this.sprites[2][4] = load_image("sprites\\vampire2_red.png");
+		this.sprites[2][5] = load_image("sprites\\unknown2_red.png");
+		
+		this.sprites[3][0] = load_image("sprites\\hunter2_green.png");
+		this.sprites[3][1] = load_image("sprites\\wolf2_green.png");
+		this.sprites[3][2] = load_image("sprites\\zombie2_green.png");
+		this.sprites[3][3] = load_image("sprites\\wizard2_green.png");
+		this.sprites[3][4] = load_image("sprites\\vampire2_green.png");
+		this.sprites[3][5] = load_image("sprites\\unknown2_green.png");
+>>>>>>> 294e5836e233b357b9ce2ca209b7fc851c568cd6
+		
+		// load cooldown spritesheets
+		this.cooldown[0][2] = load_image("sprites\\zombie_blue_cd2.png");
+		
+		//Add terrain images.
 		CONSTANTS.waterTerrain.image = this.waterImg;
 		CONSTANTS.flagTerrain.image = this.flagImg;
 
@@ -196,7 +230,8 @@ var msgLayer = new Kinetic.Layer(); // layer for messages, such as start and end
 			switch (keywords[1]) {
 			case "add":
 				var sprite = this.sprites[parseInt(keywords[2])][parseInt(keywords[4])];
-				this.hexgrid.matrix[parseInt(keywords[5])][parseInt(keywords[6])].piece = new Unit(parseInt(keywords[2]),parseInt(keywords[3]),100,parseInt(keywords[4]),new Coordinate(parseInt(keywords[5]),parseInt(keywords[6])),0,sprite);
+				var cdImage = this.cooldown[parseInt(keywords[2])][parseInt(keywords[4])];
+				this.hexgrid.matrix[parseInt(keywords[5])][parseInt(keywords[6])].piece = new Unit(parseInt(keywords[2]),parseInt(keywords[3]),100,parseInt(keywords[4]),new Coordinate(parseInt(keywords[5]),parseInt(keywords[6])),sprite,cdImage);
 				this.updateRA();
 				// update minimap
 				var pointOnMap = this.hexgrid.toMap(new Coordinate(parseInt(keywords[5]), parseInt(keywords[6])));
@@ -207,7 +242,7 @@ var msgLayer = new Kinetic.Layer(); // layer for messages, such as start and end
 				break;
 			case "move":
 				this.hexgrid.move(new Coordinate(parseInt(keywords[2]),parseInt(keywords[3])),new Coordinate(parseInt(keywords[4]),parseInt(keywords[5])))
-				this.hexgrid.matrix[parseInt(keywords[4])][parseInt(keywords[5])].piece.setcd(0);
+				this.hexgrid.matrix[parseInt(keywords[4])][parseInt(keywords[5])].piece.setcd(CONSTANTS.cd);
 				this.updateRA();
 				// update minimap
 				var oldPointOnMap = this.hexgrid.toMap(new Coordinate(parseInt(keywords[2]), parseInt(keywords[3])));
@@ -217,7 +252,7 @@ var msgLayer = new Kinetic.Layer(); // layer for messages, such as start and end
 			case "attack":
 				this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece.minusHP(parseInt(keywords[4]));
 				this.hexgrid.matrix[parseInt(keywords[5])][parseInt(keywords[6])].piece.minusHP(parseInt(keywords[7]));
-				this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece.setcd(0);
+				this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece.setcd(CONSTANTS.cd);
 				this.updateRA();
 				break;
 			case "die":
@@ -330,22 +365,51 @@ var msgLayer = new Kinetic.Layer(); // layer for messages, such as start and end
 			}
 		};
 		
+<<<<<<< HEAD
 		// hard-coded game instance for demo!!!
 		this.camera = new BuildCamera([this.background.width, this.background.height], 15, this.background, mapLayer);
 		this.minimap = new BuildMiniMap(this.camera, [this.background.width, this.background.height], 200, this.background, UILayer, stage);
 		this.hexgrid = new BuildMap(40, 1.7, 1500, 1200, 40, this.camera, mapLayer, clickCallback);
 		
 		document.addEventListener('keydown', function(event) {  // key pressing event listener
+=======
+		document.addEventListener('keydown', function(event) {  // keydown event listener
+>>>>>>> 294e5836e233b357b9ce2ca209b7fc851c568cd6
 			if (event.keyCode == 37 || event.keyCode == 65) { // left
-				gc.camera.moveLeft();
+				gc.camera.isMovingLeft = true;
 			} else if (event.keyCode == 39 || event.keyCode == 68) { // right
-				gc.camera.moveRight();
+				gc.camera.isMovingRight = true;
 			} else if (event.keyCode == 38 || event.keyCode == 87) { // up
-				gc.camera.moveUp();
+				gc.camera.isMovingUp = true;
 			} else if (event.keyCode == 40 || event.keyCode == 83) { // down
+				gc.camera.isMovingDown = true;
+			}
+			if (gc.camera.isMovingLeft)
+				gc.camera.moveLeft();
+			if (gc.camera.isMovingRight)
+				gc.camera.moveRight();
+			if (gc.camera.isMovingUp)
+				gc.camera.moveUp();
+			if (gc.camera.isMovingDown)
 				gc.camera.moveDown();
+		});
+		
+		document.addEventListener('keyup', function(event) {  // keyup event listener
+			if (event.keyCode == 37 || event.keyCode == 65) { // left
+				gc.camera.isMovingLeft = false;
+			} else if (event.keyCode == 39 || event.keyCode == 68) { // right
+				gc.camera.isMovingRight = false;
+			} else if (event.keyCode == 38 || event.keyCode == 87) { // up
+				gc.camera.isMovingUp = false;
+			} else if (event.keyCode == 40 || event.keyCode == 83) { // down
+				gc.camera.isMovingDown = false;
 			}
 		});
+		
+		// hard-coded game instance for demo!!!
+		this.camera = new BuildCamera([this.background.width, this.background.height], 15, this.background, mapLayer);
+		this.minimap = new BuildMiniMap(this.camera, [this.background.width, this.background.height], 200, this.background, UILayer, stage);
+		this.hexgrid = new BuildMap(40, 2.0, 1500, 1200, 40, this.camera, mapLayer, clickCallback);
 
 		// document.addEventListener('click', function(event) {  // left click event listener
 			// if (gc.minimap.checkClick(event)) {

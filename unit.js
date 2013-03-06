@@ -4,7 +4,7 @@
 * Prototype for a unit
 * @constructor
 */
-var Unit = function(/*int*/player,/*int*/ team,/*int*/hp,/*int*/ type, /*Coordinate*/startCoord, /*int*/ cooldown, /*image*/pic){
+var Unit = function(/*int*/player,/*int*/ team,/*int*/hp,/*int*/ type, /*Coordinate*/startCoord, /*image*/pic, /*image*/cdImage){
 	this.player = player; //Starts from 0
 	this.team = team; //Starts from 0
 	this.hp = hp;
@@ -12,10 +12,11 @@ var Unit = function(/*int*/player,/*int*/ team,/*int*/hp,/*int*/ type, /*Coordin
 	this.range = 2;
 	this.x = startCoord.X;
 	this.y = startCoord.Y;
-	this.cooldown = cooldown;
+	this.cooldown = 0;
 	this.moved = false;
 	this.attacked = false;
 	this.image = pic;
+	this.cdImage = cdImage;
 	this.attacking = false;
 	this.damaged = false;
 	this.death = null;
@@ -38,12 +39,12 @@ Unit.prototype.setcd = function(/*int*/ time){
 	var self = this;
 	var cding = window.setInterval(function(){
 			if(self.cooldown>=0){
-				self.cooldown = self.cooldown - 0.5;
+				self.cooldown = self.cooldown - 0.1;
 			}else{
 				window.clearInterval(cding);
 			}
 		}
-		,500);
+		,100);
 
 }
 
@@ -52,11 +53,34 @@ Unit.prototype.setcd = function(/*int*/ time){
  * @this {Unit}
  */
 Unit.prototype.draw = function(/*Point*/p, /*int*/height) {
+<<<<<<< HEAD
 	var unitToDraw = new Kinetic.Image({
 		image: this.image,
 		x: Math.floor(p.X - this.image.width/2),
 		y: Math.floor(p.Y + height/2 - this.image.height)
 	});
+=======
+	var unitToDraw;
+	if (this.cooldown > 0 && this.cdImage) {
+		unitToDraw = new Kinetic.Image({
+			image: this.cdImage,
+			x: Math.floor(p.X - this.image.width/2),
+			y: Math.floor(p.Y + height*2/5 - this.image.height),
+			width: this.image.width,
+			height: this.image.height
+		});
+		unitToDraw.setCrop({x:Math.round(120*(CONSTANTS.cd-this.cooldown)*10), y:0, width:120, height:120});
+		//unitToDraw.setCrop({x:0, y:0, width:500, height:100});
+	} else {
+		unitToDraw = new Kinetic.Image({
+			image: this.image,
+			x: Math.floor(p.X - this.image.width/2),
+			y: Math.floor(p.Y + height*2/5 - this.image.height),
+			width: this.image.width,
+			height: this.image.height
+		});
+	}
+>>>>>>> 294e5836e233b357b9ce2ca209b7fc851c568cd6
 	return unitToDraw;
 };
 
@@ -69,12 +93,12 @@ Unit.prototype.drawHP = function(/*Point*/p, /*int*/height) {
 	var hpToDraw = new Kinetic.Group({listening: false});
 	
 	hpToDraw.add(new Kinetic.Line({
-		points: [Math.floor(p.X - this.image.width/4), Math.floor(p.Y - this.image.height/2 - 4), Math.floor(p.X + this.image.width/4), Math.floor(p.Y - this.image.height/2 - 4)],
+		points: [Math.floor(p.X - this.image.width/4), Math.floor(p.Y - this.image.height/2 + 8), Math.floor(p.X + this.image.width/4), Math.floor(p.Y - this.image.height/2 + 8)],
 		stroke: "white",
 		strokeWidth: 3
 	}));
 	hpToDraw.add(new Kinetic.Line({
-		points: [Math.floor(p.X - this.image.width/4), Math.floor(p.Y - this.image.height/2 - 4), Math.floor(p.X - this.image.width/4 + this.image.width/2 * this.hp / 100), Math.floor(p.Y - this.image.height/2 - 4)],
+		points: [Math.floor(p.X - this.image.width/4), Math.floor(p.Y - this.image.height/2 + 8), Math.floor(p.X - this.image.width/4 + this.image.width/2 * this.hp / 100), Math.floor(p.Y - this.image.height/2 + 8)],
 		stroke: "red",
 		strokeWidth: 3
 	}));

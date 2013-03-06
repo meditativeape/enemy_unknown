@@ -178,7 +178,7 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 				var coord2 = new helper.Coordinate(parseInt(keywords[4]), parseInt(keywords[5]));
 				if (this.canMove(coord1, coord2, client)) {
 					this.makeMove(coord1, coord2);  // move in our local game
-					this.hexgrid.getUnit(coord2).setcd(0);
+					this.hexgrid.getUnit(coord2).setcd(CONSTANTS.cd);
 					for (var i in this.players) {  // tell each player the result of move
 						this.sendMsg(this.players[i], message);
 					}
@@ -192,7 +192,7 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 					var responses = this.makeAttack(myCoord, oppoCoord);  // attack in our local game and get results
 					var unit = this.hexgrid.getUnit(myCoord);
 					if (unit)
-						unit.setcd(0);
+						unit.setcd(CONSTANTS.cd);
 					for (var i in this.players) {  // tell each player the result of attack
 						for (var j in responses)
 							this.sendMsg(this.players[i], responses[j]);
@@ -286,27 +286,27 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 		// 2 players
 		var types = [0, 1, 2, 3, 4];
 		shuffle(types);
-		pieces.push(this.hexgrid.matrix[0][4].piece = new Unit(0, 0, 100, types[0], new helper.Coordinate(0,4),0, null));
+		pieces.push(this.hexgrid.matrix[0][4].piece = new Unit(0, 0, 100, types[0], new helper.Coordinate(0,4), null));
 		this.hexgrid.matrix[0][4].piece.buff = this.hexgrid.matrix[0][4].terrain?this.hexgrid.matrix[0][4].terrain.buff:null;
-		pieces.push(this.hexgrid.matrix[1][3].piece = new Unit(0, 0, 100, types[1], new helper.Coordinate(1,3),0, null));
+		pieces.push(this.hexgrid.matrix[1][3].piece = new Unit(0, 0, 100, types[1], new helper.Coordinate(1,3), null));
 		this.hexgrid.matrix[1][3].piece.buff = this.hexgrid.matrix[1][3].terrain?this.hexgrid.matrix[1][3].terrain.buff:null;
-		pieces.push(this.hexgrid.matrix[2][2].piece = new Unit(0, 0, 100, types[2], new helper.Coordinate(2,2),0, null));
+		pieces.push(this.hexgrid.matrix[2][2].piece = new Unit(0, 0, 100, types[2], new helper.Coordinate(2,2), null));
 		this.hexgrid.matrix[2][2].piece.buff = this.hexgrid.matrix[2][2].terrain?this.hexgrid.matrix[2][2].terrain.buff:null;
-		pieces.push(this.hexgrid.matrix[3][1].piece = new Unit(0, 0, 100, types[3],new helper.Coordinate(3,1), 0, null));
+		pieces.push(this.hexgrid.matrix[3][1].piece = new Unit(0, 0, 100, types[3],new helper.Coordinate(3,1), null));
 		this.hexgrid.matrix[3][1].piece.buff = this.hexgrid.matrix[3][1].terrain?this.hexgrid.matrix[3][1].terrain.buff:null;
-		pieces.push(this.hexgrid.matrix[4][0].piece = new Unit(0, 0, 100, types[4],new helper.Coordinate(4,0), 0, null));
+		pieces.push(this.hexgrid.matrix[4][0].piece = new Unit(0, 0, 100, types[4],new helper.Coordinate(4,0), null));
 		this.hexgrid.matrix[4][0].piece.buff = this.hexgrid.matrix[4][0].terrain?this.hexgrid.matrix[4][0].terrain.buff:null;
 		this.units.push(5);
 		shuffle(types);
-		pieces.push(this.hexgrid.matrix[6][10].piece = new Unit(1, 1, 100, types[0],new helper.Coordinate(6,10), 0, null));
+		pieces.push(this.hexgrid.matrix[6][10].piece = new Unit(1, 1, 100, types[0],new helper.Coordinate(6,10), null));
 		this.hexgrid.matrix[6][10].piece.buff = this.hexgrid.matrix[6][10].terrain?this.hexgrid.matrix[6][10].terrain.buff:null;
-		pieces.push(this.hexgrid.matrix[7][9].piece = new Unit(1, 1, 100, types[1], new helper.Coordinate(7,9),0, null));
+		pieces.push(this.hexgrid.matrix[7][9].piece = new Unit(1, 1, 100, types[1], new helper.Coordinate(7,9), null));
 		this.hexgrid.matrix[7][9].piece.buff = this.hexgrid.matrix[7][9].terrain?this.hexgrid.matrix[7][9].terrain.buff:null;
-		pieces.push(this.hexgrid.matrix[8][8].piece = new Unit(1, 1, 100, types[2], new helper.Coordinate(8,8),0, null));
+		pieces.push(this.hexgrid.matrix[8][8].piece = new Unit(1, 1, 100, types[2], new helper.Coordinate(8,8), null));
 		this.hexgrid.matrix[8][8].piece.buff = this.hexgrid.matrix[8][8].terrain?this.hexgrid.matrix[8][8].terrain.buff:null;
-		pieces.push(this.hexgrid.matrix[9][7].piece = new Unit(1, 1, 100, types[3],new helper.Coordinate(9,7), 0, null));
+		pieces.push(this.hexgrid.matrix[9][7].piece = new Unit(1, 1, 100, types[3],new helper.Coordinate(9,7), null));
 		this.hexgrid.matrix[9][7].piece.buff = this.hexgrid.matrix[9][7].terrain?this.hexgrid.matrix[9][7].terrain.buff:null;
-		pieces.push(this.hexgrid.matrix[10][6].piece = new Unit(1, 1, 100,types[4], new helper.Coordinate(10,6), 0, null));
+		pieces.push(this.hexgrid.matrix[10][6].piece = new Unit(1, 1, 100,types[4], new helper.Coordinate(10,6), null));
 		this.hexgrid.matrix[10][6].piece.buff = this.hexgrid.matrix[10][6].terrain?this.hexgrid.matrix[10][6].terrain.buff:null;
 		this.units.push(5);
 		// 3 players

@@ -19,6 +19,10 @@ var BuildCamera = function(mapSize, movingSpeed, img, layer) {
 	this.x = 0;
 	this.y = 0;
 	this.speed = movingSpeed;
+	this.isMovingLeft = false;
+	this.isMovingRight = false;
+	this.isMovingUp = false;
+	this.isMovingDown = false;
 	
 	// add background image
 	var bg = new Kinetic.Image({
