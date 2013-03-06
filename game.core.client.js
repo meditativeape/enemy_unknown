@@ -66,7 +66,7 @@ var msgLayer = new Kinetic.Layer(); // layer for messages, such as start and end
 	}
 
 // load assets
-	game_core_client.prototype.load_assets = function() {
+	game_core_client.prototype.load_assets = function(/*int*/ senario,/*int*/type ) {
 
 		var files_loaded = 0;
 		
@@ -87,7 +87,7 @@ var msgLayer = new Kinetic.Layer(); // layer for messages, such as start and end
 		var isAppLoaded = function() {
 			files_loaded++;
 			if (files_loaded >= 28) {
-				gc.initiate();
+				gc.initiate(senario,type);
 			}
 		}
 		
@@ -270,11 +270,11 @@ var msgLayer = new Kinetic.Layer(); // layer for messages, such as start and end
 		}
 	}; 
 	
-	game_core_client.prototype.initiate = function(){  //Sever connection functionality..
+	game_core_client.prototype.initiate = function(/*int*/senario ,/*int*/ type){  //Sever connection functionality..
 	    //Store a local reference to our connection to the server
         this.socket = io.connect();
 		
-		this.socket.send('0 join 0');
+		this.socket.send('0 join '+ type + ' '+ senario);
 		
 		//When we connect, we are not 'connected' until we have a server id
 		//and are placed in a game by the server. The server sends us a message for that.
