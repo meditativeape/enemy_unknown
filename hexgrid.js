@@ -134,7 +134,7 @@ var BuildMap = function(/*double*/side, /*double*/ratio,/*int*/ x, /*int*/y, /*d
 
 	};
 	
-	this.addUnit = function(/* */ toAdd, /*Coordinate*/dest){
+	this.addUnit = function(/*Unit */ toAdd, /*Coordinate*/dest){
 		this.matrix[dest.X][dest.Y].piece = toAdd;
 		this.matrix[dest.X][dest.Y].piece.buff = this.matrix[dest.X][dest.Y].terrain?this.matrix[dest.X][dest.Y].terrain.buff:null; 
 	};

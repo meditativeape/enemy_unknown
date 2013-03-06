@@ -124,7 +124,7 @@ var msgLayer = new Kinetic.Layer(); // layer for messages, such as start and end
 		this.sprites[3][4] = load_image("sprites\\vampire3_green.png");
 		this.sprites[3][5] = load_image("sprites\\unknown3_green.png");
 
-		// load cooldown spritesheets
+		// load cooldown spritesheetss
 		
 		this.cooldown[0][0] = load_image("sprites\\hunter3_red_cd2.png");
 		this.cooldown[0][1] = load_image("sprites\\wolf3_red_cd2.png");
@@ -180,6 +180,19 @@ var msgLayer = new Kinetic.Layer(); // layer for messages, such as start and end
 				var p = this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].MidPoint;
 				this.camera.setPos(new Point(p.X-CONSTANTS.width/2,p.Y-CONSTANTS.height/2))
 				break;
+			case "end":
+									if (this.countdownTimer){
+						window.clearInterval(this.countdownTimer);
+					}
+					this.capping = 0;
+					this.winner = parseInt(keywords[2]);
+					this.alive = false;
+				break;
+			}
+			break;
+		
+		case 1:  // game control messages
+			switch (keywords[1]) {
 			case "countdown":
 					var capteam = parseInt(keywords[2]);
 					if(!(keywords[2]==-1)){
@@ -199,19 +212,6 @@ var msgLayer = new Kinetic.Layer(); // layer for messages, such as start and end
 						this.capping = 0;
 					}
 					break;
-			case "end":
-									if (this.countdownTimer){
-						window.clearInterval(this.countdownTimer);
-					}
-					this.capping = 0;
-					this.winner = parseInt(keywords[2]);
-					this.alive = false;
-				break;
-			}
-			break;
-		
-		case 1:  // game control messages
-			switch (keywords[1]) {
 			case "add":
 				var sprite = this.sprites[parseInt(keywords[2])][parseInt(keywords[4])];
 				var cdImage = this.cooldown[parseInt(keywords[2])][parseInt(keywords[4])];

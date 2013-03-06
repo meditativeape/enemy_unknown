@@ -121,13 +121,13 @@
 		// figure out player's color
 		var color;
 		switch (player) {	
-		case 0:
+		case 2:
 			color = "lightskyblue";
 			break;
 		case 1:
 			color = "yellow";
 			break;
-		case 2:
+		case 0:
 			color = "red";
 			break;
 		case 3:
