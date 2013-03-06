@@ -47,6 +47,8 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 		this.hexgrid = null;
 		this.winCountdownFlag = false;
 		this.winCountdown = null;
+		//Store the resources
+		this.resources = [];
 
     };
 	
@@ -125,6 +127,8 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 								this.sendMsg(this.players[i], "0 countdown " + -1);
 							}
 							this.winCountdownFlag = false;
+						}
+						if(this.hexgrid.matrix[x][y].terrain.resource){
 						}
 					}
 				}

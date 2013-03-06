@@ -85,12 +85,12 @@ Unit.prototype.drawHP = function(/*Point*/p, /*int*/height) {
 	var hpToDraw = new Kinetic.Group({listening: false});
 	
 	hpToDraw.add(new Kinetic.Line({
-		points: [Math.floor(p.X - this.image.width/4), Math.floor(p.Y - this.image.height/2 + 8), Math.floor(p.X + this.image.width/4), Math.floor(p.Y - this.image.height/2 + 8)],
+		points: [Math.floor(p.X - this.image.width/4), Math.floor(p.Y - this.image.height/2 ), Math.floor(p.X + this.image.width/4), Math.floor(p.Y - this.image.height/2 )],
 		stroke: "white",
 		strokeWidth: 3
 	}));
 	hpToDraw.add(new Kinetic.Line({
-		points: [Math.floor(p.X - this.image.width/4), Math.floor(p.Y - this.image.height/2 + 8), Math.floor(p.X - this.image.width/4 + this.image.width/2 * this.hp / 100), Math.floor(p.Y - this.image.height/2 + 8)],
+		points: [Math.floor(p.X - this.image.width/4), Math.floor(p.Y - this.image.height/2 ), Math.floor(p.X - this.image.width/4 + this.image.width/2 * this.hp / 100), Math.floor(p.Y - this.image.height/2 )],
 		stroke: "red",
 		strokeWidth: 3
 	}));
@@ -127,8 +127,8 @@ Unit.prototype.gotHit = function(/*Unit*/enemy){
 	//Earth beats fire and air
 	//Fire beats air and wood
 	//Air beats wood and water
-	var damage = enemy.buff?enemy.attack+enemy.buff.attackbuff:enemy.attack;
-	var defense = this.buff?this.defense+this.buff.defensebuff:this.defense;
+	var damage = enemy.buff?(enemy.attack+enemy.buff.attackBuff):enemy.attack;
+	var defense = this.buff?(this.defense*this.buff.defenseBuff):this.defense;
 	//Calculate type advantage
     var flag = (this.type-enemy.type)%5;
 	if(flag<0){

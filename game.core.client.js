@@ -62,11 +62,11 @@ var msgLayer = new Kinetic.Layer(); // layer for messages, such as start and end
 		this.countdownTimer = null;
 		this.resource = 0;
 		
-		// load assets
-		this.load_assets();
+		
 	}
 
-	game_core_client.prototype.load_assets = function() {
+// load assets
+	game_core_client.prototype.load_assets = function(/*int*/ senario,/*int*/type ) {
 
 		var files_loaded = 0;
 		
@@ -86,45 +86,59 @@ var msgLayer = new Kinetic.Layer(); // layer for messages, such as start and end
 		
 		var isAppLoaded = function() {
 			files_loaded++;
-			if (files_loaded >= 28) {
-				gc.initiate();
+			if (files_loaded >= 39) {
+				gc.initiate(senario,type);
 			}
 		}
 		
 		// load sprites
-		this.background = load_image("sprites\\bg_temp2.jpg");
+		this.background = load_image("sprites\\bg_temp.jpg");
 		this.flagImg = load_image("sprites\\flag.png");
 		this.waterImg = load_image("sprites\\water.png");
-		this.sprites[0][0] = load_image("sprites\\hunter2_blue.png");
-		this.sprites[0][1] = load_image("sprites\\wolf2_blue.png");
-		this.sprites[0][2] = load_image("sprites\\zombie2_blue.png");
-		this.sprites[0][3] = load_image("sprites\\wizard2_blue.png");
-		this.sprites[0][4] = load_image("sprites\\vampire2_blue.png");
-		this.sprites[0][5] = load_image("sprites\\unknown2_blue.png");
+
+		this.sprites[0][0] = load_image("sprites\\hunter3_red.png");
+		this.sprites[0][1] = load_image("sprites\\wolf3_red.png");
+		this.sprites[0][2] = load_image("sprites\\zombie3_red.png");
+		this.sprites[0][3] = load_image("sprites\\wizard3_red.png");
+		this.sprites[0][4] = load_image("sprites\\vampire3_red.png");
+		this.sprites[0][5] = load_image("sprites\\unknown3_red.png");
 		
-		this.sprites[1][0] = load_image("sprites\\hunter2_yellow.png");
-		this.sprites[1][1] = load_image("sprites\\wolf2_yellow.png");
-		this.sprites[1][2] = load_image("sprites\\zombie2_yellow.png");
-		this.sprites[1][3] = load_image("sprites\\wizard2_yellow.png");
-		this.sprites[1][4] = load_image("sprites\\vampire2_yellow.png");
-		this.sprites[1][5] = load_image("sprites\\unknown2_yellow.png");
+		this.sprites[1][0] = load_image("sprites\\hunter3_yellow.png");
+		this.sprites[1][1] = load_image("sprites\\wolf3_yellow.png");
+		this.sprites[1][2] = load_image("sprites\\zombie3_yellow.png");
+		this.sprites[1][3] = load_image("sprites\\wizard3_yellow.png");
+		this.sprites[1][4] = load_image("sprites\\vampire3_yellow.png");
+		this.sprites[1][5] = load_image("sprites\\unknown3_yellow.png");
 		
-		this.sprites[2][0] = load_image("sprites\\hunter2_red.png");
-		this.sprites[2][1] = load_image("sprites\\wolf2_red.png");
-		this.sprites[2][2] = load_image("sprites\\zombie2_red.png");
-		this.sprites[2][3] = load_image("sprites\\wizard2_red.png");
-		this.sprites[2][4] = load_image("sprites\\vampire2_red.png");
-		this.sprites[2][5] = load_image("sprites\\unknown2_red.png");
+		this.sprites[2][0] = load_image("sprites\\hunter3_blue.png");
+		this.sprites[2][1] = load_image("sprites\\wolf3_blue.png");
+		this.sprites[2][2] = load_image("sprites\\zombie3_blue.png");
+		this.sprites[2][3] = load_image("sprites\\wizard3_blue.png");
+		this.sprites[2][4] = load_image("sprites\\vampire3_blue.png");
+		this.sprites[2][5] = load_image("sprites\\unknown3_blue.png");
 		
-		this.sprites[3][0] = load_image("sprites\\hunter2_green.png");
-		this.sprites[3][1] = load_image("sprites\\wolf2_green.png");
-		this.sprites[3][2] = load_image("sprites\\zombie2_green.png");
-		this.sprites[3][3] = load_image("sprites\\wizard2_green.png");
-		this.sprites[3][4] = load_image("sprites\\vampire2_green.png");
-		this.sprites[3][5] = load_image("sprites\\unknown2_green.png");
-		
+		this.sprites[3][0] = load_image("sprites\\hunter3_green.png");
+		this.sprites[3][1] = load_image("sprites\\wolf3_green.png");
+		this.sprites[3][2] = load_image("sprites\\zombie3_green.png");
+		this.sprites[3][3] = load_image("sprites\\wizard3_green.png");
+		this.sprites[3][4] = load_image("sprites\\vampire3_green.png");
+		this.sprites[3][5] = load_image("sprites\\unknown3_green.png");
+
 		// load cooldown spritesheets
-		this.cooldown[0][2] = load_image("sprites\\zombie_blue_cd2.png");
+		
+		this.cooldown[0][0] = load_image("sprites\\hunter3_red_cd2.png");
+		this.cooldown[0][1] = load_image("sprites\\wolf3_red_cd2.png");
+		this.cooldown[0][2] = load_image("sprites\\zombie3_red_cd2.png");
+		this.cooldown[0][3] = load_image("sprites\\wizard3_red_cd2.png");
+		this.cooldown[0][4] = load_image("sprites\\vampire3_red_cd2.png");
+		this.cooldown[0][5] = load_image("sprites\\unknown3_red_cd2.png");
+		
+		this.cooldown[1][0] = load_image("sprites\\hunter3_yellow_cd2.png");
+		this.cooldown[1][1] = load_image("sprites\\wolf3_yellow_cd2.png");
+		this.cooldown[1][2] = load_image("sprites\\zombie3_yellow_cd2.png");
+		this.cooldown[1][3] = load_image("sprites\\wizard3_yellow_cd2.png");
+		this.cooldown[1][4] = load_image("sprites\\vampire3_yellow_cd2.png");
+		this.cooldown[1][5] = load_image("sprites\\unknown3_yellow_cd2.png");
 		
 		//Add terrain images.
 		CONSTANTS.waterTerrain.image = this.waterImg;
@@ -263,11 +277,12 @@ var msgLayer = new Kinetic.Layer(); // layer for messages, such as start and end
 		}
 	}; 
 	
-	game_core_client.prototype.initiate = function(){  //Sever connection functionality..
-		
+	game_core_client.prototype.initiate = function(/*int*/senario ,/*int*/ type){  //Sever connection functionality..
 	    //Store a local reference to our connection to the server
         this.socket = io.connect();
-
+		
+		this.socket.send('0 join '+ type + ' '+ senario);
+		
 		//When we connect, we are not 'connected' until we have a server id
 		//and are placed in a game by the server. The server sends us a message for that.
         this.socket.on('connect', this.connecting.bind(this));
@@ -328,7 +343,9 @@ var msgLayer = new Kinetic.Layer(); // layer for messages, such as start and end
 			}
 		};
 		
+
 		document.addEventListener('keydown', function(event) {  // keydown event listener
+
 			if (event.keyCode == 37 || event.keyCode == 65) { // left
 				gc.camera.isMovingLeft = true;
 			} else if (event.keyCode == 39 || event.keyCode == 68) { // right
@@ -444,6 +461,8 @@ stage.add(msgLayer);
 
 // create game client
 var gc = new game_core_client();
+
+
 
 // animation to show text message at the center of canvas
 var centerMsg = new Kinetic.Text({

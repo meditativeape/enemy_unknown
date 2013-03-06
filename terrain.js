@@ -48,4 +48,4 @@ Terrain.prototype.draw = function(/*Point*/p, /*int*/height, /*Kinetic.Image*/ o
 //Build terrains.
 
 CONSTANTS.waterTerrain = new Terrain(0,0,0,false,null,0,0,0,null);
-CONSTANTS.flagTerrain = new Terrain(0,0,0,true,'flag',60,0,0,null);
+CONSTANTS.flagTerrain = new Terrain(0,1,0,true,'flag',60,0,0,null);
