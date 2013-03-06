@@ -95,35 +95,7 @@ var msgLayer = new Kinetic.Layer(); // layer for messages, such as start and end
 		this.background = load_image("sprites\\bg_temp2.jpg");
 		this.flagImg = load_image("sprites\\flag.png");
 		this.waterImg = load_image("sprites\\water.png");
-<<<<<<< HEAD
-		this.sprites[0][0] = load_image("sprites\\hunter1_blue.png");
-		this.sprites[0][1] = load_image("sprites\\wolf1_blue.png");
-		this.sprites[0][2] = load_image("sprites\\zombie1_blue.png");
-		this.sprites[0][3] = load_image("sprites\\wizard1_blue.png");
-		this.sprites[0][4] = load_image("sprites\\vampire1_blue.png");
-		this.sprites[0][5] = load_image("sprites\\unknown1_blue.png");
-		
-		this.sprites[1][0] = load_image("sprites\\hunter1_yellow.png");
-		this.sprites[1][1] = load_image("sprites\\wolf1_yellow.png");
-		this.sprites[1][2] = load_image("sprites\\zombie1_yellow.png");
-		this.sprites[1][3] = load_image("sprites\\wizard1_yellow.png");
-		this.sprites[1][4] = load_image("sprites\\vampire1_yellow.png");
-		this.sprites[1][5] = load_image("sprites\\unknown1_yellow.png");
-		
-		this.sprites[2][0] = load_image("sprites\\hunter1_red.png");
-		this.sprites[2][1] = load_image("sprites\\wolf1_red.png");
-		this.sprites[2][2] = load_image("sprites\\zombie1_red.png");
-		this.sprites[2][3] = load_image("sprites\\wizard1_red.png");
-		this.sprites[2][4] = load_image("sprites\\vampire1_red.png");
-		this.sprites[2][5] = load_image("sprites\\unknown1_red.png");
-		
-		this.sprites[3][0] = load_image("sprites\\hunter1_green.png");
-		this.sprites[3][1] = load_image("sprites\\wolf1_green.png");
-		this.sprites[3][2] = load_image("sprites\\zombie1_green.png");
-		this.sprites[3][3] = load_image("sprites\\wizard1_green.png");
-		this.sprites[3][4] = load_image("sprites\\vampire1_green.png");
-		this.sprites[3][5] = load_image("sprites\\unknown1_green.png");
-=======
+
 		this.sprites[0][0] = load_image("sprites\\hunter2_blue.png");
 		this.sprites[0][1] = load_image("sprites\\wolf2_blue.png");
 		this.sprites[0][2] = load_image("sprites\\zombie2_blue.png");
@@ -151,8 +123,7 @@ var msgLayer = new Kinetic.Layer(); // layer for messages, such as start and end
 		this.sprites[3][3] = load_image("sprites\\wizard2_green.png");
 		this.sprites[3][4] = load_image("sprites\\vampire2_green.png");
 		this.sprites[3][5] = load_image("sprites\\unknown2_green.png");
->>>>>>> 294e5836e233b357b9ce2ca209b7fc851c568cd6
-		
+
 		// load cooldown spritesheets
 		this.cooldown[0][2] = load_image("sprites\\zombie_blue_cd2.png");
 		
@@ -365,16 +336,9 @@ var msgLayer = new Kinetic.Layer(); // layer for messages, such as start and end
 			}
 		};
 		
-<<<<<<< HEAD
-		// hard-coded game instance for demo!!!
-		this.camera = new BuildCamera([this.background.width, this.background.height], 15, this.background, mapLayer);
-		this.minimap = new BuildMiniMap(this.camera, [this.background.width, this.background.height], 200, this.background, UILayer, stage);
-		this.hexgrid = new BuildMap(40, 1.7, 1500, 1200, 40, this.camera, mapLayer, clickCallback);
-		
-		document.addEventListener('keydown', function(event) {  // key pressing event listener
-=======
+
 		document.addEventListener('keydown', function(event) {  // keydown event listener
->>>>>>> 294e5836e233b357b9ce2ca209b7fc851c568cd6
+
 			if (event.keyCode == 37 || event.keyCode == 65) { // left
 				gc.camera.isMovingLeft = true;
 			} else if (event.keyCode == 39 || event.keyCode == 68) { // right

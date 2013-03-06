@@ -53,13 +53,6 @@ Unit.prototype.setcd = function(/*int*/ time){
  * @this {Unit}
  */
 Unit.prototype.draw = function(/*Point*/p, /*int*/height) {
-<<<<<<< HEAD
-	var unitToDraw = new Kinetic.Image({
-		image: this.image,
-		x: Math.floor(p.X - this.image.width/2),
-		y: Math.floor(p.Y + height/2 - this.image.height)
-	});
-=======
 	var unitToDraw;
 	if (this.cooldown > 0 && this.cdImage) {
 		unitToDraw = new Kinetic.Image({
@@ -80,7 +73,6 @@ Unit.prototype.draw = function(/*Point*/p, /*int*/height) {
 			height: this.image.height
 		});
 	}
->>>>>>> 294e5836e233b357b9ce2ca209b7fc851c568cd6
 	return unitToDraw;
 };
 
