@@ -36,7 +36,7 @@ var stage = new Kinetic.Stage({
 });
 var mapLayer = new Kinetic.Layer(); // layer for background image, hexgrid, and units
 var UILayer = new Kinetic.Layer(); // layer for UI elements, such as minimap, buttons, and unit info
-var msgLayer = new Kinetic.Layer(); // layer for messages, such as start and end message
+var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, such as start and end message
 
 /* The game_core_client class. */
 

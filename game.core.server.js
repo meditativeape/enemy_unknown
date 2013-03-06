@@ -128,7 +128,6 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 							}
 							this.winCountdownFlag = false;
 						}
-						this.winCountdownFlag = false;
 					}
 					if(this.hexgrid.matrix[x][y].terrain.resource){
 					}

@@ -37,15 +37,21 @@ if( 'undefined' != typeof global ) {
 Unit.prototype.setcd = function(/*int*/ time){
 	this.cooldown = time;
 	var self = this;
+	var now, before = new Date();
 	var cding = window.setInterval(function(){
+			now = new Date();
 			if(self.cooldown>=0){
-				self.cooldown = self.cooldown - 0.1;
+				var elapsedTime = now.getTime() - before.getTime();
+				if (elapsedTime > 100)  // in case tab is not active in Chrome
+					self.cooldown = self.cooldown - Math.round(elapsedTime/100)/10;
+				else
+					self.cooldown = self.cooldown - 0.1;
 			}else{
+				self.cooldown = 0;
 				window.clearInterval(cding);
 			}
-		}
-		,100);
-
+			before = new Date();
+		} ,100);
 }
 
 /**
