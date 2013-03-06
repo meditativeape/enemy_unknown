@@ -343,6 +343,18 @@ var msgLayer = new Kinetic.Layer(); // layer for messages, such as start and end
 			}
 		};
 		
+		document.addEventListener('contextmenu', function(event) { // right click event listener
+			var x = event.pageX;
+			var y = event.pageY;
+			var offsetLeft = stage.getContainer().offsetLeft;
+			var offsetTop = stage.getContainer().offsetTop;
+			if (x >= offsetLeft && x <= offsetLeft+CONSTANTS.width && y >= offsetTop && y <= offsetTop+CONSTANTS.height) {
+				event.preventDefault();
+				gc.last_click_coord = null;
+				gc.hexgrid.clearReachable();
+				gc.hexgrid.clearAttackable();
+			}
+		});
 
 		document.addEventListener('keydown', function(event) {  // keydown event listener
 
@@ -395,63 +407,6 @@ var msgLayer = new Kinetic.Layer(); // layer for messages, such as start and end
 					break;
 				}
 			}
-
-		// document.addEventListener('click', function(event) {  // left click event listener
-			// if (gc.minimap.checkClick(event)) {
-				// gc.minimap.click(event); // pass to minimap
-			// } else {
-				// if(!gc.alive){
-					// return;
-				// }
-				// var canvas = document.getElementById("gameCanvas");
-				// var canvasX = event.pageX - canvas.offsetLeft;
-				// var canvasY = event.pageY - canvas.offsetTop;
-				// var coord = gc.hexgrid.toHex(new Point(canvasX, canvasY), gc.camera);
-				// if (coord) {
-					// var unitplayer = -1;
-					// if(gc.hexgrid.getUnit(coord)!=null){
-						// unitplayer = gc.hexgrid.getUnit(coord).player;
-					// }
-					// var isReachable = gc.hexgrid.isReachable(coord);
-					// var isAttackable = gc.hexgrid.isAttackable(coord);
-					// //After unit has moved
-					// if (gc.last_click_coord && isReachable) {
-						// gc.socket.send('1 move ' + gc.last_click_coord.X +' ' + gc.last_click_coord.Y + ' ' + coord.X +' ' + coord.Y);
-						// gc.hexgrid.clearReachable();
-						// gc.hexgrid.clearAttackable();
-						// gc.last_click_coord = null;
-					// }
-					// //After unit has attacked
-					// else if (gc.last_click_coord && isAttackable){
-						// gc.socket.send('1 attack ' + gc.last_click_coord.X +' ' + gc.last_click_coord.Y + ' ' + coord.X + ' ' + coord.Y);
-						// gc.hexgrid.clearReachable();
-						// gc.hexgrid.clearAttackable();
-						// gc.last_click_coord = null;
-					// //Before unit has been selected
-					// } else if (!gc.last_click_coord && (unitplayer == gc.player)) { // select a unit
-						// if (gc.hexgrid.getUnit(coord)) { // this coordinate has a unit
-							// if(gc.hexgrid.getUnit(coord).cooldown<=0){
-								// gc.last_click_coord = coord;
-								// gc.hexgrid.markReachable(coord);
-								// gc.hexgrid.markAttackable(coord,coord);
-							// }
-						// }
-
-					// }
-				// }
-			// }
-		// });
-		// document.addEventListener('contextmenu', function(event) { // right click event listener
-			// var canvas = document.getElementById("gameCanvas");
-			// var canvasX = event.pageX - canvas.offsetLeft;
-			// var canvasY = event.pageY - canvas.offsetTop;
-			// if (canvasX <= canvas.width && canvasY <= canvas.height) {
-				// event.preventDefault();
-				// gc.last_click_coord = null;
-				// gc.hexgrid.clearReachable();
-				// gc.hexgrid.clearAttackable();
-			// }
-		// });
 	};
 	
 // draw the game
@@ -461,8 +416,6 @@ stage.add(msgLayer);
 
 // create game client
 var gc = new game_core_client();
-
-
 
 // animation to show text message at the center of canvas
 var centerMsg = new Kinetic.Text({

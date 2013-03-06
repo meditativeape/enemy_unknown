@@ -22,8 +22,6 @@ var BuildMap = function(/*string*/mapName, /*camera*/camera, /*layer*/layer, /*f
 	var side = CONSTANTS.hexSideLength;
 	var ratio = CONSTANTS.hexRatio;
 	this.scenario = Scenarios[mapName];
-	console.log(mapName);
-	console.log(Scenarios);
 	var x = this.scenario.size.x;
 	var y = this.scenario.size.y;
 	var offset = this.scenario.offset;

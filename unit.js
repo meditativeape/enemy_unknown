@@ -54,7 +54,7 @@ Unit.prototype.setcd = function(/*int*/ time){
  */
 Unit.prototype.draw = function(/*Point*/p, /*int*/height) {
 	var unitToDraw;
-	if (this.cooldown > 0 && this.cdImage) {
+	if (this.cooldown > 0.05 && this.cdImage) {
 		unitToDraw = new Kinetic.Image({
 			image: this.cdImage,
 			x: Math.floor(p.X - this.image.width/2),
@@ -62,8 +62,8 @@ Unit.prototype.draw = function(/*Point*/p, /*int*/height) {
 			width: this.image.width,
 			height: this.image.height
 		});
+		var offset = CONSTANTS.cd-this.cooldown;
 		unitToDraw.setCrop({x:Math.round(120*(CONSTANTS.cd-this.cooldown)*10), y:0, width:120, height:120});
-		//unitToDraw.setCrop({x:0, y:0, width:500, height:100});
 	} else {
 		unitToDraw = new Kinetic.Image({
 			image: this.image,
