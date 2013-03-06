@@ -61,10 +61,10 @@ var msgLayer = new Kinetic.Layer(); // layer for messages, such as start and end
 		this.countdownTimer = null;
 		this.resource = 0;
 		
-		// load assets
-		this.load_assets();
+		
 	}
 
+// load assets
 	game_core_client.prototype.load_assets = function() {
 
 		var files_loaded = 0;
@@ -93,33 +93,33 @@ var msgLayer = new Kinetic.Layer(); // layer for messages, such as start and end
 		this.background = load_image("sprites\\bg_temp.jpg");
 		this.flagImg = load_image("sprites\\flag.png");
 		this.waterImg = load_image("sprites\\water.png");
-		this.sprites[0][0] = load_image("sprites\\wood_blue.png");
-		this.sprites[0][1] = load_image("sprites\\water_blue.png");
-		this.sprites[0][2] = load_image("sprites\\earth_blue.png");
-		this.sprites[0][3] = load_image("sprites\\fire_blue.png");
-		this.sprites[0][4] = load_image("sprites\\air_blue.png");
-		this.sprites[0][5] = load_image("sprites\\unlit_blue.png");
+		this.sprites[0][0] = load_image("sprites\\hunter1_blue.png");
+		this.sprites[0][1] = load_image("sprites\\wolf1_blue.png");
+		this.sprites[0][2] = load_image("sprites\\zombie1_blue.png");
+		this.sprites[0][3] = load_image("sprites\\wizard1_blue.png");
+		this.sprites[0][4] = load_image("sprites\\vampire1_blue.png");
+		this.sprites[0][5] = load_image("sprites\\unknown1_blue.png");
 		
-		this.sprites[1][0] = load_image("sprites\\wood_yellow.png");
-		this.sprites[1][1] = load_image("sprites\\water_yellow.png");
-		this.sprites[1][2] = load_image("sprites\\earth_yellow.png");
-		this.sprites[1][3] = load_image("sprites\\fire_yellow.png");
-		this.sprites[1][4] = load_image("sprites\\air_yellow.png");
-		this.sprites[1][5] = load_image("sprites\\unlit_yellow.png");
+		this.sprites[1][0] = load_image("sprites\\hunter1_yellow.png");
+		this.sprites[1][1] = load_image("sprites\\wolf1_yellow.png");
+		this.sprites[1][2] = load_image("sprites\\zombie1_yellow.png");
+		this.sprites[1][3] = load_image("sprites\\wizard1_yellow.png");
+		this.sprites[1][4] = load_image("sprites\\vampire1_yellow.png");
+		this.sprites[1][5] = load_image("sprites\\unknown1_yellow.png");
 		
-		this.sprites[2][0] = load_image("sprites\\wood_red.png");
-		this.sprites[2][1] = load_image("sprites\\water_red.png");
-		this.sprites[2][2] = load_image("sprites\\earth_red.png");
-		this.sprites[2][3] = load_image("sprites\\fire_red.png");
-		this.sprites[2][4] = load_image("sprites\\air_red.png");
-		this.sprites[2][5] = load_image("sprites\\unlit_red.png");
+		this.sprites[2][0] = load_image("sprites\\hunter1_red.png");
+		this.sprites[2][1] = load_image("sprites\\wolf1_red.png");
+		this.sprites[2][2] = load_image("sprites\\zombie1_red.png");
+		this.sprites[2][3] = load_image("sprites\\wizard1_red.png");
+		this.sprites[2][4] = load_image("sprites\\vampire1_red.png");
+		this.sprites[2][5] = load_image("sprites\\unknown1_red.png");
 		
-		this.sprites[3][0] = load_image("sprites\\wood_green.png");
-		this.sprites[3][1] = load_image("sprites\\water_green.png");
-		this.sprites[3][2] = load_image("sprites\\earth_green.png");
-		this.sprites[3][3] = load_image("sprites\\fire_green.png");
-		this.sprites[3][4] = load_image("sprites\\air_green.png");
-		this.sprites[3][5] = load_image("sprites\\unlit_green.png");
+		this.sprites[3][0] = load_image("sprites\\hunter1_green.png");
+		this.sprites[3][1] = load_image("sprites\\wolf1_green.png");
+		this.sprites[3][2] = load_image("sprites\\zombie1_green.png");
+		this.sprites[3][3] = load_image("sprites\\wizard1_green.png");
+		this.sprites[3][4] = load_image("sprites\\vampire1_green.png");
+		this.sprites[3][5] = load_image("sprites\\unknown1_green.png");
 		
 				//Add terrain images.
 		
@@ -265,10 +265,11 @@ var msgLayer = new Kinetic.Layer(); // layer for messages, such as start and end
 	}; 
 	
 	game_core_client.prototype.initiate = function(){  //Sever connection functionality..
-		
 	    //Store a local reference to our connection to the server
         this.socket = io.connect();
-
+		
+		this.socket.send('0 join 0');
+		
 		//When we connect, we are not 'connected' until we have a server id
 		//and are placed in a game by the server. The server sends us a message for that.
         this.socket.on('connect', this.connecting.bind(this));
@@ -319,7 +320,6 @@ var msgLayer = new Kinetic.Layer(); // layer for messages, such as start and end
 			
 			// some hexagon with this player's unit has been clicked, select that unit
 			else if (unitplayer == gc.player) {
-				console.log("aha");
 				gc.hexgrid.clearReachable();
 				gc.hexgrid.clearAttackable();
 				if (gc.hexgrid.getUnit(coord).cooldown<=0) {
@@ -333,7 +333,7 @@ var msgLayer = new Kinetic.Layer(); // layer for messages, such as start and end
 		// hard-coded game instance for demo!!!
 		this.camera = new BuildCamera([this.background.width, this.background.height], 15, this.background, mapLayer);
 		this.minimap = new BuildMiniMap(this.camera, [this.background.width, this.background.height], 200, this.background, UILayer, stage);
-		this.hexgrid = new BuildMap(40, 2.0, 1500, 1200, 40, this.camera, mapLayer, clickCallback);
+		this.hexgrid = new BuildMap(40, 1.7, 1500, 1200, 40, this.camera, mapLayer, clickCallback);
 		
 		document.addEventListener('keydown', function(event) {  // key pressing event listener
 			if (event.keyCode == 37 || event.keyCode == 65) { // left
@@ -412,6 +412,8 @@ stage.add(msgLayer);
 
 // create game client
 var gc = new game_core_client();
+
+
 
 // animation to show text message at the center of canvas
 var centerMsg = new Kinetic.Text({
@@ -535,3 +537,5 @@ centerMsgAnim.start();
 			// ctx.fillText("Waiting for other players...", 80, 260);		
 		// }
 	// };
+
+

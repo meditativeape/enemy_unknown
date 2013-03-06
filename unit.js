@@ -55,7 +55,7 @@ Unit.prototype.draw = function(/*Point*/p, /*int*/height) {
 	var unitToDraw = new Kinetic.Image({
 		image: this.image,
 		x: Math.floor(p.X - this.image.width/2),
-		y: Math.floor(p.Y + height/4 - this.image.height)
+		y: Math.floor(p.Y + height/2 - this.image.height)
 	});
 	return unitToDraw;
 };
@@ -111,8 +111,8 @@ Unit.prototype.gotHit = function(/*Unit*/enemy){
 	//Earth beats fire and air
 	//Fire beats air and wood
 	//Air beats wood and water
-	var damage = enemy.buff?enemy.attack+enemy.buff.attackbuff:enemy.attack;
-	var defense = this.buff?this.defense+this.buff.defensebuff:this.defense;
+	var damage = enemy.buff?(enemy.attack+enemy.buff.attackBuff):enemy.attack;
+	var defense = this.buff?(this.defense*this.buff.defenseBuff):this.defense;
 	//Calculate type advantage
     var flag = (this.type-enemy.type)%5;
 	if(flag<0){

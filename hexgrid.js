@@ -277,15 +277,10 @@ function Hexagon(id, mx, my, x, y, spec, camera, map, callback) {
 		// add hexagon
 		var hexagonConfig = {
 			points:[],
-			stroke:'rgb(255, 165, 0)',
+			stroke:'rgb(255,255,255)',
 		};
 		for (var i = 0; i < this.Points.length; i++) {
 			hexagonConfig.points.push([this.Points[i].X-this.camera.x, this.Points[i].Y-this.camera.y]);
-		}
-		if (this.reachable) {
-			hexagonConfig.fill = 'rgba(238, 130, 238, 0.3)';
-		} else if (this.attackable) {
-			hexagonConfig.fill = 'rgba(130, 238, 130, 0.3)';
 		}
 		this.hexagonToDraw = new Kinetic.Polygon(hexagonConfig);
 		if (this.callback) {
@@ -344,9 +339,9 @@ Hexagon.prototype.update = function() {
 	this.hexagonToDraw.setPoints(points);
 	this.hexagonToDraw.setFill('transparent');
 	if (this.reachable) {
-		this.hexagonToDraw.setFill('rgba(238, 130, 238, 0.3)');
+		this.hexagonToDraw.setFill('rgba(120, 255,120, 0.3)');
 	} else if (this.attackable) {
-		this.hexagonToDraw.setFill('rgba(130, 238, 130, 0.3)');
+		this.hexagonToDraw.setFill('rgba(255, 0, 0, 0.3)');
 	}
 	
 	// add/update terrain

@@ -32,6 +32,15 @@
     game_server.onMessage = function(client,message) {
 		   //the client should be in a game, so
             //we can tell that game to handle the input
+		if(client && !client.game){
+					console.log(message);
+			var keywords = message.split(" ");
+			if(parseInt(keywords[0])==0){
+				if(keywords[1] == "join"){
+					game_server.findGame(client,parseInt(keywords[2]));
+				}
+			}
+		}
 		if(client && client.game) {
             client.game.handleClientInput(client, message);
         }
