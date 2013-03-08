@@ -29,7 +29,7 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 
 /* The game_core_server class */
 
-    var game_core_server = module.exports = function(playerList, gameid, type, server){
+    var game_core_server = module.exports = function(playerList, gameid, type, mapName, server){
 
         // Store the players
         this.players = playerList;
@@ -39,6 +39,8 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 		this.id = gameid;
 		// Store the type of the game. One of 0, 1, 2, 3.
 		this.type = type;
+		// Store the map name of the game
+		this.mapName = mapName;
         // gameserver
         this.server = server;
 		// Game has not started yet
@@ -263,7 +265,7 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 		this.started = true;
 		console.log(":: " + this.id.substring(0,8) + " :: Initializing game...");
 		for (var i in this.players) {
-			this.sendMsg(this.players[i], "0 init " + "default " + i + " " + i + " " + this.type);  // TODO: hardcoded!
+			this.sendMsg(this.players[i], "0 init " + mapName + " " + i + " " + i + " " + this.type);  // TODO: 1v1 only!
 			// this.sendMsg(this.players[i], "resource " + CONSTANTS.init_resource);
 		}
 		
@@ -282,15 +284,15 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 		
 		// hardcoded game instance for demo!
 		var pieces = [];
-		this.hexgrid = new BuildMap("default");
+		this.hexgrid = new BuildMap(mapName);
 		
 		// initialize terrain
 		var terrain = this.hexgrid.scenario.terrain;
 		for (var i = 0; i < terrain.length; i++)
 			for (var j = 0; j < terrain[i].length; j++) {
 				switch (terrain[i][j]) {
-				case "water":
-					this.hexgrid.addTerrain(CONSTANTS.waterTerrain, new helper.Coordinate(i, j));
+				case "thron":
+					this.hexgrid.addTerrain(CONSTANTS.thronTerrain, new helper.Coordinate(i, j));
 					break;
 				case "flag":
 					this.hexgrid.addTerrain(CONSTANTS.flagTerrain, new helper.Coordinate(i, j));
@@ -299,32 +301,25 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 			}
 			
 		// 2 players
-		var types = [0, 1, 2, 3, 4];
-		var P1sp = this.hexgrid.scenario.startpoint[1];
-		shuffle(types);
-		for (var i = 0; i < 5; i++) {
-			var u = new Unit(0, 0, 100, types[i], new helper.Coordinate(P1sp[i][0], P1sp[i][1]), null);
-			pieces.push(u);
-			this.hexgrid.addUnit(u, new helper.Coordinate(P1sp[i][0], P1sp[i][1]));
+		for (i = 0; i < 2; i++) {
+			var types = this.hexgrid.scenario.startunits[i];
+			shuffle(types);
+			var sp = this.hexgrid.scenario.startpoint[i];
+			for (var j = 0; j < types.length; j++) {
+				var u = new Unit(0, 0, 100, types[j], new helper.Coordinate(sp[j][0], sp[j][1]), null);
+				pieces.push(u);
+				this.hexgrid.addUnit(u, new helper.Coordinate(sp[j][0], sp[j][1]));
+			}
+			this.units.push(types.length);
 		}
-		this.units.push(5);
 		
-		var P2sp = this.hexgrid.scenario.startpoint[2];
-		shuffle(types);
-		for (var i = 0; i < 5; i++) {
-			var u = new Unit(1, 1, 100, types[i], new helper.Coordinate(P2sp[i][0], P2sp[i][1]), null);
-			pieces.push(u);
-			this.hexgrid.addUnit(u, new helper.Coordinate(P2sp[i][0], P2sp[i][1]));
-		}
-		this.units.push(5);
-		
-		// do not work for 2v2 yet
+		// TODO: do not work for 2v2 yet
 		var k = 0;
 		for (var i in this.players) {
 			this.players[i].team = k++;
 			// this.players[i].resource = CONSTANTS.init_resource;
 			for (var j in pieces) {
-				if (this.players[i].team == pieces[j].team)
+				if (this.hexgrid.scenario.revealtype || this.players[i].team == pieces[j].team)
 					this.sendMsg(this.players[i], "1 add {0} {1} {2} {3} {4}".format([pieces[j].player, pieces[j].team, pieces[j].type, pieces[j].x, pieces[j].y]));
 				else
 					this.sendMsg(this.players[i], "1 add {0} {1} {2} {3} {4}".format([pieces[j].player, pieces[j].team, 5, pieces[j].x, pieces[j].y]));

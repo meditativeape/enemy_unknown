@@ -42,9 +42,10 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 
 	var game_core_client = function() {
 	
-		// Container for all unit images and animations
-		// 0:blue, 1:yellow, 2:red, 3:green
+		// Container for all unit images
+		// 0:red, 1:yellow, 2:blue, 3:green
 		this.sprites = [[], [], [], []];
+		// Container for all unit cooldown images
 		this.cooldown = [[], [], [], []];
 		this.last_click_coord = null;
 		this.background = null;
@@ -66,7 +67,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 	}
 
 // load assets
-	game_core_client.prototype.load_assets = function(/*int*/ senario,/*int*/type ) {
+	game_core_client.prototype.load_assets = function(/*int*/ scenario,/*int*/type ) {
 
 		var files_loaded = 0;
 		
@@ -87,14 +88,14 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		var isAppLoaded = function() {
 			files_loaded++;
 			if (files_loaded >= 39) {
-				gc.initiate(senario,type);
+				gc.initiate(scenario,type);
 			}
 		}
 		
 		// load sprites
 		this.background = load_image("sprites\\bg1.png");
 		this.flagImg = load_image("sprites\\flag.png");
-		this.waterImg = load_image("sprites\\throns.png");
+		this.thronImg = load_image("sprites\\thron.png");
 
 		this.sprites[0][0] = load_image("sprites\\hunter3_red.png");
 		this.sprites[0][1] = load_image("sprites\\wolf3_red.png");
@@ -141,7 +142,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		this.cooldown[1][5] = load_image("sprites\\UNKNOWN3_YELLOW_CD2.png");
 		
 		//Add terrain images.
-		CONSTANTS.waterTerrain.image = this.waterImg;
+		CONSTANTS.thronTerrain.image = this.thronImg;
 		CONSTANTS.flagTerrain.image = this.flagImg;
 
 	};
@@ -176,7 +177,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				playSound('sounds\\forest.mp3');
 				break;
 			case "end":
-									if (this.countdownTimer){
+					if (this.countdownTimer){
 						window.clearInterval(this.countdownTimer);
 					}
 					this.capping = 0;
@@ -279,11 +280,11 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		}
 	}; 
 	
-	game_core_client.prototype.initiate = function(/*int*/senario ,/*int*/ type){  //Sever connection functionality..
+	game_core_client.prototype.initiate = function(/*string*/scenario ,/*int*/ type){  //Server connection functionality..
 	    //Store a local reference to our connection to the server
         this.socket = io.connect();
 		
-		this.socket.send('0 join '+ type + ' '+ senario);
+		this.socket.send('0 join '+ type + ' '+ scenario);
 		
 		//When we connect, we are not 'connected' until we have a server id
 		//and are placed in a game by the server. The server sends us a message for that.
@@ -401,8 +402,8 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		for (var i = 0; i < terrain.length; i++)
 			for (var j = 0; j < terrain[i].length; j++) {
 				switch (terrain[i][j]) {
-				case "water":
-					this.hexgrid.addTerrain(CONSTANTS.waterTerrain, new Coordinate(i, j));
+				case "thron":
+					this.hexgrid.addTerrain(CONSTANTS.thronTerrain, new Coordinate(i, j));
 					break;
 				case "flag":
 					this.hexgrid.addTerrain(CONSTANTS.flagTerrain, new Coordinate(i, j));

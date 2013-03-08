@@ -284,7 +284,8 @@ function Hexagon(id, mx, my, x, y, spec, camera, map, callback) {
 		if (this.callback) {
 			var me = this;
 			this.hexagonToDraw.on('click', function(event){
-				me.callback(new Coordinate(me.matrixx, me.matrixy));
+				if (event.which == 1)  // only works with left click
+					me.callback(new Coordinate(me.matrixx, me.matrixy));
 			});
 		}
 		this.map.hexGroup.add(this.hexagonToDraw);
