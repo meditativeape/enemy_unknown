@@ -94,9 +94,9 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		
 		// load sprites
 		this.background = load_image("sprites\\bg1.png");
-		this.flagImg = load_image("sprites\\flag.png");
+		this.flagImg = load_image("sprites\\tile-flag.png");
 		this.thronImg = load_image("sprites\\thron.png");
-		this.whokillswhoImg = load_image("sprites\\whokillswhocolor.png");
+		this.whokillswhoImg = load_image("sprites\\whokillswhocolor1.png");
 
 		this.sprites[0][0] = load_image("sprites\\hunter3_red.png");
 		this.sprites[0][1] = load_image("sprites\\wolf3_red.png");
