@@ -87,7 +87,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		
 		var isAppLoaded = function() {
 			files_loaded++;
-			if (files_loaded >= 39) {
+			if (files_loaded >= 40) {
 				gc.initiate(scenario,type);
 			}
 		}
@@ -96,6 +96,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		this.background = load_image("sprites\\bg1.png");
 		this.flagImg = load_image("sprites\\flag.png");
 		this.thronImg = load_image("sprites\\thron.png");
+		this.whokillswhoImg = load_image("sprites\\whokillswhocolor.png");
 
 		this.sprites[0][0] = load_image("sprites\\hunter3_red.png");
 		this.sprites[0][1] = load_image("sprites\\wolf3_red.png");
@@ -393,6 +394,13 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				gc.camera.isMovingDown = false;
 			}
 		});
+		
+		// who kills whom image
+		UILayer.add(new Kinetic.Image({
+			x: CONSTANTS.width - this.whokillswhoImg.width,
+			y: 0,
+			image: this.whokillswhoImg
+		}));
 		
 		// hard-coded game instance for demo!!!
 		this.camera = new BuildCamera([this.background.width, this.background.height], 15, this.background, mapLayer);
