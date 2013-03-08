@@ -9,6 +9,8 @@ var waiting = function(){
 		started = true;
 		waitingScreen.style.visibility = "visible";
 		levelMenu.style.visibility = "hidden";
+		loseMenu.style.visibility = "hidden";
+		winMenu.style.visibility = "hidden";
 		
 	}
 }
@@ -17,11 +19,20 @@ var started = false;
 var selectLevel = function(){
 	levelMenu.style.visibility = "visible";
 	startMenu.style.visibility = "hidden";
+	howToMenu.style.visibility = "hidden";
+	loseMenu.style.visibility = "hidden";
+	winMenu.style.visibility = "hidden";
 }
 
-var gameEnded = function(/*boolean*/){
+
+var gameEnded = function(/*boolean*/winner){
 	container.style.visibility = "hidden";
-	endGameMenu.style.visibility = "visible";
+	started = false;
+	if(winner){
+		winMenu.style.visibility = "visible";
+	}else{
+		loseMenu.style.visibility = "visible";
+	}
 }
 
 var start = function(){
@@ -29,7 +40,13 @@ var start = function(){
 	waitingScreen.style.visibility = "hidden";
 }
 
+var howTo = function(){
+	howToMenu.style.visibility = "visible";
+	startMenu.style.visibility = "hidden";
+}
+
 var menuBack = function(){
 	levelMenu.style.visibility = "hidden";
+	howToMenu.style.visibility = "hidden";
 	startMenu.style.visibility = "visible";
 }

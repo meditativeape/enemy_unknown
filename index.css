@@ -6,7 +6,7 @@ html , body {
 	padding: 0;
 }
 
-#container {
+.center{
 	height : 600px;
 	margin: auto;
 	left:0;
@@ -16,44 +16,76 @@ html , body {
 	position: absolute;
 	width : 800px;
 	z-index:100;
+}
+
+.button{
+	width: 120px;
+	font-family: Georgia, "Times New Roman", Times, serif;
+	font-size:14px;
+	color: #ffffff;
+	padding: 5px 5px;
+	background: -moz-linear-gradient(
+		top,
+		#6b58ff 0%,
+		#5a24a1);
+	background: -webkit-gradient(
+		linear, left top, left bottom, 
+		from(#6b58ff),
+		to(#5a24a1));
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	border-radius: 10px;
+	border: 3px solid #6b57ff;
+}
+.button:hover{
+	width: 120px;
+	font-family: Georgia, "Times New Roman", Times, serif;
+	font-size:14px;
+	color: #ffffff;
+	padding: 5px 5px;
+	background: -moz-linear-gradient(
+		top,
+		#441d63 0%,
+		#3a0039);
+	background: -webkit-gradient(
+		linear, left top, left bottom, 
+		from(#441d63),
+		to(#3a0039));
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	border-radius: 10px;
+	border: 3px solid #6b57ff;
+}
+
+.option {
+	font-family: Georgia, "Times New Roman", Times, serif;
+	font-size:14px;
+}
+
+#container {
 	visibility: hidden;
 }
 
 #startMenu {
-	height : 600px;
-	margin: auto;
-	left:0;
-	right:0;
-	top:0;
-	bottom:0;
-	position: absolute;
-	width : 800px;
-	z-index:100;
+	visibility: visible;
 }
 
-#levelMenu {
-	height : 600px;
-	margin: auto;
-	left:0;
-	right:0;
-	top:0;
-	bottom:0;
-	position: absolute;
-	width : 800px;
-	z-index:100;
+
+#howToMenu {
 	visibility: hidden;
 }
 
-#endGameMenu {
-	height : 600px;
-	margin: auto;
-	left:0;
-	right:0;
-	top:0;
-	bottom:0;
-	position: absolute;
-	width : 800px;
-	z-index:100;
+#levelMenu {
+	visibility: hidden;
+	font-family: Georgia, "Times New Roman", Times, serif;
+	font-size:14px;
+}
+
+#winMenu {
+	visibility: hidden;
+}
+
+#loseMenu {
 	visibility: hidden;
 }
 
@@ -62,15 +94,5 @@ html , body {
 }
 
 #waitingScreen {
-	height : 600px;
-	margin: auto;
-	left:0;
-	right:0;
-	top:0;
-	bottom:0;
-	position: absolute;
-	width : 800px;
-	z-index:100;
 	visibility: hidden;
 }
-

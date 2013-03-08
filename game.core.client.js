@@ -184,7 +184,11 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 					this.capping = 0;
 					this.winner = parseInt(keywords[2]);
 					this.alive = false;
-					//gameEnded();
+					if (gc.winner == gc.team){
+						gameEnded(true);
+					} else {
+						gameEnded(false);
+					}
 				break;
 			}
 			break;

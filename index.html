@@ -13,14 +13,40 @@
 		<script type="text/javascript" src="/socket.io/socket.io.js"></script>
 		
 		<script type="text/javascript" src="lib/kinetic-v4.3.3.js"></script>
-
-	</head>
+	<script src="SpryAssets/SpryAccordion.js" type="text/javascript"></script>
+    <link href="SpryAssets/SpryAccordion.css" rel="stylesheet" type="text/css">
+</head>
 
 	<body>
     <div id="sound"></div>
-		<div id="container"></div>
-        <div id="waitingScreen"><img src="sprites/introanimation2.gif" width="800" height="600" alt="waiting for other players"></div>
-        <div id="startMenu"><table width="200" border="0" align="center">
+		<div class="center" id="container"></div>
+    <div class="center" id="howToMenu"><table border="0" align="center">
+  <tr>
+    <td>      <div id="howToPlay" class="Accordion" tabindex="0">
+        <div class="AccordionPanel">
+          <div class="AccordionPanelTab">How to move camera:</div>
+          <div class="AccordionPanelContent"><img src="sprites/howtoplaycamera.gif" width="600" height="300" alt="Move camera"></div>
+        </div>
+        <div class="AccordionPanel">
+          <div class="AccordionPanelTab">How to move unit:</div>
+          <div class="AccordionPanelContent"><img src="sprites/howtoplaymoveattack.gif" width="600" height="300" alt="Move unit"></div>
+        </div>
+</div></td>
+  </tr>
+  <tr>
+    <td align="center"><button class="button" onclick="selectLevel()">Play</button></td>
+  </tr>
+    <tr>
+    <td align="center"><button class="button" onclick="menuBack()">Back</button></td>
+  </tr>
+
+</table>
+
+
+    </div>
+    </div>
+    <div class="center" id="waitingScreen"><img src="sprites/introanimation2.gif" width="800" height="600" alt="waiting for other players"></div>
+        <div class="center" id="startMenu"><table border="0" align="center">
 		  <tr>
 			<td><img src="sprites/introanimationgif1.gif" width="400" height="125" alt="Enemy Unknown"></td>
 			</tr>
@@ -28,29 +54,29 @@
 		    <td align="center">&nbsp;</td>
 	      </tr>
 		  <tr>
-			<td align="center"><button onclick="selectLevel()">Play</button></td>
+			<td align="center"><button class="button" onclick="selectLevel()">Play</button></td>
 		  </tr>
 		  <tr>
 		    <td align="center">&nbsp;</td>
 	      </tr>
 		  <tr>
-			<td align="center"><button onclick="">How to Play</button></td>
+			<td align="center"><button class="button" onclick="howTo()">How to play</button></td>
 		  </tr>
 		  <tr>
 		    <td align="center">&nbsp;</td>
 	      </tr>
 		  <tr>
-		    <td align="center"><button onclick="">High Score</button></td>
+		    <td align="center"><button class="button" onclick="">High Score</button></td>
 	      </tr>
 		  <tr>
 		    <td align="center">&nbsp;</td>
 	      </tr>
 		  <tr>
-			<td align="center"><button onclick="">About</button></td>
+			<td align="center"><button class="button" onclick="">About</button></td>
 			</tr>
 		</table>
 		</div>
-				<div id="levelMenu"><table width="200" border="0" align="center">
+				<div class="center" id="levelMenu"><table border="0" align="center">
 		  <tr>
 			<td><img src="sprites/introanimationgif1.gif" width="400" height="125" alt="Enemy Unknown"></td>
 			</tr>
@@ -58,7 +84,7 @@
 		    <td align="center">&nbsp;</td>
 	      </tr>
 		  <tr>
-			<td>Senario:&nbsp;<select name="scenario" id="scenario">
+			<td>Senario:&nbsp;<select name="scenario" class="option" id="scenario">
 			  <option value="slayer">Slayer</option>
 			  <option value="tutorial_1">Tutorial</option>
 			  <option value="captureflag">Capture the Flag</option>
@@ -68,7 +94,7 @@
 		    <td align="center">&nbsp;</td>
 	      </tr>
 		  <tr>
-			<td>Type:&nbsp;<select name="type" id="type">
+			<td>Type:&nbsp;<select name="type" class="option" id="type">
 			  <option value="0">1vs1</option>
 			</select></td>
 		  </tr>
@@ -76,35 +102,50 @@
 		    <td align="center">&nbsp;</td>
 	      </tr>
 		  <tr>
-			<td align="center"><button onclick="waiting()">Start!</button></td>
+			<td align="center"><button class="button" onclick="waiting()">Start!</button></td>
 			</tr>
             		  <tr>
 		    <td align="center">&nbsp;</td>
 	      </tr>
            <tr>
-			<td align="center"><button onclick="menuBack()">Back</button></td>
+			<td align="center"><button class="button" onclick="menuBack()">Back</button></td>
 			</tr>
 		</table>
 </div>
 		</div>
-				<div id="endGameMenu"><table width="200" border="1" align="center">
+				<div class="center" id="winMenu"><table border="0" align="center">
 		  <tr>
-			<td>Enemy Unknown</td>
+			<td><img src="sprites/youwin1.png" width="400" height="300" alt="You win"></td>
 			</tr>
 		  <tr>
-			<td><</td>
+			<td align="center"><button class="button" onclick="waiting()">Play Again</button></td>
 		  </tr>
 		  <tr>
-			<td></td>
+			<td align="center"><button class="button" onclick="selectLevel()">Select Senario</button></td>
 		  </tr>
 		  <tr>
-			<td></td>
+			<td align="center"><button class="button" onclick=" ">High Scores</button></td>
+			</tr>
+		</table>
+		</div>
+        <div class="center" id="loseMenu"><table border="0" align="center">
+		  <tr>
+			<td><img src="sprites/youlose.png" width="400" height="300" alt="You lose"></td>
+		  </tr>
+		  <tr>
+			<td align="center"><button class="button" onclick="waiting()">Play Again</button></td>
+		  </tr>
+		  <tr>
+			<td align="center"><button class="button" onclick="selectLevel()">Select Senario</button></td>
+		  </tr>
+		  <tr>
+			<td align="center"><button class="button" onclick=" ">High Scores</button></td>
 			</tr>
 		</table>
 		</div>
 				
 				<!-- Game code -->
-		<script type="text/javascript" src="menu.js"></script>
+	<script type="text/javascript" src="menu.js"></script>
 	
 		<script type="text/javascript" src="helper.js"></script>
 		<script type="text/javascript" src="scenarios.js"></script>
@@ -116,6 +157,10 @@
 
 		<script type="text/javascript" src="terrain.js"></script>
 		<script type="text/javascript" src="game.core.client.js"></script>
+    <script type="text/javascript">
+var howToPlay = new Spry.Widget.Accordion("howToPlay");
+
+    </script>
 	</body>
 
 </html>
