@@ -19,7 +19,7 @@ var selectLevel = function(){
 	startMenu.style.visibility = "hidden";
 }
 
-var gameEnded = function(){
+var gameEnded = function(/*boolean*/){
 	container.style.visibility = "hidden";
 	endGameMenu.style.visibility = "visible";
 }
