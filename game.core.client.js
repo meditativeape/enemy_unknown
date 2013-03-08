@@ -432,8 +432,6 @@ stage.add(mapLayer);
 stage.add(UILayer);
 stage.add(msgLayer);
 
-// create game client
-var gc = new game_core_client();
 
 // animation to show text message at the center of canvas
 var centerMsg = new Kinetic.Text({
