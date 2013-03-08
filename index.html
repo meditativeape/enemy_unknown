@@ -2,7 +2,7 @@
 <html>
 	<head>
 
-		<title>Enemy: Unknown</title>
+		<title>Enemy: &lt;Unknown&gt;</title>
 
 		<!-- Load style sheet -->
 		<link href="index.css" media="screen" rel="stylesheet" type="text/css">
@@ -19,42 +19,73 @@
 	<body>
     <div id="sound"></div>
 		<div id="container"></div>
-        <div id="startMenu"><table width="200" border="1" align="center">
+        <div id="waitingScreen"><img src="sprites/introanimation2.gif" width="800" height="600" alt="waiting for other players"></div>
+        <div id="startMenu"><table width="200" border="0" align="center">
 		  <tr>
-			<td>Enemy Unknown</td>
+			<td><img src="sprites/introanimationgif1.gif" width="400" height="125" alt="Enemy Unknown"></td>
 			</tr>
 		  <tr>
-			<td><button onclick="selectLevel()">Start!</button></td>
+		    <td align="center">&nbsp;</td>
+	      </tr>
+		  <tr>
+			<td align="center"><button onclick="selectLevel()">Play</button></td>
 		  </tr>
 		  <tr>
-			<td><button onclick="">High Score</button></td>
+		    <td align="center">&nbsp;</td>
+	      </tr>
+		  <tr>
+			<td align="center"><button onclick="">How to Play</button></td>
 		  </tr>
 		  <tr>
-			<td><button onclick="">How to Play</button></td>
+		    <td align="center">&nbsp;</td>
+	      </tr>
+		  <tr>
+		    <td align="center"><button onclick="">High Score</button></td>
+	      </tr>
+		  <tr>
+		    <td align="center">&nbsp;</td>
+	      </tr>
+		  <tr>
+			<td align="center"><button onclick="">About</button></td>
 			</tr>
 		</table>
 		</div>
-				<div id="levelMenu"><table width="200" border="1" align="center">
+				<div id="levelMenu"><table width="200" border="0" align="center">
 		  <tr>
-			<td>Enemy Unknown</td>
+			<td><img src="sprites/introanimationgif1.gif" width="400" height="125" alt="Enemy Unknown"></td>
 			</tr>
+            		  <tr>
+		    <td align="center">&nbsp;</td>
+	      </tr>
 		  <tr>
-			<td>Senario:<select name="senario" id="senario">
-			  <option value="0">Tutorial</option>
-			  <option value="1">Slayer</option>
+			<td>Senario:&nbsp;<select name="scenario" id="scenario">
+			  <option value="0">Slayer</option>
+			  <option value="1">Tutorial</option>
 			  <option value="2">Capture the Flag</option>
 			</select></td>
 		  </tr>
+          		  <tr>
+		    <td align="center">&nbsp;</td>
+	      </tr>
 		  <tr>
-			<td>Type:<select name="type" id="type">
+			<td>Type:&nbsp;<select name="type" id="type">
 			  <option value="0">1vs1</option>
 			</select></td>
 		  </tr>
+          		  <tr>
+		    <td align="center">&nbsp;</td>
+	      </tr>
 		  <tr>
-			<td><button onclick="start()">Start!</button></td>
+			<td align="center"><button onclick="waiting()">Start!</button></td>
+			</tr>
+            		  <tr>
+		    <td align="center">&nbsp;</td>
+	      </tr>
+           <tr>
+			<td align="center"><button onclick="menuBack()">Back</button></td>
 			</tr>
 		</table>
-		</div>
+</div>
 		</div>
 				<div id="endGameMenu"><table width="200" border="1" align="center">
 		  <tr>

@@ -1,5 +1,5 @@
 // JavaScript Document
-var start = function(){
+var waiting = function(){
 	if(!started){
 		var sen = document.getElementById('senario');
 		var typ = document.getElementById('type');
@@ -7,7 +7,7 @@ var start = function(){
 		var typSelection = typ.options[typ.selectedIndex].value;
 		gc.load_assets(parseInt(senSelection),parseInt(typSelection));
 		started = true;
-		container.style.visibility = "visible";
+		waitingScreen.style.visibility = "visible";
 		levelMenu.style.visibility = "hidden";
 		
 	}
@@ -22,4 +22,14 @@ var selectLevel = function(){
 var gameEnded = function(){
 	container.style.visibility = "hidden";
 	endGameMenu.style.visibility = "visible";
+}
+
+var start = function(){
+	container.style.visibility = "visible";
+	waitingScreen.style.visibility = "hidden";
+}
+
+var menuBack = function(){
+	levelMenu.style.visibility = "hidden";
+	startMenu.style.visibility = "visible";
 }
