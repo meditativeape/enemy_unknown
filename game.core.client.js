@@ -179,17 +179,25 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				playSound('sounds\\forest.mp3');
 				break;
 			case "end":
-					if (this.countdownTimer){
-						window.clearInterval(this.countdownTimer);
-					}
-					this.capping = 0;
-					this.winner = parseInt(keywords[2]);
-					this.alive = false;
-					if (gc.winner == gc.team){
-						gameEnded(true);
-					} else {
-						gameEnded(false);
-					}
+				if (this.countdownTimer){
+					window.clearInterval(this.countdownTimer);
+				}
+				this.capping = 0;
+				this.winner = parseInt(keywords[2]);
+				this.alive = false;
+				// clear all layers
+				var layers = [mapLayer, UILayer, msgLayer];
+				for (var i in layers) {
+					var children = layers[i].getChildren();
+					for (var j in children)
+						children[j].destroy();
+				}
+				// switch back to menu
+				if (gc.winner == gc.team){
+					gameEnded(true);
+				} else {
+					gameEnded(false);
+				}
 				break;
 			}
 			break;
@@ -197,24 +205,24 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		case 1:  // game control messages
 			switch (keywords[1]) {
 			case "countdown":
-					var capteam = parseInt(keywords[2]);
-					if(!(keywords[2]==-1)){
-						if(this.team == capteam){
-							this.capping = 1;
-						}else{
-							this.capping = -1;
-						}
-						var self = this;
-						this.countdownTimer = window.setInterval(function(){
-							self.countdown--;
-						}
-						,1000);
+				var capteam = parseInt(keywords[2]);
+				if(!(keywords[2]==-1)){
+					if(this.team == capteam){
+						this.capping = 1;
 					}else{
-						window.clearInterval(this.countdownTimer);
-						this.countdown = 60;
-						this.capping = 0;
+						this.capping = -1;
 					}
-					break;
+					var self = this;
+					this.countdownTimer = window.setInterval(function(){
+						self.countdown--;
+					}
+					,1000);
+				}else{
+					window.clearInterval(this.countdownTimer);
+					this.countdown = 60;
+					this.capping = 0;
+				}
+				break;
 			case "add":
 				var sprite = this.sprites[parseInt(keywords[2])][parseInt(keywords[4])];
 				var cdImage = this.cooldown[parseInt(keywords[2])][parseInt(keywords[4])];
@@ -433,7 +441,8 @@ stage.add(UILayer);
 stage.add(msgLayer);
 
 // create game client
-var gc = new game_core_client();
+// var gc = new game_core_client();
+var gc;
 
 // animation to show text message at the center of canvas
 var centerMsg = new Kinetic.Text({
@@ -518,11 +527,11 @@ var centerMsgAnim = new Kinetic.Animation(function(frame) {
 		} 
 	}
 }, msgLayer);
-centerMsgAnim.start();
+// centerMsgAnim.start();
 
 //Helper function for playing sound
 function playSound(soundfile) {
- document.getElementById("sound").innerHTML=
- "<embed src=\""+soundfile+"\" hidden=\"true\" autostart=\"true\" loop=\"false\" />";
- }
+  document.getElementById("sound").innerHTML=
+  "<embed src=\""+soundfile+"\" hidden=\"true\" autostart=\"true\" loop=\"false\" />";
+}
 

@@ -29,7 +29,7 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 
 /* The game_core_server class */
 
-    var game_core_server = module.exports = function(playerList, gameid, type, scenario, server){
+    var game_core_server = module.exports = function(playerList, gameid, type, scenario){
 
         // Store the players
         this.players = playerList;
@@ -41,8 +41,6 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 		this.type = type;
 		// Store the map name of the game
 		this.scenario = scenario;
-        // gameserver
-        this.server = server;
 		// Game has not started yet
 		this.started = false;
 		// Our local game
@@ -356,5 +354,4 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 			this.sendMsg(this.players[i], "0 end " + winningTeam);
 			this.players[i].game = null;
 		}
-		this.server.endGame(this.id)
 	};

@@ -30,18 +30,17 @@
 
     //Relay messages from the client
     game_server.onMessage = function(client,message) {
-		   //the client should be in a game, so
-            //we can tell that game to handle the input
+		//the client should be in a game, so
+        //we can tell that game to handle the input
 		if(client && !client.game){
-					console.log(message);
+			console.log(":: server :: received a message: " + message);
 			var keywords = message.split(" ");
 			if(parseInt(keywords[0])==0){
 				if(keywords[1] == "join"){
 					game_server.findGame(client,parseInt(keywords[2]),keywords[3]);
 				}
 			}
-		}
-		if(client && client.game) {
+		} else if (client && client.game) {
             client.game.handleClientInput(client, message);
         }
 		
@@ -60,7 +59,7 @@
     game_server.createGame = function(player, type,scenario) {
 
         // Create a new game instance
-        var thegame = new game_core_server([player], UUID(), type,scenario, this);
+        var thegame = new game_core_server([player], UUID(), type, scenario);
 		
         // Store it in the list of game
         this.games.push(thegame);
@@ -79,20 +78,6 @@
         return thegame;
 
     }; // game_server.createGame
-	
-	
-	game_server.endGame = function(gameid){
-	
-		for (var i in this.games) {
-			if (this.games[i].gameid == gameid) {
-				this.games.splice(i, i+1);
-				this.game_count--;
-				this.log(':: server :: Game removed. There are now ' + this.game_count + ' games' );
-				break;
-			}
-		}
-        
-	}//game_server.endGame 
 
     game_server.findGame = function(player,type,scenario) {
 
@@ -142,6 +127,7 @@
 						this.log(':: server :: Starting game....');
                     	game_instance.startGame();
 						this.games.splice(gameid, gameid+1);
+						this.game_count--;
 					}
 					break;
                 } //if less than 2 players
