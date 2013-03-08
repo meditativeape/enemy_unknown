@@ -57,10 +57,10 @@
 	}
 
     // Define some required functions
-    game_server.createGame = function(player, type) {
+    game_server.createGame = function(player, type,scenario) {
 
         // Create a new game instance
-        var thegame = new game_core_server([player], UUID(), type, this);
+        var thegame = new game_core_server([player], UUID(), type,scenario, this);
 		
         // Store it in the list of game
         this.games.push(thegame);
@@ -122,7 +122,7 @@
 		
                     //get the game we are checking against
                 var game_instance = this.games[gameid];
-				if(game_instance.type != type) continue;
+				if(game_instance.type != type ||game_instance.scenario != scenario) continue;
 			
                     //If the game is a player short
 				var player_count = game_instance.players.length;
@@ -151,14 +151,14 @@
                 //we must create one
             if(!joined_a_game) {
 
-                this.createGame(player, type);
+                this.createGame(player, type,scenario);
 
             } //if no join already
 
         } else { //if there are any games at all
 
                 //no games? create one!
-            this.createGame(player,type);
+            this.createGame(player,type,scenario);
         }
 
     }; //game_server.findGame
