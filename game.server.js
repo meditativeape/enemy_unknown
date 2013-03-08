@@ -37,7 +37,7 @@
 			var keywords = message.split(" ");
 			if(parseInt(keywords[0])==0){
 				if(keywords[1] == "join"){
-					game_server.findGame(client,parseInt(keywords[2]),parseInt(keywords[3]));
+					game_server.findGame(client,parseInt(keywords[2]),keywords[3]);
 				}
 			}
 		}
@@ -94,7 +94,7 @@
         
 	}//game_server.endGame 
 
-    game_server.findGame = function(player,type,senario) {
+    game_server.findGame = function(player,type,scenario) {
 
 		var needed;
 		 if(type == 0){

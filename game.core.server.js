@@ -29,7 +29,7 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 
 /* The game_core_server class */
 
-    var game_core_server = module.exports = function(playerList, gameid, type, mapName, server){
+    var game_core_server = module.exports = function(playerList, gameid, type, scenario, server){
 
         // Store the players
         this.players = playerList;
@@ -40,7 +40,7 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 		// Store the type of the game. One of 0, 1, 2, 3.
 		this.type = type;
 		// Store the map name of the game
-		this.mapName = mapName;
+		this.scenario = scenario;
         // gameserver
         this.server = server;
 		// Game has not started yet
@@ -265,7 +265,7 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 		this.started = true;
 		console.log(":: " + this.id.substring(0,8) + " :: Initializing game...");
 		for (var i in this.players) {
-			this.sendMsg(this.players[i], "0 init " + mapName + " " + i + " " + i + " " + this.type);  // TODO: 1v1 only!
+			this.sendMsg(this.players[i], "0 init " + this.scenario + " " + i + " " + i + " " + this.type);  // TODO: 1v1 only!
 			// this.sendMsg(this.players[i], "resource " + CONSTANTS.init_resource);
 		}
 		
@@ -284,7 +284,7 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 		
 		// hardcoded game instance for demo!
 		var pieces = [];
-		this.hexgrid = new BuildMap(mapName);
+		this.hexgrid = new BuildMap(this.scenario);
 		
 		// initialize terrain
 		var terrain = this.hexgrid.scenario.terrain;
@@ -306,7 +306,7 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 			shuffle(types);
 			var sp = this.hexgrid.scenario.startpoint[i];
 			for (var j = 0; j < types.length; j++) {
-				var u = new Unit(0, 0, 100, types[j], new helper.Coordinate(sp[j][0], sp[j][1]), null);
+				var u = new Unit(i, i, 100, types[j], new helper.Coordinate(sp[j][0], sp[j][1]), null);
 				pieces.push(u);
 				this.hexgrid.addUnit(u, new helper.Coordinate(sp[j][0], sp[j][1]));
 			}
@@ -327,8 +327,10 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 		}
 		
 		console.log(":: " + this.id.substring(0,8) + " :: Game started!");
+		k = -1;
 		for (var i in this.players) {
-			this.sendMsg(this.players[i], "0 start {0} {1}".format([pieces[5*i].x, pieces[5*i].y]));
+			k += this.hexgrid.scenario.startunits[parseInt(i)].length;
+			this.sendMsg(this.players[i], "0 start {0} {1}".format([pieces[k].x, pieces[k].y]));
 		}
 	};
 	
