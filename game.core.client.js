@@ -193,7 +193,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 						children[j].destroy();
 				}
 				// switch back to menu
-				if (gc.winner == gc.team){
+				if (this.winner == this.team){
 					gameEnded(true);
 				} else {
 					gameEnded(false);
@@ -456,78 +456,67 @@ var centerMsg = new Kinetic.Text({
 });
 msgLayer.add(centerMsg);
 var centerMsgAnim = new Kinetic.Animation(function(frame) {
-	if (gc.started) {
-		if (gc.starting){
-			centerMsg.setText("Game has started");
-			centerMsg.setFill('white');
-			centerMsg.setX(CONSTANTS.width/4);
-			centerMsg.setY(CONSTANTS.height/2);
-			centerMsg.setFontSize(60);
-			centerMsg.setFontStyle('normal');
-			centerMsg.setFontFamily('Calibri');
-			// ctx.font = '30px Calibri';	
-			// ctx.fillText("Objective: Kill all enemy units.", canvas.width/4 + 60, canvas.height/2 + 60);
-			if (!msgLayer.isAncestorOf(centerMsg)) {
-				msgLayer.add(centerMsg);
-			}
-		} else if (gc.capping){
-			if (gc.capping == 1){
-				centerMsg.setText("Caputring flag: " + gc.countdown + " seconds until win.");
+	if (gc) {
+		if (gc.started) {
+			if (gc.starting){
+				centerMsg.setText("Game has started");
 				centerMsg.setFill('white');
 				centerMsg.setX(CONSTANTS.width/4);
 				centerMsg.setY(CONSTANTS.height/2);
-				centerMsg.setFontSize(30);
+				centerMsg.setFontSize(60);
+				centerMsg.setFontStyle('normal');
+				centerMsg.setFontFamily('Calibri');
+				// ctx.font = '30px Calibri';	
+				// ctx.fillText("Objective: Kill all enemy units.", canvas.width/4 + 60, canvas.height/2 + 60);
+				if (!msgLayer.isAncestorOf(centerMsg)) {
+					msgLayer.add(centerMsg);
+				}
+			} else if (gc.capping){  // TODO: hardcoded!
+				if (gc.capping == 1){
+					centerMsg.setText("Caputring flag: " + gc.countdown + " seconds until win.");
+					centerMsg.setFill('white');
+					centerMsg.setX(200);
+					centerMsg.setY(50);
+					centerMsg.setFontSize(28);
+					centerMsg.setFontStyle('normal');
+					centerMsg.setFontFamily('Calibri');
+					if (!msgLayer.isAncestorOf(centerMsg)) {
+						msgLayer.add(centerMsg);
+					}
+				} else {
+					centerMsg.setText("Defend flag: " + gc.countdown + " seconds until lose.");
+					centerMsg.setFill('white');
+					if (gc.countdown <= 10)
+						centerMsg.setFill('red');
+					centerMsg.setX(210);
+					centerMsg.setY(50);
+					centerMsg.setFontSize(28);
+					centerMsg.setFontStyle('normal');
+					centerMsg.setFontFamily('Calibri');
+					if (!msgLayer.isAncestorOf(centerMsg)) {
+						msgLayer.add(centerMsg);
+					}
+				}
+			} else if (!gc.alive && gc.winner === false){
+				centerMsg.setText("All your units are dead!");
+				centerMsg.setFill('white');
+				centerMsg.setX(CONSTANTS.width/4);
+				centerMsg.setY(CONSTANTS.height/2);
+				centerMsg.setFontSize(60);
 				centerMsg.setFontStyle('normal');
 				centerMsg.setFontFamily('Calibri');
 				if (!msgLayer.isAncestorOf(centerMsg)) {
 					msgLayer.add(centerMsg);
 				}
 			} else {
-				centerMsg.setText("Defend flag: " + gc.countdown + " seconds until lose.");
-				centerMsg.setFill('white');
-				centerMsg.setX(CONSTANTS.width/4);
-				centerMsg.setY(CONSTANTS.height/2);
-				centerMsg.setFontSize(30);
-				centerMsg.setFontStyle('normal');
-				centerMsg.setFontFamily('Calibri');
-				if (!msgLayer.isAncestorOf(centerMsg)) {
-					msgLayer.add(centerMsg);
+				if (msgLayer.isAncestorOf(centerMsg)) {
+					centerMsg.remove();
 				}
 			}
-		} else if (!gc.alive && gc.winner === false){
-			centerMsg.setText("All your units are dead!");
-			centerMsg.setFill('white');
-			centerMsg.setX(CONSTANTS.width/4);
-			centerMsg.setY(CONSTANTS.height/2);
-			centerMsg.setFontSize(60);
-			centerMsg.setFontStyle('normal');
-			centerMsg.setFontFamily('Calibri');
-			if (!msgLayer.isAncestorOf(centerMsg)) {
-				msgLayer.add(centerMsg);
-			}
-		} else if (!(gc.winner===false)){
-			if (gc.winner == gc.team){
-				centerMsg.setText("You have won!");
-			} else {
-				centerMsg.setText("You have lost.");
-			}
-			centerMsg.setFill('white');
-			centerMsg.setX(CONSTANTS.width/4);
-			centerMsg.setY(CONSTANTS.height/2);
-			centerMsg.setFontSize(60);
-			centerMsg.setFontStyle('normal');
-			centerMsg.setFontFamily('Calibri');
-			if (!msgLayer.isAncestorOf(centerMsg)) {
-				msgLayer.add(centerMsg);
-			}
-		} else {
-			if (msgLayer.isAncestorOf(centerMsg)) {
-				centerMsg.remove();
-			}
-		} 
+		}
 	}
 }, msgLayer);
-// centerMsgAnim.start();
+centerMsgAnim.start();
 
 //Helper function for playing sound
 function playSound(soundfile) {
