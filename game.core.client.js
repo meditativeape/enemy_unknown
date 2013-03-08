@@ -399,7 +399,8 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		UILayer.add(new Kinetic.Image({
 			x: CONSTANTS.width - this.whokillswhoImg.width,
 			y: 0,
-			image: this.whokillswhoImg
+			image: this.whokillswhoImg,
+			listening: false
 		}));
 		
 		// hard-coded game instance for demo!!!

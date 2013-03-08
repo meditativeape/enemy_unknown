@@ -47,6 +47,58 @@ var Scenarios = {
 		"revealtype": true
 	},
 	
+	"slayer": {
+		"size": {"x": 1500, "y": 1200, "numRows": 11, "numCols": 11},
+		"offset": 40,
+		"terrain": (function(){
+			var terrain = [];
+			// all initialized to null
+			for (var i = 0; i < 11; i++) {
+				terrain.push([]);
+				for (var j = 0; j < 11; j++) {
+					terrain[i][j] = null;
+				}
+			}
+			// add throns
+			terrain[2][6] = "thron";
+			terrain[2][7] = "thron";
+			terrain[2][8] = "thron";
+			terrain[3][5] = "thron";
+			terrain[3][6] = "thron";
+			terrain[3][7] = "thron";
+			terrain[3][8] = "thron";
+			terrain[4][4] = "thron";
+			terrain[4][7] = "thron";
+			terrain[4][8] = "thron";
+			terrain[5][3] = "thron";
+			terrain[5][7] = "thron";
+			terrain[6][2] = "thron";
+			terrain[6][3] = "thron";
+			terrain[6][6] = "thron";
+			terrain[7][2] = "thron";
+			terrain[7][3] = "thron";
+			terrain[7][4] = "thron";
+			terrain[7][5] = "thron";
+			terrain[8][2] = "thron";
+			terrain[8][3] = "thron";
+			terrain[8][4] = "thron";
+			return terrain;
+		})(),
+		"startpoint": {
+			0: [[0,4], [1,3], [2,2], [3,1], [4,0]],
+			1: [[6,10], [7,9], [8,8], [9,7], [10,6]],
+			2: [],
+			3: []
+		},
+		"startunits": {
+			0: [0, 1, 2, 3, 4],
+			1: [0, 1, 2, 3, 4],
+			2: [0, 1, 2, 3, 4],
+			3: [0, 1, 2, 3, 4]
+		},
+		"revealtype": false
+	},
+	
 	"captureflag": {
 		"size": {"x": 1500, "y": 1200, "numRows": 11, "numCols": 11},
 		"offset": 40,
