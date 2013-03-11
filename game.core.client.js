@@ -98,47 +98,47 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		this.thronImg = load_image("sprites\\thron.png");
 		this.whokillswhoImg = load_image("sprites\\whokillswhocolor1.png");
 
-		this.sprites[0][0] = load_image("sprites\\hunter3_red.png");
-		this.sprites[0][1] = load_image("sprites\\wolf3_red.png");
-		this.sprites[0][2] = load_image("sprites\\zombie3_red.png");
-		this.sprites[0][3] = load_image("sprites\\wizard3_red.png");
+		this.sprites[0][0] = load_image("sprites\\wizard3_red.png");
+		this.sprites[0][1] = load_image("sprites\\zombie3_red.png");
+		this.sprites[0][2] = load_image("sprites\\hunter3_red.png");
+		this.sprites[0][3] = load_image("sprites\\wolf3_red.png");
 		this.sprites[0][4] = load_image("sprites\\vampire3_red.png");
 		this.sprites[0][5] = load_image("sprites\\unknown3_red.png");
 		
-		this.sprites[1][0] = load_image("sprites\\hunter3_yellow.png");
-		this.sprites[1][1] = load_image("sprites\\wolf3_yellow.png");
-		this.sprites[1][2] = load_image("sprites\\zombie3_yellow.png");
-		this.sprites[1][3] = load_image("sprites\\wizard3_yellow.png");
+		this.sprites[1][0] = load_image("sprites\\wizard3_yellow.png");
+		this.sprites[1][1] = load_image("sprites\\zombie3_yellow.png");
+		this.sprites[1][2] = load_image("sprites\\hunter3_yellow.png");
+		this.sprites[1][3] = load_image("sprites\\wolf3_yellow.png");
 		this.sprites[1][4] = load_image("sprites\\vampire3_yellow.png");
 		this.sprites[1][5] = load_image("sprites\\unknown3_yellow.png");
 		
-		this.sprites[2][0] = load_image("sprites\\hunter3_blue.png");
-		this.sprites[2][1] = load_image("sprites\\wolf3_blue.png");
-		this.sprites[2][2] = load_image("sprites\\zombie3_blue.png");
-		this.sprites[2][3] = load_image("sprites\\wizard3_blue.png");
+		this.sprites[2][0] = load_image("sprites\\wizard3_blue.png");
+		this.sprites[2][1] = load_image("sprites\\zombie3_blue.png");
+		this.sprites[2][2] = load_image("sprites\\hunter3_blue.png");
+		this.sprites[2][3] = load_image("sprites\\wolf3_blue.png");
 		this.sprites[2][4] = load_image("sprites\\vampire3_blue.png");
 		this.sprites[2][5] = load_image("sprites\\unknown3_blue.png");
 		
-		this.sprites[3][0] = load_image("sprites\\hunter3_green.png");
-		this.sprites[3][1] = load_image("sprites\\wolf3_green.png");
-		this.sprites[3][2] = load_image("sprites\\zombie3_green.png");
-		this.sprites[3][3] = load_image("sprites\\wizard3_green.png");
+		this.sprites[3][0] = load_image("sprites\\wizard3_green.png");
+		this.sprites[3][1] = load_image("sprites\\zombie3_green.png");
+		this.sprites[3][2] = load_image("sprites\\hunter3_green.png");
+		this.sprites[3][3] = load_image("sprites\\wolf3_green.png");
 		this.sprites[3][4] = load_image("sprites\\vampire3_green.png");
 		this.sprites[3][5] = load_image("sprites\\unknown3_green.png");
 
 		// load cooldown spritesheetss
 		
-		this.cooldown[0][0] = load_image("sprites\\HUNTER3_RED_CD2.png");
-		this.cooldown[0][1] = load_image("sprites\\WOLF3_RED_CD2.png");
-		this.cooldown[0][2] = load_image("sprites\\ZOMBIE3_RED_CD2.png");
-		this.cooldown[0][3] = load_image("sprites\\WIZARD3_RED_CD2.png");
+		this.cooldown[0][0] = load_image("sprites\\WIZARD3_RED_CD2.png");
+		this.cooldown[0][1] = load_image("sprites\\ZOMBIE3_RED_CD2.png");
+		this.cooldown[0][2] = load_image("sprites\\HUNTER3_RED_CD2.png");
+		this.cooldown[0][3] = load_image("sprites\\WOLF3_RED_CD2.png");
 		this.cooldown[0][4] = load_image("sprites\\VAMPIRE3_RED_CD2.png");
 		this.cooldown[0][5] = load_image("sprites\\UNKNOWN3_RED_CD2.png");
 		
-		this.cooldown[1][0] = load_image("sprites\\HUNTER3_YELLOW_CD2.png");
-		this.cooldown[1][1] = load_image("sprites\\WOLF3_YELLOW_CD2.png");
-		this.cooldown[1][2] = load_image("sprites\\ZOMBIE3_YELLOW_CD2.png");
-		this.cooldown[1][3] = load_image("sprites\\WIZARD3_YELLOW_CD2.png");
+		this.cooldown[1][0] = load_image("sprites\\WIZARD3_YELLOW_CD2.png");
+		this.cooldown[1][1] = load_image("sprites\\ZOMBIE3_YELLOW_CD2.png");
+		this.cooldown[1][2] = load_image("sprites\\HUNTER3_YELLOW_CD2.png");
+		this.cooldown[1][3] = load_image("sprites\\WOLF3_YELLOW_CD2.png");
 		this.cooldown[1][4] = load_image("sprites\\VAMPIRE3_YELLOW_CD2.png");
 		this.cooldown[1][5] = load_image("sprites\\UNKNOWN3_YELLOW_CD2.png");
 		

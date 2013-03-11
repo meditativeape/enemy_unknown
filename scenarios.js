@@ -132,6 +132,128 @@ var Scenarios = {
 			3: [0, 1, 2, 3, 4]
 		},
 		"revealtype": false
+	},
+
+	"vampirehunter": {
+		"size": {"x": 1500, "y": 1200, "numRows": 11, "numCols": 11},
+		"offset": 40,
+		"terrain": (function(){
+			var terrain = [];
+			// all initialized to null
+			for (var i = 0; i < 11; i++) {
+				terrain.push([]);
+				for (var j = 0; j < 11; j++) {
+					terrain[i][j] = null;
+				}
+			}
+			// add special terrains
+			terrain[5][5] = "flag";
+			terrain[4][5] = "thron";
+			terrain[5][4] = "thron";
+			terrain[5][6] = "thron";
+			terrain[6][5] = "thron";
+			return terrain;
+		})(),
+		"startpoint": {
+			0: [[3,5], [4,4],[5,3],[4,3],[3,4]],
+			1: [[5,7],[6,6], [7,5],[7,6],[6,7]]
+		},
+		"startunits": {
+			0: [0, 1, 1 ,3,3],
+			1: [2,2,2,2, 4]
+		},
+		"revealtype": false
+	},
+	"zombieisbetter": {
+		"size": {"x": 1500, "y": 1200, "numRows": 11, "numCols": 11},
+		"offset": 40,
+		"terrain": (function(){
+			var terrain = [];
+			// all initialized to null
+			for (var i = 0; i < 11; i++) {
+				terrain.push([]);
+				for (var j = 0; j < 11; j++) {
+					terrain[i][j] = null;
+				}
+			}
+			// add special terrains
+			terrain[5][5] = "flag";
+			terrain[4][5] = "thron";
+			terrain[5][4] = "thron";
+			terrain[5][6] = "thron";
+			terrain[6][5] = "thron";
+			return terrain;
+		})(),
+		"startpoint": {
+			0: [[3,5], [4,4],[5,3],[4,3],[3,4]],
+			1: [[5,7],[6,6], [7,5],[7,6],[6,7]]
+		},
+		"startunits": {
+			0: [0, 0, 0 ,0,2],
+			1: [1,4,4,4, 4]
+		},
+		"revealtype": false
+	},
+	"rockpapersissors": {
+		"size": {"x": 1500, "y": 1200, "numRows": 11, "numCols": 11},
+		"offset": 40,
+		"terrain": (function(){
+			var terrain = [];
+			// all initialized to null
+			for (var i = 0; i < 11; i++) {
+				terrain.push([]);
+				for (var j = 0; j < 11; j++) {
+					terrain[i][j] = null;
+				}
+			}
+			// add special terrains
+			terrain[5][5] = "flag";
+			terrain[4][5] = "thron";
+			terrain[5][4] = "thron";
+			terrain[5][6] = "thron";
+			terrain[6][5] = "thron";
+			return terrain;
+		})(),
+		"startpoint": {
+			0: [[3,5], [4,4],[5,3]],
+			1: [[5,7],[6,6], [7,5]]
+		},
+		"startunits": {
+			0: [4, 3, 0],
+			1: [4, 3, 0]
+		},
+		"revealtype": false
+	},
+	
+	"warzone": {
+		"size": {"x": 1500, "y": 1200, "numRows": 11, "numCols": 11},
+		"offset": 40,
+		"terrain": (function(){
+			var terrain = [];
+			// all initialized to null
+			for (var i = 0; i < 11; i++) {
+				terrain.push([]);
+				for (var j = 0; j < 11; j++) {
+					terrain[i][j] = null;
+				}
+			}
+			// add special terrains
+			terrain[5][5] = "flag";
+			terrain[4][5] = "thron";
+			terrain[5][4] = "thron";
+			terrain[5][6] = "thron";
+			terrain[6][5] = "thron";
+			return terrain;
+		})(),
+		"startpoint": {
+			0: [[0,4], [1,3], [2,2], [3,1],[4,0],[2,3],[3,2]],
+			1: [[6,10], [7,9], [8,8], [9,7], [10,6],[7,8],[8,7]],
+		},
+		"startunits": {
+			0: [0, 1,1,2,2,3,4],
+			1: [0,1,1,2,2,3,4]
+		},
+		"revealtype": false
 	}
 };
 

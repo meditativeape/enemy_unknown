@@ -25,7 +25,7 @@ var Unit = function(/*int*/player,/*int*/ team,/*int*/hp,/*int*/ type, /*Coordin
 	this.hpfloat = 0;
 	this.terrain = null;
 	this.buff = null;
-	this.attack = 10;
+	this.attack = 50;
 	this.defense = 1;
 }
 
@@ -60,7 +60,7 @@ Unit.prototype.setcd = function(/*int*/ time){
  */
 Unit.prototype.draw = function(/*Point*/p, /*int*/height) {
 	var unitToDraw;
-	if (this.cooldown > 0.05 && this.cdImage) {
+	if (this.cooldown > 0.2 && this.cdImage) {
 		unitToDraw = new Kinetic.Image({
 			image: this.cdImage,
 			x: Math.floor(p.X - this.image.width/2),
@@ -68,8 +68,8 @@ Unit.prototype.draw = function(/*Point*/p, /*int*/height) {
 			width: this.image.width,
 			height: this.image.height
 		});
-		var offset = CONSTANTS.cd-this.cooldown;
-		unitToDraw.setCrop({x:Math.round(120*(CONSTANTS.cd-this.cooldown)*10), y:0, width:120, height:120});
+		var offset = Math.round((5 - this.cooldown/3)*10);
+		unitToDraw.setCrop({x:120*offset, y:0, width:120, height:120});
 	} else {
 		unitToDraw = new Kinetic.Image({
 			image: this.image,
@@ -136,26 +136,40 @@ Unit.prototype.gotHit = function(/*Unit*/enemy){
 	var damage = enemy.buff?(enemy.attack+enemy.buff.attackBuff):enemy.attack;
 	var defense = this.buff?(this.defense*this.buff.defenseBuff):this.defense;
 	//Calculate type advantage
-    var flag = (this.type-enemy.type)%5;
-	if(flag<0){
-		flag = flag + 5;
-		
+    if(enemy.type == 0){
+		if(this.type == 4){
+			this.hp = 0;
+		}else if(enemy.type == this.type){
+			this.hp = this.hp - 20;
+		}else if(enemy.type<this.type){
+			enemy.hp = enemy.hp - 20;
+		}
+	}else{
+		if(enemy.type>this.type){
+			this.hp = this.hp - 50;
+		}
+		else if(enemy.type == this.type){
+			this.hp = this.hp - 20;
+		}
+		else if(enemy.type < this.type){
+			enemy.hp = enemy.hp - 20;
+		}
 	}
 	//My advantage
-    if (flag>2){
-    	this.hp = this.hp - Math.floor(damage/2 * defense); 
-		//enemy.hp = enemy.hp - floor(damage/2);
-	}
-	//Enemy advantage
-    else if (flag!=0){
-        this.hp = this.hp - Math.floor(damage * 2 * defense);
-		//enemy.hp = enemy.hp - damage;
-	}
-	//Tie
-    else{
-        this.hp = this.hp - Math.floor(damage * defense);
-		//enemy.hp = enemy.hp - damage;
-	}
+//    if (flag>2){
+//    	this.hp = this.hp - Math.floor(damage/2 * defense); 
+//		//enemy.hp = enemy.hp - floor(damage/2);
+//	}
+//	//Enemy advantage
+//    else if (flag!=0){
+//        this.hp = this.hp - Math.floor(damage * 2 * defense);
+//		//enemy.hp = enemy.hp - damage;
+//	}
+//	//Tie
+//    else{
+//        this.hp = this.hp - Math.floor(damage * defense);
+//		//enemy.hp = enemy.hp - damage;
+//	}
 	if(this.hp < 0){
 		this.hp = 0;
 	}
