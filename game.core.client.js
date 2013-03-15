@@ -96,7 +96,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		this.background = load_image("sprites\\bg1.png");
 		this.flagImg = load_image("sprites\\tile-flag.png");
 		this.thronImg = load_image("sprites\\thron.png");
-		this.whokillswhoImg = load_image("sprites\\whokillswhocolor1.png");
+		this.whokillswhoImg = load_image("sprites\\whokillswho.png");
 
 		this.sprites[0][0] = load_image("sprites\\wizard3_red.png");
 		this.sprites[0][1] = load_image("sprites\\zombie3_red.png");
@@ -358,6 +358,8 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 					gc.hexgrid.markReachable(coord);
 					gc.hexgrid.markAttackable(coord,coord);
 				}
+			}else{
+				gc.guess = coord;
 			}
 		};
 		
@@ -517,10 +519,4 @@ var centerMsgAnim = new Kinetic.Animation(function(frame) {
 	}
 }, msgLayer);
 centerMsgAnim.start();
-
-//Helper function for playing sound
-function playSound(soundfile) {
-  document.getElementById("sound").innerHTML=
-  "<embed src=\""+soundfile+"\" hidden=\"true\" autostart=\"true\" loop=\"false\" />";
-}
 
