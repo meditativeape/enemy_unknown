@@ -63,10 +63,57 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		this.countdownTimer = null;
 		this.resource = 0;
 		
+		var me = this;
+		var contextmenu = function(event) { // right click event listener
+			var x = event.pageX;
+			var y = event.pageY;
+			var offsetLeft = stage.getContainer().offsetLeft;
+			var offsetTop = stage.getContainer().offsetTop;
+			if (x >= offsetLeft && x <= offsetLeft+CONSTANTS.width && y >= offsetTop && y <= offsetTop+CONSTANTS.height) {
+				event.preventDefault();
+				me.last_click_coord = null;
+				me.hexgrid.clearReachable();
+				me.hexgrid.clearAttackable();
+			}
+		};
+		document.addEventListener('contextmenu', contextmenu);
+
+		var keydown = function(event) { // keydown event listener
+			if (event.keyCode == 37 || event.keyCode == 65) { // left
+				me.camera.isMovingLeft = true;
+			} else if (event.keyCode == 39 || event.keyCode == 68) { // right
+				me.camera.isMovingRight = true;
+			} else if (event.keyCode == 38 || event.keyCode == 87) { // up
+				me.camera.isMovingUp = true;
+			} else if (event.keyCode == 40 || event.keyCode == 83) { // down
+				me.camera.isMovingDown = true;
+			}
+			if (me.camera.isMovingLeft)
+				me.camera.moveLeft();
+			if (me.camera.isMovingRight)
+				me.camera.moveRight();
+			if (me.camera.isMovingUp)
+				me.camera.moveUp();
+			if (me.camera.isMovingDown)
+				me.camera.moveDown();
+		};
+		document.addEventListener('keydown', keydown);
 		
+		var keyup = function(event) { // keyup event listener
+			if (event.keyCode == 37 || event.keyCode == 65) { // left
+				me.camera.isMovingLeft = false;
+			} else if (event.keyCode == 39 || event.keyCode == 68) { // right
+				me.camera.isMovingRight = false;
+			} else if (event.keyCode == 38 || event.keyCode == 87) { // up
+				me.camera.isMovingUp = false;
+			} else if (event.keyCode == 40 || event.keyCode == 83) { // down
+				me.camera.isMovingDown = false;
+			}
+		};
+		document.addEventListener('keyup', keyup);
 	}
 
-// load assets
+	// load assets
 	game_core_client.prototype.load_assets = function(/*string*/ scenario,/*int*/type ) {
 
 		var files_loaded = 0;
@@ -145,12 +192,13 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		//Add terrain images.
 		CONSTANTS.thronTerrain.image = this.thronImg;
 		CONSTANTS.flagTerrain.image = this.flagImg;
+		
+		
 
 	};
 
 	game_core_client.prototype.onnetmessage = function(data){
 
-	
 		var keywords = data.split(" ");
 		var msgType = parseInt(keywords[0]);
 		
@@ -163,6 +211,9 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				this.player = parseInt(keywords[3]);
 				this.team = parseInt(keywords[4]);
 				this.type = parseInt(keywords[5]);
+				this.alive = true;
+				this.started = false;
+				this.winner = false;
 				this.initGame();
 				break;
 			case "start":
@@ -185,13 +236,17 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				this.capping = 0;
 				this.winner = parseInt(keywords[2]);
 				this.alive = false;
+				// stop animations
+				this.camera.stop();
+				this.minimap.stop();
+				this.hexgrid.stop();
 				// clear all layers
-				var layers = [mapLayer, UILayer, msgLayer];
-				for (var i in layers) {
-					var children = layers[i].getChildren();
-					for (var j in children)
-						children[j].destroy();
-				}
+				mapLayer.destroy();
+				mapLayer = new Kinetic.Layer();
+				UILayer.destroy();
+				UILayer = new Kinetic.Layer();
+				msgLayer.destroy();
+				msgLayer = new Kinetic.Layer({listening: false});
 				// switch back to menu
 				if (this.winner == this.team){
 					gameEnded(true);
@@ -294,30 +349,24 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		}
 	}; 
 	
-
 	game_core_client.prototype.initiate = function(/*string*/scenario ,/*int*/ type){  //Server connection functionality..
-	    //Store a local reference to our connection to the server
-        this.socket = io.connect();
-		
-		this.socket.send('0 join '+ type + ' '+ scenario);
-		
-		//When we connect, we are not 'connected' until we have a server id
-		//and are placed in a game by the server. The server sends us a message for that.
-        this.socket.on('connect', this.connecting.bind(this));
 
-		//Sent when we are disconnected (network, server down, etc)
-        this.socket.on('disconnect', this.ondisconnect.bind(this));
-		//Handle when we connect to the server, showing state and storing id's.
-        this.socket.on('onconnected', this.onconnected.bind(this));
-		//On message from the server, we parse the commands and send it to the handlers
-        this.socket.on('message', this.onnetmessage.bind(this));
-		// Start animation
-		// var canvas = document.getElementById('gameCanvas');
-		// canvas.width = 800;
-		// canvas.height = 600;
-		// animate(this);
-		
-		//TODO
+		if (!this.socket) {
+			//Store a local reference to our connection to the server
+			this.socket = io.connect();
+			//When we connect, we are not 'connected' until we have a server id
+			//and are placed in a game by the server. The server sends us a message for that.
+			this.socket.on('connect', this.connecting.bind(this));
+
+			//Sent when we are disconnected (network, server down, etc)
+			this.socket.on('disconnect', this.ondisconnect.bind(this));
+			//Handle when we connect to the server, showing state and storing id's.
+			this.socket.on('onconnected', this.onconnected.bind(this));
+			//On message from the server, we parse the commands and send it to the handlers
+			this.socket.on('message', this.onnetmessage.bind(this));
+		}
+	    
+		this.socket.send('0 join '+ type + ' '+ scenario);
 	};
 
 	game_core_client.prototype.initGame = function(){
@@ -361,52 +410,6 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 			}
 		};
 		
-		document.addEventListener('contextmenu', function(event) { // right click event listener
-			var x = event.pageX;
-			var y = event.pageY;
-			var offsetLeft = stage.getContainer().offsetLeft;
-			var offsetTop = stage.getContainer().offsetTop;
-			if (x >= offsetLeft && x <= offsetLeft+CONSTANTS.width && y >= offsetTop && y <= offsetTop+CONSTANTS.height) {
-				event.preventDefault();
-				gc.last_click_coord = null;
-				gc.hexgrid.clearReachable();
-				gc.hexgrid.clearAttackable();
-			}
-		});
-
-		document.addEventListener('keydown', function(event) {  // keydown event listener
-
-			if (event.keyCode == 37 || event.keyCode == 65) { // left
-				gc.camera.isMovingLeft = true;
-			} else if (event.keyCode == 39 || event.keyCode == 68) { // right
-				gc.camera.isMovingRight = true;
-			} else if (event.keyCode == 38 || event.keyCode == 87) { // up
-				gc.camera.isMovingUp = true;
-			} else if (event.keyCode == 40 || event.keyCode == 83) { // down
-				gc.camera.isMovingDown = true;
-			}
-			if (gc.camera.isMovingLeft)
-				gc.camera.moveLeft();
-			if (gc.camera.isMovingRight)
-				gc.camera.moveRight();
-			if (gc.camera.isMovingUp)
-				gc.camera.moveUp();
-			if (gc.camera.isMovingDown)
-				gc.camera.moveDown();
-		});
-		
-		document.addEventListener('keyup', function(event) {  // keyup event listener
-			if (event.keyCode == 37 || event.keyCode == 65) { // left
-				gc.camera.isMovingLeft = false;
-			} else if (event.keyCode == 39 || event.keyCode == 68) { // right
-				gc.camera.isMovingRight = false;
-			} else if (event.keyCode == 38 || event.keyCode == 87) { // up
-				gc.camera.isMovingUp = false;
-			} else if (event.keyCode == 40 || event.keyCode == 83) { // down
-				gc.camera.isMovingDown = false;
-			}
-		});
-		
 		// who kills whom image
 		UILayer.add(new Kinetic.Image({
 			x: CONSTANTS.width - this.whokillswhoImg.width,
@@ -416,12 +419,13 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		}));
 		
 		// hard-coded game instance for demo!!!
-		this.camera = new BuildCamera([this.background.width, this.background.height], 15, this.background, mapLayer);
-		this.minimap = new BuildMiniMap(this.camera, [this.background.width, this.background.height], 200, this.background, UILayer, stage);
+		var scenario = Scenarios[this.mapName];
+		this.camera = new BuildCamera([scenario.size.x + scenario.offset*2, scenario.size.y], 15, this.background, mapLayer);
+		this.minimap = new BuildMiniMap(this.camera, [scenario.size.x + scenario.offset*2, scenario.size.y], 200, this.background, UILayer, stage);
 		this.hexgrid = new BuildMap(this.mapName, this.camera, mapLayer, clickCallback);
 		
 		// initialize terrain
-		var terrain = this.hexgrid.scenario.terrain;
+		var terrain = scenario.terrain;
 		for (var i = 0; i < terrain.length; i++)
 			for (var j = 0; j < terrain[i].length; j++) {
 				switch (terrain[i][j]) {
@@ -433,16 +437,14 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 					break;
 				}
 			}
+		
+		// draw the game
+		stage.add(mapLayer);
+		stage.add(UILayer);
+		stage.add(msgLayer);
 	};
-	
-// draw the game
-stage.add(mapLayer);
-stage.add(UILayer);
-stage.add(msgLayer);
 
-
-var gc;
-
+var gc = new game_core_client();
 
 // animation to show text message at the center of canvas
 var centerMsg = new Kinetic.Text({

@@ -32,20 +32,25 @@ var BuildCamera = function(mapSize, movingSpeed, img, layer) {
 		width: CONSTANTS.width,
 		height: CONSTANTS.height
 	});
-	layer.add(bg);
+	// layer.add(bg);
 	
 	// add animation to the background image
-	var anime = new Kinetic.Animation(function(frame){
-		bg.setCrop({
-			x: me.x,
-			y: me.y,
-			width: CONSTANTS.width,
-			height: CONSTANTS.height
-		});
-	}, layer);
-	anime.start();
+	// this.anime = new Kinetic.Animation(function(frame){
+		// bg.setCrop({
+			// x: me.x,
+			// y: me.y,
+			// width: CONSTANTS.width,
+			// height: CONSTANTS.height
+		// });
+	// }, layer);
+	// this.anime.start();
 	
 	// methods
+	this.stop = function(){
+		if (this.anime) {
+			this.anime.stop();
+		}
+	}
 	
 	this.setPos = function(p){
 		var newX = p.X;

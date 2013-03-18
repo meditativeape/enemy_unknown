@@ -59,11 +59,11 @@
 	layer.add(this.toDraw);
 	
 	// add animation to cameraBox
-	var anime = new Kinetic.Animation(function(frame){
+	this.anime = new Kinetic.Animation(function(frame){
 		cameraBox.setX(Math.floor(camera.x*me.width/me.mapSize[0]));
 		cameraBox.setY(Math.floor(camera.y*me.height/me.mapSize[1]));
 	}, layer);
-	anime.start();
+	this.anime.start();
 	
 	// methods
 	// this.draw = function(img){
@@ -116,6 +116,12 @@
 			// ctx.fill();
 		// }
 	// };
+	
+	this.stop = function(){
+		if (this.anime) {
+			this.anime.stop();
+		}
+	}
 	
 	this.addUnit = function(p, player){
 		// figure out player's color

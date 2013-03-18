@@ -3,8 +3,8 @@
  */
 var Scenarios = {
 	"tutorial_1": {
-		"size": {"x": 1500, "y": 1200, "numRows": 11, "numCols": 11},
-		"offset": 40,
+		"size": {"x": 2300, "y": 1500, "numRows": 11, "numCols": 11},
+		"offset": 50,
 		"terrain": (function(){
 			var terrain = [];
 			// all initialized to thron

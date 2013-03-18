@@ -72,14 +72,19 @@ var BuildMap = function(/*string*/mapName, /*camera*/camera, /*layer*/layer, /*f
 		layer.add(this.unitGroup);
 		layer.add(this.hpGroup);
 		var me = this;
-		var anim = new Kinetic.Animation(function(frame) {
+		this.anim = new Kinetic.Animation(function(frame) {
 			for(var x in me.matrix){
 				for(var y in me.matrix[x]){
 					me.matrix[x][y].update();
 				}
 			}
 		}, layer);
-		anim.start();
+		this.anim.start();
+	}
+	
+	this.stop = function stop(){
+		if (this.anim)
+			this.anim.stop();
 	}
 	
 	this.toHex = function toHex(/*Point*/ p){
@@ -192,11 +197,11 @@ var BuildMap = function(/*string*/mapName, /*camera*/camera, /*layer*/layer, /*f
 	
 	this.isReachable = function(/*Coordinate*/coord){
 		return this.matrix[coord.X][coord.Y].reachable;
-	}
+	};
 	
 	this.isAttackable = function(/*Coordinate*/coord){
 		return this.matrix[coord.X][coord.Y].attackable;
-	}
+	};
 }
 
 // server side we export BuildMap.
@@ -284,8 +289,6 @@ function Hexagon(id, mx, my, x, y, spec, camera, map, callback) {
 		if (this.callback) {
 			var me = this;
 			this.hexagonToDraw.on('click', function(event){
-				// alert(me.matrixx + ", " + me.matrixy);
-				// me.reachable = true;
 				if (event.which == 1)  // only works with left click
 					me.callback(new Coordinate(me.matrixx, me.matrixy));
 			});

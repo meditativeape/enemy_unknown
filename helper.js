@@ -23,7 +23,7 @@ var CONSTANTS = {
 	height: 600,
 	cd: 15,
 	init_resource: 100,
-	hexSideLength: 40,
+	hexSideLength: 60,
 	hexRatio: 2.0
 };
 
