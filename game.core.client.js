@@ -458,7 +458,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 			}
 	
 			// some hexagon with this player's unit has been clicked, select that unit
-			if (unitplayer == gc.player) {
+			else if (unitplayer == gc.player) {
 				gc.hexgrid.clearReachable();
 				gc.hexgrid.clearAttackable();
 				if (gc.hexgrid.getUnit(coord).cooldown<=0) {
