@@ -34,16 +34,25 @@ var BuildCamera = function(mapSize, movingSpeed, img, layer) {
 	});
 	// layer.add(bg);
 	
-	// add animation to the background image
-	// this.anime = new Kinetic.Animation(function(frame){
+	// add animation to move camera and background image
+	var me = this;
+	this.anime = new Kinetic.Animation(function(frame){
+		if (me.isMovingLeft)
+			me.moveLeft();
+		if (me.isMovingRight)
+			me.moveRight();
+		if (me.isMovingUp)
+			me.moveUp();
+		if (me.isMovingDown)
+			me.moveDown();
 		// bg.setCrop({
 			// x: me.x,
 			// y: me.y,
 			// width: CONSTANTS.width,
 			// height: CONSTANTS.height
 		// });
-	// }, layer);
-	// this.anime.start();
+	}, layer);
+	this.anime.start();
 	
 	// methods
 	this.stop = function(){

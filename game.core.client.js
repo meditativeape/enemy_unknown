@@ -64,6 +64,35 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		this.resource = 0;
 		
 		var me = this;
+		
+		var mousemove = function(event) {
+			var x = event.pageX;
+			var y = event.pageY;
+			var offsetLeft = stage.getContainer().offsetLeft;
+			var offsetTop = stage.getContainer().offsetTop;
+			if (x < offsetLeft) {
+				me.camera.isMovingLeft = true;
+			} else {
+				me.camera.isMovingLeft = false;
+			}
+			if (x > offsetLeft+CONSTANTS.width) {
+				me.camera.isMovingRight = true;
+			} else {
+				me.camera.isMovingRight = false;
+			}
+			if (y < offsetTop) {
+				me.camera.isMovingUp = true;
+			} else {
+				me.camera.isMovingUp = false;
+			}
+			if (y > offsetTop+CONSTANTS.height) {
+				me.camera.isMovingDown = true;
+			} else {
+				me.camera.isMovingDown = false;
+			}
+		};
+		document.addEventListener("mousemove", mousemove);
+		
 		var contextmenu = function(event) { // right click event listener
 			var x = event.pageX;
 			var y = event.pageY;
@@ -88,14 +117,38 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 			} else if (event.keyCode == 40 || event.keyCode == 83) { // down
 				me.camera.isMovingDown = true;
 			}
-			if (me.camera.isMovingLeft)
-				me.camera.moveLeft();
-			if (me.camera.isMovingRight)
-				me.camera.moveRight();
-			if (me.camera.isMovingUp)
-				me.camera.moveUp();
-			if (me.camera.isMovingDown)
-				me.camera.moveDown();
+			if (me.guess) {
+				if (event.keyCode == 49){
+					me.hexgrid.getUnit(me.guess).guess(4);
+					me.hexgrid.matrix[me.guess.X][me.guess.Y].guessing = false;
+					me.guess = null;
+				}
+				if (event.keyCode == 50){
+					me.hexgrid.getUnit(me.guess).guess(3);
+					me.hexgrid.matrix[me.guess.X][me.guess.Y].guessing = false;
+					me.guess = null;
+				}
+				if (event.keyCode == 51){
+					me.hexgrid.getUnit(me.guess).guess(2);
+					me.hexgrid.matrix[me.guess.X][me.guess.Y].guessing = false;
+					me.guess = null;
+				}
+				if (event.keyCode == 52){
+					me.hexgrid.getUnit(me.guess).guess(1);
+					me.hexgrid.matrix[me.guess.X][me.guess.Y].guessing = false;
+					me.guess = null;
+				}
+				if (event.keyCode == 53){
+					me.hexgrid.getUnit(me.guess).guess(0);
+					me.hexgrid.matrix[me.guess.X][me.guess.Y].guessing = false;
+					me.guess = null;
+				}
+				if (event.keyCode == 54){
+					me.hexgrid.getUnit(me.guess).guess(5);
+					me.hexgrid.matrix[me.guess.X][me.guess.Y].guessing = false;
+					me.guess = null;
+				}	
+			}
 		};
 		document.addEventListener('keydown', keydown);
 		
@@ -174,7 +227,6 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		this.sprites[3][5] = load_image("sprites\\unknown3_green.png");
 
 		// load cooldown spritesheetss
-		
 		this.cooldown[0][0] = load_image("sprites\\WIZARD3_RED_CD2.png");
 		this.cooldown[0][1] = load_image("sprites\\ZOMBIE3_RED_CD2.png");
 		this.cooldown[0][2] = load_image("sprites\\HUNTER3_RED_CD2.png");
@@ -192,9 +244,6 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		//Add terrain images.
 		CONSTANTS.thronTerrain.image = this.thronImg;
 		CONSTANTS.flagTerrain.image = this.flagImg;
-		
-		
-
 	};
 
 	game_core_client.prototype.onnetmessage = function(data){
@@ -217,6 +266,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				this.initGame();
 				break;
 			case "start":
+				// starting msg
 				this.starting = true;
 				var self = this;
 				window.setTimeout(function(){
@@ -225,9 +275,10 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 					,2000);
 				start();
 				this.started = true;
+				// TODO: set camera position!
 				var p = this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].MidPoint;
 				this.camera.setPos(new Point(p.X-CONSTANTS.width/2,p.Y-CONSTANTS.height/2))
-				playSound('sounds\\forest.mp3');
+				//playSound('sounds\\forest.mp3');
 				break;
 			case "end":
 				if (this.countdownTimer){
@@ -308,8 +359,13 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 			case "die":
 				this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece.type = parseInt(keywords[4]);
 				// this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece.die();
-				if (this.last_click_coord && this.last_click_coord.X == parseInt(keywords[2]) && this.last_click_coord.Y == parseInt(keywords[3]))
+				if (this.last_click_coord && this.last_click_coord.X == parseInt(keywords[2]) && this.last_click_coord.Y == parseInt(keywords[3])){
 					this.last_click_coord = null;
+				}
+				if (this.guess && this.guess.X == parseInt(keywords[2]) && this.guess == parseInt(keywords[3])){
+					this.hexgrid.matrix[gc.guess.X][gc.guess.Y].guessing = false;
+					this.guess = null;
+				}
 				this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece = null;
 				// update minimap
 				var pointOnMap = this.hexgrid.toMap(new Coordinate(parseInt(keywords[2]), parseInt(keywords[3])));
@@ -385,7 +441,10 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 			
 			var isReachable = gc.hexgrid.isReachable(coord);
 			var isAttackable = gc.hexgrid.isAttackable(coord);
-			
+			if(gc.guess){
+				gc.hexgrid.matrix[gc.guess.X][gc.guess.Y].guessing = false;
+			}
+			gc.guess = null;
 			// some unit has been selected, and some hexagon without this player's unit has been clicked
 			if (gc.last_click_coord && (unitplayer != gc.player)) {
 				if (isReachable) {  // Move unit
@@ -397,9 +456,9 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				gc.hexgrid.clearAttackable();
 				gc.last_click_coord = null;
 			}
-			
+	
 			// some hexagon with this player's unit has been clicked, select that unit
-			else if (unitplayer == gc.player) {
+			if (unitplayer == gc.player) {
 				gc.hexgrid.clearReachable();
 				gc.hexgrid.clearAttackable();
 				if (gc.hexgrid.getUnit(coord).cooldown<=0) {
@@ -408,7 +467,10 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 					gc.hexgrid.markAttackable(coord,coord);
 				}
 			}else{
-				gc.guess = coord;
+				if(gc.hexgrid.getUnit(coord)){
+					gc.guess = coord;
+					gc.hexgrid.matrix[coord.X][coord.Y].guessing = true;
+				}
 			}
 		};
 		
@@ -420,9 +482,10 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 			listening: false
 		}));
 		
+		
 		// hard-coded game instance for demo!!!
 		var scenario = Scenarios[this.mapName];
-		this.camera = new BuildCamera([scenario.size.x + scenario.offset*2, scenario.size.y], 15, this.background, mapLayer);
+		this.camera = new BuildCamera([scenario.size.x + scenario.offset*2, scenario.size.y], 10, this.background, mapLayer);
 		this.minimap = new BuildMiniMap(this.camera, [scenario.size.x + scenario.offset*2, scenario.size.y], 200, this.background, UILayer, stage);
 		this.hexgrid = new BuildMap(this.mapName, this.camera, mapLayer, clickCallback);
 		

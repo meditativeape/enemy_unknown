@@ -48,8 +48,8 @@ var Scenarios = {
 	},
 	
 	"slayer": {
-		"size": {"x": 1500, "y": 1200, "numRows": 11, "numCols": 11},
-		"offset": 40,
+		"size": {"x": 2300, "y": 1500, "numRows": 11, "numCols": 11},
+		"offset": 50,
 		"terrain": (function(){
 			var terrain = [];
 			// all initialized to null
@@ -100,8 +100,8 @@ var Scenarios = {
 	},
 	
 	"captureflag": {
-		"size": {"x": 1500, "y": 1200, "numRows": 11, "numCols": 11},
-		"offset": 40,
+		"size": {"x": 2300, "y": 1500, "numRows": 11, "numCols": 11},
+		"offset": 50,
 		"terrain": (function(){
 			var terrain = [];
 			// all initialized to null
@@ -135,8 +135,8 @@ var Scenarios = {
 	},
 
 	"vampirehunter": {
-		"size": {"x": 1500, "y": 1200, "numRows": 11, "numCols": 11},
-		"offset": 40,
+		"size": {"x": 2300, "y": 1500, "numRows": 11, "numCols": 11},
+		"offset": 50,
 		"terrain": (function(){
 			var terrain = [];
 			// all initialized to null
@@ -165,8 +165,8 @@ var Scenarios = {
 		"revealtype": false
 	},
 	"zombieisbetter": {
-		"size": {"x": 1500, "y": 1200, "numRows": 11, "numCols": 11},
-		"offset": 40,
+		"size": {"x": 2300, "y": 1500, "numRows": 11, "numCols": 11},
+		"offset": 50,
 		"terrain": (function(){
 			var terrain = [];
 			// all initialized to null
@@ -195,8 +195,8 @@ var Scenarios = {
 		"revealtype": false
 	},
 	"rockpapersissors": {
-		"size": {"x": 1500, "y": 1200, "numRows": 11, "numCols": 11},
-		"offset": 40,
+		"size": {"x": 2300, "y": 1500, "numRows": 11, "numCols": 11},
+		"offset": 50,
 		"terrain": (function(){
 			var terrain = [];
 			// all initialized to null
@@ -226,8 +226,8 @@ var Scenarios = {
 	},
 	
 	"warzone": {
-		"size": {"x": 1500, "y": 1200, "numRows": 11, "numCols": 11},
-		"offset": 40,
+		"size": {"x": 2300, "y": 1500, "numRows": 11, "numCols": 11},
+		"offset": 50,
 		"terrain": (function(){
 			var terrain = [];
 			// all initialized to null

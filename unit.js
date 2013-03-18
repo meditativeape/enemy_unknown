@@ -64,7 +64,7 @@ Unit.prototype.draw = function(/*Point*/p, /*int*/height) {
 		unitToDraw = new Kinetic.Image({
 			image: this.cdImage,
 			x: Math.floor(p.X - this.image.width/2),
-			y: Math.floor(p.Y + height*2/5 - this.image.height),
+			y: Math.floor(p.Y + height*2/5 - this.image.height + 5),
 			width: this.image.width,
 			height: this.image.height
 		});
@@ -74,7 +74,7 @@ Unit.prototype.draw = function(/*Point*/p, /*int*/height) {
 		unitToDraw = new Kinetic.Image({
 			image: this.image,
 			x: Math.floor(p.X - this.image.width/2),
-			y: Math.floor(p.Y + height*2/5 - this.image.height),
+			y: Math.floor(p.Y + height*2/5 - this.image.height + 5),
 			width: this.image.width,
 			height: this.image.height
 		});
@@ -91,12 +91,12 @@ Unit.prototype.drawHP = function(/*Point*/p, /*int*/height) {
 	var hpToDraw = new Kinetic.Group({listening: false});
 	
 	hpToDraw.add(new Kinetic.Line({
-		points: [Math.floor(p.X - this.image.width/4), Math.floor(p.Y - this.image.height/2 ), Math.floor(p.X + this.image.width/4), Math.floor(p.Y - this.image.height/2 )],
+		points: [Math.floor(p.X - this.image.width/4), Math.floor(p.Y - this.image.height/2 + 18), Math.floor(p.X + this.image.width/4), Math.floor(p.Y - this.image.height/2 + 18)],
 		stroke: "white",
 		strokeWidth: 3
 	}));
 	hpToDraw.add(new Kinetic.Line({
-		points: [Math.floor(p.X - this.image.width/4), Math.floor(p.Y - this.image.height/2 ), Math.floor(p.X - this.image.width/4 + this.image.width/2 * this.hp / 100), Math.floor(p.Y - this.image.height/2 )],
+		points: [Math.floor(p.X - this.image.width/4), Math.floor(p.Y - this.image.height/2 + 18), Math.floor(p.X - this.image.width/4 + this.image.width/2 * this.hp / 100), Math.floor(p.Y - this.image.height/2 + 18)],
 		stroke: "red",
 		strokeWidth: 3
 	}));
@@ -121,6 +121,7 @@ Unit.prototype.drawHP = function(/*Point*/p, /*int*/height) {
 
 Unit.prototype.guess = function(/*int*/ guess){
 	this.image = gc.sprites[this.player][guess];
+	this.cdImage = gc.cooldown[this.player][guess];
 }
 
 Unit.prototype.minusHP = function(/*int*/hp){
