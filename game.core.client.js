@@ -64,8 +64,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		this.resource = 0;
 		
 		var me = this;
-		
-		var mousemove = function(event) {
+		var mousemove = function(event) {  // mouse move event listener
 			var x = event.pageX;
 			var y = event.pageY;
 			var offsetLeft = stage.getContainer().offsetLeft;
@@ -289,12 +288,18 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 					window.clearInterval(this.countdownTimer);
 				}
 				this.capping = 0;
+				this.countdown = 60;
 				this.winner = parseInt(keywords[2]);
 				this.alive = false;
+				this.last_click_coord = null;
+				this.started = false;
+				this.countdownTimer = null;
+				this.resource = 0;
 				// stop animations
 				this.camera.stop();
 				this.minimap.stop();
 				this.hexgrid.stop();
+				this.centerMsgAnim.stop();
 				// clear all layers
 				mapLayer.destroy();
 				mapLayer = new Kinetic.Layer();
@@ -431,6 +436,79 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 
 	game_core_client.prototype.initGame = function(){
 	
+		// animation to show text message at the center of canvas
+		var me = this;
+		var centerMsg = new Kinetic.Text({
+			text: "Waiting for other players...",
+			x: 80,
+			y: 260,
+			fill: 'rgba(127, 155, 0, 0.5)',
+			fontFamily: 'Calibri',
+			fontSize: 60,
+			fontStyle: 'italic'
+		});
+		msgLayer.add(centerMsg);
+		this.centerMsgAnim = new Kinetic.Animation(function(frame) {
+			if (me.started) {
+				if (me.starting){
+					centerMsg.setText("Game has started");
+					centerMsg.setFill('white');
+					centerMsg.setX(CONSTANTS.width/4);
+					centerMsg.setY(CONSTANTS.height/2);
+					centerMsg.setFontSize(60);
+					centerMsg.setFontStyle('normal');
+					centerMsg.setFontFamily('Calibri');
+					// ctx.font = '30px Calibri';	
+					// ctx.fillText("Objective: Kill all enemy units.", canvas.width/4 + 60, canvas.height/2 + 60);
+					if (!msgLayer.isAncestorOf(centerMsg)) {
+						msgLayer.add(centerMsg);
+					}
+				} else if (me.capping){  // TODO: hardcoded!
+					if (me.capping == 1){
+						centerMsg.setText("Caputring flag: " + me.countdown + " seconds until win.");
+						centerMsg.setFill('white');
+						centerMsg.setX(200);
+						centerMsg.setY(50);
+						centerMsg.setFontSize(28);
+						centerMsg.setFontStyle('normal');
+						centerMsg.setFontFamily('Calibri');
+						if (!msgLayer.isAncestorOf(centerMsg)) {
+							msgLayer.add(centerMsg);
+						}
+					} else {
+						centerMsg.setText("Defend flag: " + me.countdown + " seconds until lose.");
+						centerMsg.setFill('white');
+						if (me.countdown <= 10)
+							centerMsg.setFill('red');
+						centerMsg.setX(210);
+						centerMsg.setY(50);
+						centerMsg.setFontSize(28);
+						centerMsg.setFontStyle('normal');
+						centerMsg.setFontFamily('Calibri');
+						if (!msgLayer.isAncestorOf(centerMsg)) {
+							msgLayer.add(centerMsg);
+						}
+					}
+				} else if (!me.alive && me.winner === false){
+					centerMsg.setText("All your units are dead!");
+					centerMsg.setFill('white');
+					centerMsg.setX(CONSTANTS.width/4);
+					centerMsg.setY(CONSTANTS.height/2);
+					centerMsg.setFontSize(60);
+					centerMsg.setFontStyle('normal');
+					centerMsg.setFontFamily('Calibri');
+					if (!msgLayer.isAncestorOf(centerMsg)) {
+						msgLayer.add(centerMsg);
+					}
+				} else {
+					if (msgLayer.isAncestorOf(centerMsg)) {
+						centerMsg.remove();
+					}
+				}
+			}
+		}, msgLayer);
+		this.centerMsgAnim.start();
+	
 		// callback function for click events on a hexagon
 		var clickCallback = function(coord){
 		
@@ -514,78 +592,4 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 	};
 
 var gc = new game_core_client();
-
-// animation to show text message at the center of canvas
-var centerMsg = new Kinetic.Text({
-	text: "Waiting for other players...",
-	x: 80,
-	y: 260,
-	fill: 'rgba(127, 155, 0, 0.5)',
-	fontFamily: 'Calibri',
-	fontSize: 60,
-	fontStyle: 'italic'
-});
-msgLayer.add(centerMsg);
-var centerMsgAnim = new Kinetic.Animation(function(frame) {
-	if (gc) {
-		if (gc.started) {
-			if (gc.starting){
-				centerMsg.setText("Game has started");
-				centerMsg.setFill('white');
-				centerMsg.setX(CONSTANTS.width/4);
-				centerMsg.setY(CONSTANTS.height/2);
-				centerMsg.setFontSize(60);
-				centerMsg.setFontStyle('normal');
-				centerMsg.setFontFamily('Calibri');
-				// ctx.font = '30px Calibri';	
-				// ctx.fillText("Objective: Kill all enemy units.", canvas.width/4 + 60, canvas.height/2 + 60);
-				if (!msgLayer.isAncestorOf(centerMsg)) {
-					msgLayer.add(centerMsg);
-				}
-			} else if (gc.capping){  // TODO: hardcoded!
-				if (gc.capping == 1){
-					centerMsg.setText("Caputring flag: " + gc.countdown + " seconds until win.");
-					centerMsg.setFill('white');
-					centerMsg.setX(200);
-					centerMsg.setY(50);
-					centerMsg.setFontSize(28);
-					centerMsg.setFontStyle('normal');
-					centerMsg.setFontFamily('Calibri');
-					if (!msgLayer.isAncestorOf(centerMsg)) {
-						msgLayer.add(centerMsg);
-					}
-				} else {
-					centerMsg.setText("Defend flag: " + gc.countdown + " seconds until lose.");
-					centerMsg.setFill('white');
-					if (gc.countdown <= 10)
-						centerMsg.setFill('red');
-					centerMsg.setX(210);
-					centerMsg.setY(50);
-					centerMsg.setFontSize(28);
-					centerMsg.setFontStyle('normal');
-					centerMsg.setFontFamily('Calibri');
-					if (!msgLayer.isAncestorOf(centerMsg)) {
-						msgLayer.add(centerMsg);
-					}
-				}
-			} else if (!gc.alive && gc.winner === false){
-				centerMsg.setText("All your units are dead!");
-				centerMsg.setFill('white');
-				centerMsg.setX(CONSTANTS.width/4);
-				centerMsg.setY(CONSTANTS.height/2);
-				centerMsg.setFontSize(60);
-				centerMsg.setFontStyle('normal');
-				centerMsg.setFontFamily('Calibri');
-				if (!msgLayer.isAncestorOf(centerMsg)) {
-					msgLayer.add(centerMsg);
-				}
-			} else {
-				if (msgLayer.isAncestorOf(centerMsg)) {
-					centerMsg.remove();
-				}
-			}
-		}
-	}
-}, msgLayer);
-centerMsgAnim.start();
 

@@ -55,7 +55,7 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 	game_core_server.prototype.canMove = function(coord1, coord2, player){
 		
 		var unit = this.hexgrid.getUnit(coord1);
-		if (unit && unit.team == player.team && !this.hexgrid.getUnit(coord2)){ // coord1 has player's unit and coord2 is empty
+		if (unit && unit.player == player.player && !this.hexgrid.getUnit(coord2)){ // coord1 has player's unit and coord2 is empty
 			if (this.hexgrid.hexDist(this.hexgrid.matrix[coord1.X][coord1.Y], this.hexgrid.matrix[coord2.X][coord2.Y]) <= unit.range) {
 				if (!this.hexgrid.matrix[coord2.X][coord2.Y].terrain) {
 					return true;
@@ -78,7 +78,7 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 	
 		var myUnit = this.hexgrid.getUnit(coord1);
 		var theirUnit = this.hexgrid.getUnit(coord2);
-		if (myUnit.team == player.team && theirUnit && theirUnit.team != player.team)
+		if (myUnit.player == player.player && theirUnit && theirUnit.team != player.team)
 			if (this.hexgrid.hexDist(this.hexgrid.matrix[coord1.X][coord1.Y], this.hexgrid.matrix[coord2.X][coord2.Y]) <= myUnit.range)
 				return true;
 		return false;
@@ -314,6 +314,7 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 		// TODO: do not work for 2v2 yet
 		var k = 0;
 		for (var i in this.players) {
+			this.players[i].player = k;
 			this.players[i].team = k++;
 			// this.players[i].resource = CONSTANTS.init_resource;
 			for (var j in pieces) {
