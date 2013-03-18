@@ -176,7 +176,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				this.started = true;
 				var p = this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].MidPoint;
 				this.camera.setPos(new Point(p.X-CONSTANTS.width/2,p.Y-CONSTANTS.height/2))
-				playSound('sounds\\forest.mp3');
+				//playSound('sounds\\forest.mp3');
 				break;
 			case "end":
 				if (this.countdownTimer){
@@ -253,8 +253,13 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 			case "die":
 				this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece.type = parseInt(keywords[4]);
 				// this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece.die();
-				if (this.last_click_coord && this.last_click_coord.X == parseInt(keywords[2]) && this.last_click_coord.Y == parseInt(keywords[3]))
+				if (this.last_click_coord && this.last_click_coord.X == parseInt(keywords[2]) && this.last_click_coord.Y == parseInt(keywords[3])){
 					this.last_click_coord = null;
+				}
+				if (this.guess && this.guess.X == parseInt(keywords[2]) && this.guess == parseInt(keywords[3])){
+					this.hexgrid.matrix[gc.guess.X][gc.guess.Y].guessing = false;
+					this.guess = null;
+				}
 				this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece = null;
 				// update minimap
 				var pointOnMap = this.hexgrid.toMap(new Coordinate(parseInt(keywords[2]), parseInt(keywords[3])));
@@ -336,7 +341,10 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 			
 			var isReachable = gc.hexgrid.isReachable(coord);
 			var isAttackable = gc.hexgrid.isAttackable(coord);
-			
+			if(gc.guess){
+				gc.hexgrid.matrix[gc.guess.X][gc.guess.Y].guessing = false;
+			}
+			gc.guess = null;
 			// some unit has been selected, and some hexagon without this player's unit has been clicked
 			if (gc.last_click_coord && (unitplayer != gc.player)) {
 				if (isReachable) {  // Move unit
@@ -348,9 +356,9 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				gc.hexgrid.clearAttackable();
 				gc.last_click_coord = null;
 			}
-			
+	
 			// some hexagon with this player's unit has been clicked, select that unit
-			else if (unitplayer == gc.player) {
+			if (unitplayer == gc.player) {
 				gc.hexgrid.clearReachable();
 				gc.hexgrid.clearAttackable();
 				if (gc.hexgrid.getUnit(coord).cooldown<=0) {
@@ -359,7 +367,10 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 					gc.hexgrid.markAttackable(coord,coord);
 				}
 			}else{
-				gc.guess = coord;
+				if(gc.hexgrid.getUnit(coord)){
+					gc.guess = coord;
+					gc.hexgrid.matrix[coord.X][coord.Y].guessing = true;
+				}
 			}
 		};
 		
@@ -373,6 +384,8 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				gc.last_click_coord = null;
 				gc.hexgrid.clearReachable();
 				gc.hexgrid.clearAttackable();
+				gc.hexgrid.matrix[gc.guess.X][gc.guess.Y].guessing = false;
+				gc.guess = null;
 			}
 		});
 
@@ -395,6 +408,39 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				gc.camera.moveUp();
 			if (gc.camera.isMovingDown)
 				gc.camera.moveDown();
+			if(gc.guess){
+				if (event.keyCode == 49){
+					gc.hexgrid.getUnit(gc.guess).guess(4);
+					gc.hexgrid.matrix[gc.guess.X][gc.guess.Y].guessing = false;
+					gc.guess = null;
+				}
+				if (event.keyCode == 50){
+					gc.hexgrid.getUnit(gc.guess).guess(3);
+					gc.hexgrid.matrix[gc.guess.X][gc.guess.Y].guessing = false;
+					gc.guess = null;
+				}
+				if (event.keyCode == 51){
+					gc.hexgrid.getUnit(gc.guess).guess(2);
+					gc.hexgrid.matrix[gc.guess.X][gc.guess.Y].guessing = false;
+					gc.guess = null;
+				}
+				if (event.keyCode == 52){
+					gc.hexgrid.getUnit(gc.guess).guess(1);
+					gc.hexgrid.matrix[gc.guess.X][gc.guess.Y].guessing = false;
+					gc.guess = null;
+				}
+				if (event.keyCode == 53){
+					gc.hexgrid.getUnit(gc.guess).guess(0);
+					gc.hexgrid.matrix[gc.guess.X][gc.guess.Y].guessing = false;
+					gc.guess = null;
+				}
+				if (event.keyCode == 54){
+					gc.hexgrid.getUnit(gc.guess).guess(5);
+					gc.hexgrid.matrix[gc.guess.X][gc.guess.Y].guessing = false;
+					gc.guess = null;
+				}
+				
+			}
 		});
 		
 		document.addEventListener('keyup', function(event) {  // keyup event listener
@@ -416,6 +462,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 			image: this.whokillswhoImg,
 			listening: false
 		}));
+		
 		
 		// hard-coded game instance for demo!!!
 		this.camera = new BuildCamera([this.background.width, this.background.height], 15, this.background, mapLayer);

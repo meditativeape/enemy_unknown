@@ -239,6 +239,7 @@ function Hexagon(id, mx, my, x, y, spec, camera, map, callback) {
 	this.matrixy = my;
 	this.reachable = false;
 	this.attackable = false;
+	this.guessing = false;
 	this.Points = [];//Polygon Base
 	this.spec = spec;
 	var x1 = (spec.width - spec.side)/2;
@@ -343,6 +344,8 @@ Hexagon.prototype.update = function() {
 		this.hexagonToDraw.setFill('rgba(120, 255,120, 0.3)');
 	} else if (this.attackable) {
 		this.hexagonToDraw.setFill('rgba(255, 0, 0, 0.3)');
+	}else if (this.guessing){
+		this.hexagonToDraw.setFill('rgba(0,0,255,0.3)');
 	}
 	
 	// add/update terrain
