@@ -103,6 +103,10 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				me.last_click_coord = null;
 				me.hexgrid.clearReachable();
 				me.hexgrid.clearAttackable();
+				if(me.guess){
+					me.hexgrid.matrix[me.guess.X][me.guess.Y].guessing = false;
+					me.guess = null;
+				}
 			}
 		};
 		document.addEventListener('contextmenu', contextmenu);
