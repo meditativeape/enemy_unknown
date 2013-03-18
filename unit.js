@@ -68,7 +68,7 @@ Unit.prototype.draw = function(/*Point*/p, /*int*/height) {
 			width: this.image.width,
 			height: this.image.height
 		});
-		var offset = Math.round((5 - this.cooldown/3)*10);
+		var offset = Math.round((5 - this.cooldown/2)*10);
 		unitToDraw.setCrop({x:120*offset, y:0, width:120, height:120});
 	} else {
 		unitToDraw = new Kinetic.Image({
@@ -118,6 +118,10 @@ Unit.prototype.drawHP = function(/*Point*/p, /*int*/height) {
 	
 	return hpToDraw;
 };
+
+Unit.prototype.guess = function(/*int*/ guess){
+	this.image = gc.sprites[this.player][guess];
+}
 
 Unit.prototype.minusHP = function(/*int*/hp){
 	this.lostHP = this.hp - hp;
