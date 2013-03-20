@@ -176,7 +176,7 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 			case "add":
 				var coord = new helper.Coordinate(parseInt(keywords[2]), parseInt(keywords[3]));
 				if(this.canAdd()){
-					this.hexgrid.addUnit(new Unit(parseInt(keywords[2]),parseInt(keywords[3]),100,parseInt(keywords[4]),new Coordinate(parseInt(keywords[5]),parseInt(keywords[6])),null,null),coord);
+					this.hexgrid.addUnit(new Unit(parseInt(keywords[2]),parseInt(keywords[3]),4,parseInt(keywords[4]),new Coordinate(parseInt(keywords[5]),parseInt(keywords[6])),null,null),coord);
 				}
 				break;
 			case "move":
@@ -304,7 +304,7 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 			shuffle(types);
 			var sp = this.hexgrid.scenario.startpoint[i];
 			for (var j = 0; j < types.length; j++) {
-				var u = new Unit(i, i, 100, types[j], new helper.Coordinate(sp[j][0], sp[j][1]), null);
+				var u = new Unit(i, i, 4, types[j], new helper.Coordinate(sp[j][0], sp[j][1]), null);
 				pieces.push(u);
 				this.hexgrid.addUnit(u, new helper.Coordinate(sp[j][0], sp[j][1]));
 			}

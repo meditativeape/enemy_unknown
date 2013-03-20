@@ -44,9 +44,10 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 	
 		// Container for all unit images
 		// 0:red, 1:yellow, 2:blue, 3:green
-		this.sprites = [[], [], [], []];
+        this.sprites = [[], [], [], []];
 		// Container for all unit cooldown images
 		this.cooldown = [[], [], [], []];
+        
 		this.last_click_coord = null;
 		this.background = null;
 		this.camera = null;
@@ -62,6 +63,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		this.capping = 0;
 		this.countdownTimer = null;
 		this.resource = 0;
+        this.showNum = 1;
 		
 		var me = this;
 		var mousemove = function(event) {  // mouse move event listener
@@ -190,59 +192,75 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		
 		var isAppLoaded = function() {
 			files_loaded++;
-			if (files_loaded >= 40) {
+			if (files_loaded >= 53) {
 				gc.initiate(scenario,type);
 			}
 		}
 		
 		// load sprites
-		this.background = load_image("sprites\\bg1.png");
+		this.background = load_image("sprites\\bg_grey.jpg");
+        this.heartImg = load_image("sprites\\heart.png");
 		this.flagImg = load_image("sprites\\tile-flag.png");
 		this.thronImg = load_image("sprites\\thron.png");
 		this.whokillswhoImg = load_image("sprites\\whokillswho.png");
 
-		this.sprites[0][0] = load_image("sprites\\wizard3_red.png");
-		this.sprites[0][1] = load_image("sprites\\zombie3_red.png");
-		this.sprites[0][2] = load_image("sprites\\hunter3_red.png");
-		this.sprites[0][3] = load_image("sprites\\wolf3_red.png");
-		this.sprites[0][4] = load_image("sprites\\vampire3_red.png");
-		this.sprites[0][5] = load_image("sprites\\unknown3_red.png");
+		this.sprites[0][0] = load_image("sprites\\wizard6_red.png");
+		this.sprites[0][1] = load_image("sprites\\zombie6_red.png");
+		this.sprites[0][2] = load_image("sprites\\hunter6_red.png");
+		this.sprites[0][3] = load_image("sprites\\wolf6_red.png");
+		this.sprites[0][4] = load_image("sprites\\vampire6_red.png");
+		this.sprites[0][5] = load_image("sprites\\unknown6_red.png");
 		
-		this.sprites[1][0] = load_image("sprites\\wizard3_yellow.png");
-		this.sprites[1][1] = load_image("sprites\\zombie3_yellow.png");
-		this.sprites[1][2] = load_image("sprites\\hunter3_yellow.png");
-		this.sprites[1][3] = load_image("sprites\\wolf3_yellow.png");
-		this.sprites[1][4] = load_image("sprites\\vampire3_yellow.png");
-		this.sprites[1][5] = load_image("sprites\\unknown3_yellow.png");
+		this.sprites[1][0] = load_image("sprites\\wizard6_yellow.png");
+		this.sprites[1][1] = load_image("sprites\\zombie6_yellow.png");
+		this.sprites[1][2] = load_image("sprites\\hunter6_yellow.png");
+		this.sprites[1][3] = load_image("sprites\\wolf6_yellow.png");
+		this.sprites[1][4] = load_image("sprites\\vampire6_yellow.png");
+		this.sprites[1][5] = load_image("sprites\\unknown6_yellow.png");
 		
-		this.sprites[2][0] = load_image("sprites\\wizard3_blue.png");
-		this.sprites[2][1] = load_image("sprites\\zombie3_blue.png");
-		this.sprites[2][2] = load_image("sprites\\hunter3_blue.png");
-		this.sprites[2][3] = load_image("sprites\\wolf3_blue.png");
-		this.sprites[2][4] = load_image("sprites\\vampire3_blue.png");
-		this.sprites[2][5] = load_image("sprites\\unknown3_blue.png");
+		this.sprites[2][0] = load_image("sprites\\wizard6_blue.png");
+		this.sprites[2][1] = load_image("sprites\\zombie6_blue.png");
+		this.sprites[2][2] = load_image("sprites\\hunter6_blue.png");
+		this.sprites[2][3] = load_image("sprites\\wolf6_blue.png");
+		this.sprites[2][4] = load_image("sprites\\vampire6_blue.png");
+		this.sprites[2][5] = load_image("sprites\\unknown6_blue.png");
 		
-		this.sprites[3][0] = load_image("sprites\\wizard3_green.png");
-		this.sprites[3][1] = load_image("sprites\\zombie3_green.png");
-		this.sprites[3][2] = load_image("sprites\\hunter3_green.png");
-		this.sprites[3][3] = load_image("sprites\\wolf3_green.png");
-		this.sprites[3][4] = load_image("sprites\\vampire3_green.png");
-		this.sprites[3][5] = load_image("sprites\\unknown3_green.png");
+		this.sprites[3][0] = load_image("sprites\\wizard6_green.png");
+		this.sprites[3][1] = load_image("sprites\\zombie6_green.png");
+		this.sprites[3][2] = load_image("sprites\\hunter6_green.png");
+		this.sprites[3][3] = load_image("sprites\\wolf6_green.png");
+		this.sprites[3][4] = load_image("sprites\\vampire6_green.png");
+		this.sprites[3][5] = load_image("sprites\\unknown6_green.png");
 
 		// load cooldown spritesheetss
-		this.cooldown[0][0] = load_image("sprites\\WIZARD3_RED_CD2.png");
-		this.cooldown[0][1] = load_image("sprites\\ZOMBIE3_RED_CD2.png");
-		this.cooldown[0][2] = load_image("sprites\\HUNTER3_RED_CD2.png");
-		this.cooldown[0][3] = load_image("sprites\\WOLF3_RED_CD2.png");
-		this.cooldown[0][4] = load_image("sprites\\VAMPIRE3_RED_CD2.png");
-		this.cooldown[0][5] = load_image("sprites\\UNKNOWN3_RED_CD2.png");
+        
+		this.cooldown[0][0] = load_image("sprites\\WIZARD6_RED_CD.png");
+		this.cooldown[0][1] = load_image("sprites\\ZOMBIE6_RED_CD.png");
+		this.cooldown[0][2] = load_image("sprites\\HUNTER6_RED_CD.png");
+		this.cooldown[0][3] = load_image("sprites\\WOLF6_RED_CD.png");
+		this.cooldown[0][4] = load_image("sprites\\VAMPIRE6_RED_CD.png");
+		this.cooldown[0][5] = load_image("sprites\\UNKNOWN6_RED_CD.png");
 		
-		this.cooldown[1][0] = load_image("sprites\\WIZARD3_YELLOW_CD2.png");
-		this.cooldown[1][1] = load_image("sprites\\ZOMBIE3_YELLOW_CD2.png");
-		this.cooldown[1][2] = load_image("sprites\\HUNTER3_YELLOW_CD2.png");
-		this.cooldown[1][3] = load_image("sprites\\WOLF3_YELLOW_CD2.png");
-		this.cooldown[1][4] = load_image("sprites\\VAMPIRE3_YELLOW_CD2.png");
-		this.cooldown[1][5] = load_image("sprites\\UNKNOWN3_YELLOW_CD2.png");
+		this.cooldown[1][0] = load_image("sprites\\WIZARD6_YELLOW_CD.png");
+		this.cooldown[1][1] = load_image("sprites\\ZOMBIE6_YELLOW_CD.png");
+		this.cooldown[1][2] = load_image("sprites\\HUNTER6_YELLOW_CD.png");
+		this.cooldown[1][3] = load_image("sprites\\WOLF6_YELLOW_CD.png");
+		this.cooldown[1][4] = load_image("sprites\\VAMPIRE6_YELLOW_CD.png");
+		this.cooldown[1][5] = load_image("sprites\\UNKNOWN6_YELLOW_CD.png");
+        
+        this.cooldown[2][0] = load_image("sprites\\WIZARD6_BLUE_CD.png");
+		this.cooldown[2][1] = load_image("sprites\\ZOMBIE6_BLUE_CD.png");
+		this.cooldown[2][2] = load_image("sprites\\HUNTER6_BLUE_CD.png");
+		this.cooldown[2][3] = load_image("sprites\\WOLF6_BLUE_CD.png");
+		this.cooldown[2][4] = load_image("sprites\\VAMPIRE6_BLUE_CD.png");
+		this.cooldown[2][5] = load_image("sprites\\UNKNOWN6_BLUE_CD.png");
+        
+        this.cooldown[3][0] = load_image("sprites\\WIZARD6_GREEN_CD.png");
+		this.cooldown[3][1] = load_image("sprites\\ZOMBIE6_GREEN_CD.png");
+		this.cooldown[3][2] = load_image("sprites\\HUNTER6_GREEN_CD.png");
+		this.cooldown[3][3] = load_image("sprites\\WOLF6_GREEN_CD.png");
+		this.cooldown[3][4] = load_image("sprites\\VAMPIRE6_GREEN_CD.png");
+		this.cooldown[3][5] = load_image("sprites\\UNKNOWN6_GREEN_CD.png");
 		
 		//Add terrain images.
 		CONSTANTS.thronTerrain.image = this.thronImg;
@@ -340,8 +358,9 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				break;
 			case "add":
 				var sprite = this.sprites[parseInt(keywords[2])][parseInt(keywords[4])];
-				var cdImage = this.cooldown[parseInt(keywords[2])][parseInt(keywords[4])];
-				this.hexgrid.matrix[parseInt(keywords[5])][parseInt(keywords[6])].piece = new Unit(parseInt(keywords[2]),parseInt(keywords[3]),100,parseInt(keywords[4]),new Coordinate(parseInt(keywords[5]),parseInt(keywords[6])),sprite,cdImage);
+				var cd = this.cooldown[parseInt(keywords[2])][parseInt(keywords[4])];
+				this.hexgrid.matrix[parseInt(keywords[5])][parseInt(keywords[6])].piece = new Unit(parseInt(keywords[2]), parseInt(keywords[3]),
+                        4, parseInt(keywords[4]), new Coordinate(parseInt(keywords[5]),parseInt(keywords[6])), this.heartImg, sprite, cd, this.showNum);
 				this.updateRA();
 				// update minimap
 				var pointOnMap = this.hexgrid.toMap(new Coordinate(parseInt(keywords[5]), parseInt(keywords[6])));

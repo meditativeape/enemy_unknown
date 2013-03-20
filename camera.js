@@ -32,7 +32,7 @@ var BuildCamera = function(mapSize, movingSpeed, img, layer) {
 		width: CONSTANTS.width,
 		height: CONSTANTS.height
 	});
-	// layer.add(bg);
+	layer.add(bg);
 	
 	// add animation to move camera and background image
 	var me = this;
@@ -45,12 +45,12 @@ var BuildCamera = function(mapSize, movingSpeed, img, layer) {
 			me.moveUp();
 		if (me.isMovingDown)
 			me.moveDown();
-		// bg.setCrop({
-			// x: me.x,
-			// y: me.y,
-			// width: CONSTANTS.width,
-			// height: CONSTANTS.height
-		// });
+		bg.setCrop({
+			x: me.x,
+			y: me.y,
+			width: CONSTANTS.width,
+			height: CONSTANTS.height
+		});
 	}, layer);
 	this.anime.start();
 	
