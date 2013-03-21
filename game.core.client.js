@@ -265,6 +265,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		//Add terrain images.
 		CONSTANTS.thronTerrain.image = this.thronImg;
 		CONSTANTS.flagTerrain.image = this.flagImg;
+        CONSTANTS.heart = this.heartImg;
 	};
 
 	game_core_client.prototype.onnetmessage = function(data){
@@ -360,7 +361,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				var sprite = this.sprites[parseInt(keywords[2])][parseInt(keywords[4])];
 				var cd = this.cooldown[parseInt(keywords[2])][parseInt(keywords[4])];
 				this.hexgrid.matrix[parseInt(keywords[5])][parseInt(keywords[6])].piece = new Unit(parseInt(keywords[2]), parseInt(keywords[3]),
-                        4, parseInt(keywords[4]), new Coordinate(parseInt(keywords[5]),parseInt(keywords[6])), this.heartImg, sprite, cd, this.showNum);
+                        4, parseInt(keywords[4]), new Coordinate(parseInt(keywords[5]),parseInt(keywords[6])), sprite, cd, this.showNum);
 				this.updateRA();
 				// update minimap
 				var pointOnMap = this.hexgrid.toMap(new Coordinate(parseInt(keywords[5]), parseInt(keywords[6])));
