@@ -1,10 +1,16 @@
+// server side we import CONSTANTS
+if( 'undefined' != typeof global ) {
+    var helper = require("./helper.js");
+	var CONSTANTS = helper.CONSTANTS;
+}
+
 // Unit Prototype
 
 /**
 * Prototype for a unit
 * @constructor
 */
-var Unit = function(/*int*/player, /*int*/ team, /*int*/hp, /*int*/type, /*Coordinate*/startCoord, /*image*/heartImg, /*image*/pic, /*image*/cd, /*int*/showNum){
+var Unit = function(/*int*/player, /*int*/ team, /*int*/hp, /*int*/type, /*Coordinate*/startCoord, /*image*/pic, /*image*/cd, /*int*/showNum){
 	this.player = player; //Starts from 0
 	this.team = team; //Starts from 0
 	this.hp = hp;
@@ -15,7 +21,7 @@ var Unit = function(/*int*/player, /*int*/ team, /*int*/hp, /*int*/type, /*Coord
 	this.cooldown = 0;
 	this.moved = false;
 	this.attacked = false;
-    this.heartImage = heartImg;
+    this.heartImage = CONSTANTS.heart;
 	this.image = pic;
 	this.cd = cd;
 	this.attacking = false;
@@ -150,6 +156,7 @@ Unit.prototype.drawHP = function(/*Point*/p, /*int*/height) {
 };
 
 Unit.prototype.guess = function(/*int*/ guess){
+    this.type = guess;
 	this.image = gc.sprites[this.player][guess];
 	this.cdImage = gc.cooldown[this.player][guess];
 }
