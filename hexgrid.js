@@ -31,7 +31,7 @@ var BuildMap = function(/*string*/mapName, /*camera*/camera, /*layer*/layer, /*f
 		this.hexGroup = new Kinetic.Group();  // only hexagons listen to events
 		this.terrainGroup = new Kinetic.Group({listening: false});
 		this.unitGroup = new Kinetic.Group({listening: false});
-		this.hpGroup = new Kinetic.Group({listening: false});
+		// this.hpGroup = new Kinetic.Group({listening: false});
 	}
 	
 	this.matrix = [];
@@ -70,7 +70,7 @@ var BuildMap = function(/*string*/mapName, /*camera*/camera, /*layer*/layer, /*f
 		layer.add(this.terrainGroup);
 		layer.add(this.hexGroup);
 		layer.add(this.unitGroup);
-		layer.add(this.hpGroup);
+		// layer.add(this.hpGroup);
 		var me = this;
 		this.anim = new Kinetic.Animation(function(frame) {
 			for(var x in me.matrix){
@@ -365,12 +365,12 @@ Hexagon.prototype.update = function() {
 	// add/update unit and hp
 	if (this.unitToDraw)
 		this.unitToDraw.destroy();
-	if (this.hpToDraw)
-		this.hpToDraw.destroy();
+	// if (this.hpToDraw)
+		// this.hpToDraw.destroy();
 	if (this.piece != null) {
 		this.unitToDraw = this.piece.draw(midPoint, this.spec.height);
 		this.map.unitGroup.add(this.unitToDraw);
-		this.hpToDraw = this.piece.drawHP(midPoint, this.spec.height);
-		this.map.hpGroup.add(this.hpToDraw);
+		// this.hpToDraw = this.piece.drawHP(midPoint, this.spec.height);
+		// this.map.hpGroup.add(this.hpToDraw);
 	}
 };
