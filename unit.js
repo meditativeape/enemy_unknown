@@ -150,7 +150,7 @@ Unit.prototype.drawHP = function(/*Point*/p, /*int*/height) {
 };
 
 Unit.prototype.guess = function(/*int*/ guess){
-	this.imageWithNum = gc.sprites[this.player][guess];
+	this.image = gc.sprites[this.player][guess];
 	this.cdImage = gc.cooldown[this.player][guess];
 }
 
