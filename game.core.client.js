@@ -124,12 +124,12 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 			}
 			if (me.guess) {
 				if (event.keyCode == 49){
-					me.hexgrid.getUnit(me.guess).guess(4);
+					me.hexgrid.getUnit(me.guess).guess(0);
 					me.hexgrid.matrix[me.guess.X][me.guess.Y].guessing = false;
 					me.guess = null;
 				}
 				if (event.keyCode == 50){
-					me.hexgrid.getUnit(me.guess).guess(3);
+					me.hexgrid.getUnit(me.guess).guess(1);
 					me.hexgrid.matrix[me.guess.X][me.guess.Y].guessing = false;
 					me.guess = null;
 				}
@@ -139,12 +139,12 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 					me.guess = null;
 				}
 				if (event.keyCode == 52){
-					me.hexgrid.getUnit(me.guess).guess(1);
+					me.hexgrid.getUnit(me.guess).guess(3);
 					me.hexgrid.matrix[me.guess.X][me.guess.Y].guessing = false;
 					me.guess = null;
 				}
 				if (event.keyCode == 53){
-					me.hexgrid.getUnit(me.guess).guess(0);
+					me.hexgrid.getUnit(me.guess).guess(4);
 					me.hexgrid.matrix[me.guess.X][me.guess.Y].guessing = false;
 					me.guess = null;
 				}
@@ -204,62 +204,62 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		this.thronImg = load_image("sprites\\thron.png");
 		this.whokillswhoImg = load_image("sprites\\whokillswho.png");
 
-		this.sprites[0][0] = load_image("sprites\\wizard6_red.png");
-		this.sprites[0][1] = load_image("sprites\\zombie6_red.png");
+		this.sprites[0][0] = load_image("sprites\\vampire6_red.png");
+		this.sprites[0][1] = load_image("sprites\\wolf6_red.png");
 		this.sprites[0][2] = load_image("sprites\\hunter6_red.png");
-		this.sprites[0][3] = load_image("sprites\\wolf6_red.png");
-		this.sprites[0][4] = load_image("sprites\\vampire6_red.png");
+		this.sprites[0][3] = load_image("sprites\\zombie6_red.png");
+		this.sprites[0][4] = load_image("sprites\\wizard6_red.png");
 		this.sprites[0][5] = load_image("sprites\\unknown6_red.png");
 		
-		this.sprites[1][0] = load_image("sprites\\wizard6_yellow.png");
-		this.sprites[1][1] = load_image("sprites\\zombie6_yellow.png");
+		this.sprites[1][0] = load_image("sprites\\vampire6_yellow.png");
+		this.sprites[1][1] = load_image("sprites\\wolf6_yellow.png");
 		this.sprites[1][2] = load_image("sprites\\hunter6_yellow.png");
-		this.sprites[1][3] = load_image("sprites\\wolf6_yellow.png");
-		this.sprites[1][4] = load_image("sprites\\vampire6_yellow.png");
+		this.sprites[1][3] = load_image("sprites\\zombie6_yellow.png");
+		this.sprites[1][4] = load_image("sprites\\wizard6_yellow.png");
 		this.sprites[1][5] = load_image("sprites\\unknown6_yellow.png");
 		
-		this.sprites[2][0] = load_image("sprites\\wizard6_blue.png");
-		this.sprites[2][1] = load_image("sprites\\zombie6_blue.png");
+		this.sprites[2][0] = load_image("sprites\\vampire6_blue.png");
+		this.sprites[2][1] = load_image("sprites\\wolf6_blue.png");
 		this.sprites[2][2] = load_image("sprites\\hunter6_blue.png");
-		this.sprites[2][3] = load_image("sprites\\wolf6_blue.png");
-		this.sprites[2][4] = load_image("sprites\\vampire6_blue.png");
+		this.sprites[2][3] = load_image("sprites\\zombie6_blue.png");
+		this.sprites[2][4] = load_image("sprites\\wizard6_blue.png");
 		this.sprites[2][5] = load_image("sprites\\unknown6_blue.png");
 		
-		this.sprites[3][0] = load_image("sprites\\wizard6_green.png");
-		this.sprites[3][1] = load_image("sprites\\zombie6_green.png");
+		this.sprites[3][0] = load_image("sprites\\vampire6_green.png");
+		this.sprites[3][1] = load_image("sprites\\wolf6_green.png");
 		this.sprites[3][2] = load_image("sprites\\hunter6_green.png");
-		this.sprites[3][3] = load_image("sprites\\wolf6_green.png");
-		this.sprites[3][4] = load_image("sprites\\vampire6_green.png");
+		this.sprites[3][3] = load_image("sprites\\zombie6_green.png");
+		this.sprites[3][4] = load_image("sprites\\wizard6_green.png");
 		this.sprites[3][5] = load_image("sprites\\unknown6_green.png");
 
 		// load cooldown spritesheetss
         
-		this.cooldown[0][0] = load_image("sprites\\WIZARD6_RED_CD.png");
-		this.cooldown[0][1] = load_image("sprites\\ZOMBIE6_RED_CD.png");
+		this.cooldown[0][0] = load_image("sprites\\VAMPIRE6_RED_CD.png");
+		this.cooldown[0][1] = load_image("sprites\\WOLF6_RED_CD.png");
 		this.cooldown[0][2] = load_image("sprites\\HUNTER6_RED_CD.png");
-		this.cooldown[0][3] = load_image("sprites\\WOLF6_RED_CD.png");
-		this.cooldown[0][4] = load_image("sprites\\VAMPIRE6_RED_CD.png");
+		this.cooldown[0][3] = load_image("sprites\\ZOMBIE6_RED_CD.png");
+		this.cooldown[0][4] = load_image("sprites\\WIZARD6_RED_CD.png");
 		this.cooldown[0][5] = load_image("sprites\\UNKNOWN6_RED_CD.png");
 		
-		this.cooldown[1][0] = load_image("sprites\\WIZARD6_YELLOW_CD.png");
-		this.cooldown[1][1] = load_image("sprites\\ZOMBIE6_YELLOW_CD.png");
+		this.cooldown[1][0] = load_image("sprites\\VAMPIRE6_YELLOW_CD.png");
+		this.cooldown[1][1] = load_image("sprites\\WOLF6_YELLOW_CD.png");
 		this.cooldown[1][2] = load_image("sprites\\HUNTER6_YELLOW_CD.png");
-		this.cooldown[1][3] = load_image("sprites\\WOLF6_YELLOW_CD.png");
-		this.cooldown[1][4] = load_image("sprites\\VAMPIRE6_YELLOW_CD.png");
+		this.cooldown[1][3] = load_image("sprites\\ZOMBIE6_YELLOW_CD.png");
+		this.cooldown[1][4] = load_image("sprites\\WIZARD6_YELLOW_CD.png");
 		this.cooldown[1][5] = load_image("sprites\\UNKNOWN6_YELLOW_CD.png");
         
-        this.cooldown[2][0] = load_image("sprites\\WIZARD6_BLUE_CD.png");
-		this.cooldown[2][1] = load_image("sprites\\ZOMBIE6_BLUE_CD.png");
+        this.cooldown[2][0] = load_image("sprites\\VAMPIRE6_BLUE_CD.png");
+		this.cooldown[2][1] = load_image("sprites\\WOLF6_BLUE_CD.png");
 		this.cooldown[2][2] = load_image("sprites\\HUNTER6_BLUE_CD.png");
-		this.cooldown[2][3] = load_image("sprites\\WOLF6_BLUE_CD.png");
-		this.cooldown[2][4] = load_image("sprites\\VAMPIRE6_BLUE_CD.png");
+		this.cooldown[2][3] = load_image("sprites\\ZOMBIE6_BLUE_CD.png");
+		this.cooldown[2][4] = load_image("sprites\\WIZARD6_BLUE_CD.png");
 		this.cooldown[2][5] = load_image("sprites\\UNKNOWN6_BLUE_CD.png");
         
-        this.cooldown[3][0] = load_image("sprites\\WIZARD6_GREEN_CD.png");
-		this.cooldown[3][1] = load_image("sprites\\ZOMBIE6_GREEN_CD.png");
+        this.cooldown[3][0] = load_image("sprites\\VAMPIRE6_GREEN_CD.png");
+		this.cooldown[3][1] = load_image("sprites\\WOLF6_GREEN_CD.png");
 		this.cooldown[3][2] = load_image("sprites\\HUNTER6_GREEN_CD.png");
-		this.cooldown[3][3] = load_image("sprites\\WOLF6_GREEN_CD.png");
-		this.cooldown[3][4] = load_image("sprites\\VAMPIRE6_GREEN_CD.png");
+		this.cooldown[3][3] = load_image("sprites\\ZOMBIE6_GREEN_CD.png");
+		this.cooldown[3][4] = load_image("sprites\\WIZARD6_GREEN_CD.png");
 		this.cooldown[3][5] = load_image("sprites\\UNKNOWN6_GREEN_CD.png");
 		
 		//Add terrain images.
