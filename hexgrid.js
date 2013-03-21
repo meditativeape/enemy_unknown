@@ -289,8 +289,8 @@ function Hexagon(id, mx, my, x, y, spec, camera, map, callback) {
 		this.hexagonToDraw = new Kinetic.Polygon(hexagonConfig);
 		if (this.callback) {
 			var me = this;
-			this.hexagonToDraw.on('click', function(event){
-				if (event.which == 1)  // only works with left click
+			this.hexagonToDraw.on('click tap', function(event){
+				if (event.which != 2)  // does work with right click
 					me.callback(new Coordinate(me.matrixx, me.matrixy));
 			});
 		}
