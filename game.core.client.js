@@ -266,6 +266,27 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		CONSTANTS.thronTerrain.image = this.thronImg;
 		CONSTANTS.flagTerrain.image = this.flagImg;
         CONSTANTS.heart = this.heartImg;
+		
+		//Load sounds
+		soundManager.setup({
+		  url: '/lib/',
+		  flashVersion: 8, // optional: shiny features (default = 8)
+		  useFlashBlock: true, // optionally, enable when you're ready to dive in
+		  /**
+		   * read up on HTML5 audio support, if you're feeling adventurous.
+		   * iPad/iPhone and devices without flash installed will always attempt to use it.
+		   */
+		  ontimeout: function() {
+  				alert("soundManager failed to load");	
+ 			}
+		});
+		
+		 var mySound = soundManager.createSound({
+			  id: 'background',
+			  url: '/sounds/forest.mp3'
+		});
+		mySound.play();
+
 	};
 
 	game_core_client.prototype.onnetmessage = function(data){
