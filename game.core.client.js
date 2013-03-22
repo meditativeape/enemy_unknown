@@ -192,7 +192,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		
 		var isAppLoaded = function() {
 			files_loaded++;
-			if (files_loaded >= 53) {
+			if (files_loaded >= 54) {
 				gc.initiate(scenario,type);
 			}
 		}
@@ -200,6 +200,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		// load sprites
 		this.background = load_image("sprites\\bg_grey.jpg");
         this.heartImg = load_image("sprites\\heart.png");
+		this.resourceImg = load_image("sprites\\resource.png");
 		this.flagImg = load_image("sprites\\tile-flag.png");
 		this.thronImg = load_image("sprites\\thron.png");
 		this.whokillswhoImg = load_image("sprites\\whokillswho.png");
@@ -232,8 +233,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		this.sprites[3][4] = load_image("sprites\\wizard6_green.png");
 		this.sprites[3][5] = load_image("sprites\\unknown6_green.png");
 
-		// load cooldown spritesheetss
-        
+		// load cooldown spritesheets
 		this.cooldown[0][0] = load_image("sprites\\VAMPIRE6_RED_CD.png");
 		this.cooldown[0][1] = load_image("sprites\\WOLF6_RED_CD.png");
 		this.cooldown[0][2] = load_image("sprites\\HUNTER6_RED_CD.png");
@@ -262,9 +262,10 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		this.cooldown[3][4] = load_image("sprites\\WIZARD6_GREEN_CD.png");
 		this.cooldown[3][5] = load_image("sprites\\UNKNOWN6_GREEN_CD.png");
 		
-		//Add terrain images.
+		// add terrain images
 		CONSTANTS.thronTerrain.image = this.thronImg;
 		CONSTANTS.flagTerrain.image = this.flagImg;
+		CONSTANTS.resourceTerrain.image = this.resourceImg;
         CONSTANTS.heart = this.heartImg;
 		
 		//Load sounds
@@ -619,6 +620,9 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				switch (terrain[i][j]) {
 				case "thron":
 					this.hexgrid.addTerrain(CONSTANTS.thronTerrain, new Coordinate(i, j));
+					break;
+				case "resource":
+					this.hexgrid.addTerrain(CONSTANTS.resourceTerrain, new Coordinate(i, j));
 					break;
 				case "flag":
 					this.hexgrid.addTerrain(CONSTANTS.flagTerrain, new Coordinate(i, j));

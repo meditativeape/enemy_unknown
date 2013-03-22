@@ -103,33 +103,51 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 		return responses;
 		
 	};
+	
+	game_core_server.prototype.updateResource = function(id, offset){
+		this.resources[id] += offset;
+		this.sendMsg(this.players[id], "1 resource " + this.resources[id]);
+	};
 
 	game_core_server.prototype.checkObjectives = function(){
 		for(var x in this.hexgrid.matrix){ // brute force!
 			for(var y in this.hexgrid.matrix[x]){
 				if(this.hexgrid.matrix[x][y].terrain){
-					if(this.hexgrid.matrix[x][y].terrain.objectiveType == 'flag'){
+					var t = this.hexgrid.matrix[x][y].terrain;
+					if(t.objectiveType == 'flag'){  // is a flag
 						var self = this;
-						if(this.hexgrid.matrix[x][y].piece && !this.winCountdownFlag){
+						if (this.hexgrid.matrix[x][y].piece && !t.captured) {
 							this.winner = self.hexgrid.matrix[x][y].piece.team;
 							for (var i in this.players) {
 								this.sendMsg(this.players[i], "1 countdown " + this.winner);
 							}
-							this.winCountdown = window.setTimeout(function(){
+							t.countdown = window.setTimeout(function(){
 								self.endGame(self.winner);
-								},self.hexgrid.matrix[x][y].terrain.objectiveTime*1000);
-							this.winCountdownFlag = true;
-						}
-						else if(!this.hexgrid.matrix[x][y].piece && this.winCountdownFlag){
+								}, t.objectiveTime*1000);
+							t.captured = true;
+						} else if (!this.hexgrid.matrix[x][y].piece && t.captured) {
 							this.winner = null;
-							window.clearTimeout(this.winCountdown);
+							window.clearTimeout(t.countdown);
 							for (var i in this.players) {
 								this.sendMsg(this.players[i], "1 countdown " + -1);
 							}
-							this.winCountdownFlag = false;
+							t.captured = false;
 						}
 					}
-					if(this.hexgrid.matrix[x][y].terrain.resource){
+					if (t.resource) {  // provide resource
+                        var r = t.resource;
+						var self = this;
+						if (this.hexgrid.matrix[x][y].piece && !t.captured) {
+                            var id = this.hexgrid.matrix[x][y].piece.player;
+							t.interval = window.setInterval(function(){
+								self.updateResource(id, r);
+								}, t.gatheringSpeed*1000);
+							t.captured = true;
+						} else if (!this.hexgrid.matrix[x][y].piece && t.captured) {
+							window.clearInterval(t.interval);
+                            t.interval = -1;
+							t.captured = false;
+						}
 					}
 				}
 			}
@@ -264,7 +282,6 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 		console.log(":: " + this.id.substring(0,8) + " :: Initializing game...");
 		for (var i in this.players) {
 			this.sendMsg(this.players[i], "0 init " + this.scenario + " " + i + " " + i + " " + this.type);  // TODO: 1v1 only!
-			// this.sendMsg(this.players[i], "resource " + CONSTANTS.init_resource);
 		}
 		
 		// helper function to shuffle an array
@@ -295,8 +312,18 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 				case "flag":
 					this.hexgrid.addTerrain(CONSTANTS.flagTerrain, new helper.Coordinate(i, j));
 					break;
+                case "resource":
+					this.hexgrid.addTerrain(CONSTANTS.resourceTerrain, new helper.Coordinate(i, j));
+					break;
 				}
 			}
+		
+		// initialize resources
+		var resource = this.hexgrid.scenario.resource;
+		if (resource) {
+			for (var i = 0; i < this.players.length; i++)
+                this.resources[i] = resource[i];
+		}
 			
 		// 2 players
 		for (i = 0; i < 2; i++) {
@@ -351,6 +378,17 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 	};
 	
 	game_core_server.prototype.endGame = function(winningTeam){
+        // clear all intervals in terrains
+        for(var x in this.hexgrid.matrix){ // brute force!
+			for(var y in this.hexgrid.matrix[x]){
+				if(this.hexgrid.matrix[x][y].terrain){
+					var t = this.hexgrid.matrix[x][y].terrain;
+                    if (t.interval != -1)
+                        window.clearInterval(t.interval);
+                }
+            }
+        }
+        // stop clients
 		for (var i in this.players) {
 			this.sendMsg(this.players[i], "0 end " + winningTeam);
 			this.players[i].game = null;

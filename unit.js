@@ -158,7 +158,7 @@ Unit.prototype.drawHP = function(/*Point*/p, /*int*/height) {
 Unit.prototype.guess = function(/*int*/ guess){
     this.type = guess;
 	this.image = gc.sprites[this.player][guess];
-	this.cdImage = gc.cooldown[this.player][guess];
+	this.cd = gc.cooldown[this.player][guess];
 }
 
 Unit.prototype.minusHP = function(/*int*/hp){
@@ -173,22 +173,22 @@ Unit.prototype.gotHit = function(/*Unit*/enemy){
 	var damage = enemy.buff?(enemy.attack+enemy.buff.attackBuff):enemy.attack;
 	var defense = this.buff?(this.defense*this.buff.defenseBuff):this.defense;
 	//Calculate type advantage
-    if(enemy.type == 0){
-		if(this.type == 4){
+    if(enemy.type == 4){
+		if(this.type == 0){
 			this.hp = 0;
 		}else if(enemy.type == this.type){
 			this.hp = this.hp - 1;
-		}else if(enemy.type<this.type){
+		}else if(enemy.type > this.type){
 			enemy.hp = enemy.hp - 1;
 		}
 	}else{
-		if(enemy.type>this.type){
+		if(enemy.type < this.type){
 			this.hp = this.hp - 2;
 		}
 		else if(enemy.type == this.type){
 			this.hp = this.hp - 1;
 		}
-		else if(enemy.type < this.type){
+		else if(enemy.type > this.type){
 			enemy.hp = enemy.hp - 1;
 		}
 	}

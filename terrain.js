@@ -15,6 +15,9 @@ var Terrain = function(/*int*/attackBuff,/*int*/ defenseBuff,/*int*/rangeBuff,/*
 	this.resource = resource;
 	this.gatheringSpeed = gatheringSpeed;
 	this.image = image;
+	this.captured = false;
+	this.countdown = null;
+    this.interval = -1;
 }
 
 var Buff = function(/*int*/attackBuff,/*int*/ defenseBuff,/*int*/rangeBuff){
@@ -28,7 +31,7 @@ var Buff = function(/*int*/attackBuff,/*int*/ defenseBuff,/*int*/rangeBuff){
  * If oldTerrain is provided, update on oldTerrain.
  * @this {Terrain}
  */
-Terrain.prototype.draw = function(/*Point*/p, /*int*/height, /*Kinetic.Image*/ oldTerrain) {
+Terrain.prototype.draw = function(/*Point*/p, /*int*/height, /*Kinetic.Image*/oldTerrain) {
 	if (this.image) {
 		if (oldTerrain) {
 			oldTerrain.setX(Math.floor(p.X - this.image.width/2));
@@ -49,3 +52,4 @@ Terrain.prototype.draw = function(/*Point*/p, /*int*/height, /*Kinetic.Image*/ o
 
 CONSTANTS.thronTerrain = new Terrain(0,0,0,false,null,0,0,0,null);
 CONSTANTS.flagTerrain = new Terrain(0,1,0,true,'flag',60,0,0,null);
+CONSTANTS.resourceTerrain = new Terrain(0,0,0,true,'resource',0,1,1,null);
