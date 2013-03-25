@@ -327,10 +327,6 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 			  id: 'gothitsound',
 			  url: '/sounds/gothit.mp3'
 		});
-
-		
-
-
 	};
 
 	game_core_client.prototype.onnetmessage = function(data){
@@ -383,7 +379,8 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				this.camera.stop();
 				this.minimap.stop();
 				this.hexgrid.stop();
-				this.centerMsgAnim.stop();
+				this.UILayerAnim.stop();
+                this.msgLayerAnim.stop();
 				// clear all layers
 				mapLayer.destroy();
 				mapLayer = new Kinetic.Layer();
@@ -533,7 +530,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 			fontStyle: 'italic'
 		});
 		msgLayer.add(centerMsg);
-		this.centerMsgAnim = new Kinetic.Animation(function(frame) {
+		this.msgLayerAnim = new Kinetic.Animation(function(frame) {
 			if (me.started) {
 				if (me.starting){
 					centerMsg.setText("Game has started");
@@ -592,7 +589,30 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				}
 			}
 		}, msgLayer);
-		this.centerMsgAnim.start();
+		this.msgLayerAnim.start();
+        
+        // who kills whom image
+		UILayer.add(new Kinetic.Image({
+			x: CONSTANTS.width - this.whokillswhoImg.width,
+			y: 0,
+			image: this.whokillswhoImg,
+			listening: false
+		}));
+		
+        // resource
+        var resourceText = new Kinetic.Text({
+            fontFamily: "Impact",
+            fontSize: 30,
+            stroke: "white",
+            text: this.resource,
+            x: 280,
+            y: 50
+        });
+        UILayer.add(resourceText);
+        this.UILayerAnim = new Kinetic.Animation(function(frame) {
+            resourceText.setText(me.resource);
+        }, UILayer);
+        this.UILayerAnim.start();
 	
 		// callback function for click events on a hexagon
 		var clickCallback = function(coord){
@@ -652,15 +672,6 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				gc.toBuild = null;
 			}
 		};
-		
-		// who kills whom image
-		UILayer.add(new Kinetic.Image({
-			x: CONSTANTS.width - this.whokillswhoImg.width,
-			y: 0,
-			image: this.whokillswhoImg,
-			listening: false
-		}));
-		
 		
 		// hard-coded game instance for demo!!!
 		var scenario = Scenarios[this.mapName];

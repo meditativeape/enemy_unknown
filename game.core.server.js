@@ -110,7 +110,7 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 	};
     
     game_core_server.prototype.buildUnit = function(type, coord, player){
-        var id = player.id;
+        var id = player.player;
         var team = player.team;
         // check if coord is empty
         if (this.hexgrid.getUnit(coord))
@@ -124,19 +124,18 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
         ys = [y, y+1, y-1, y+1, y-1, y];
         for (var i = 0; i < 6; i++) {
             unit = this.hexgrid.getUnit(new helper.Coordinate(xs[i], ys[i]));
-            if (unit && unit.team = team) {
+            if (unit && (unit.team == team)) {
                 hasAllyNearby = true;
                 break;
             }
         }
         // TODO: hardcoded cost!
-        if (hasAllyNearby && this.resources[id]>50) {
+        if (hasAllyNearby && this.resources[id]>=50) {
             // deduct resource
             this.resources[id] -= 50;
             this.sendMsg(this.players[id], "1 resource " + this.resources[id]);
             // add unit
             var u = new Unit(id, team, 4, type, coord);
-            pieces.push(u);
 			this.hexgrid.addUnit(u, coord);
             for (var i in this.players) {
                 if (this.hexgrid.scenario.revealtype || this.players[i].team == team) {
@@ -231,9 +230,9 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 		case 1:  // game state messages
 			switch (keywords[1]) {
 			case "build":
-                var type = parseInt(2);
+                var type = parseInt(keywords[2]);
 				var coord = new helper.Coordinate(parseInt(keywords[3]), parseInt(keywords[4]));
-				
+				this.buildUnit(type, coord, client);
 				break;
 			case "move":
 				var coord1 = new helper.Coordinate(parseInt(keywords[2]), parseInt(keywords[3]));
@@ -359,8 +358,10 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 		// initialize resources
 		var resource = this.hexgrid.scenario.resource;
 		if (resource) {
-			for (var i = 0; i < this.players.length; i++)
+			for (var i = 0; i < this.players.length; i++) {
                 this.resources[i] = resource[i];
+                this.sendMsg(this.players[i], "1 resource " + resource[i]);
+            }
 		}
 			
 		// 2 players
