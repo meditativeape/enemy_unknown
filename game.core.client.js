@@ -64,6 +64,8 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		this.countdownTimer = null;
 		this.resource = 0;
         this.showNum = 1;
+		this.build = false;
+		this.toBuild = null;
 		
 		var me = this;
 		var mousemove = function(event) {  // mouse move event listener
@@ -108,6 +110,8 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 					me.hexgrid.matrix[me.guess.X][me.guess.Y].guessing = false;
 					me.guess = null;
 				}
+				gc.build = false;
+				gc.toBuild = null;
 			}
 		};
 		document.addEventListener('contextmenu', contextmenu);
@@ -122,37 +126,88 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 			} else if (event.keyCode == 40 || event.keyCode == 83) { // down
 				me.camera.isMovingDown = true;
 			}
-			if (me.guess) {
-				if (event.keyCode == 49){
+			if (event.keyCode == 49){
+				if(me.guess){
 					me.hexgrid.getUnit(me.guess).guess(0);
 					me.hexgrid.matrix[me.guess.X][me.guess.Y].guessing = false;
 					me.guess = null;
 				}
-				if (event.keyCode == 50){
+				if(me.build){
+					if(me.resource >= 50){
+						me.toBuild = 0;
+						me.resource -= 50;
+					}
+					me.build = false;
+				}
+			}
+			if (event.keyCode == 50){
+				if(me.guess){
 					me.hexgrid.getUnit(me.guess).guess(1);
 					me.hexgrid.matrix[me.guess.X][me.guess.Y].guessing = false;
 					me.guess = null;
 				}
-				if (event.keyCode == 51){
+				if(me.build){
+					if(me.resource >= 50){
+						me.toBuild = 1;
+						me.resource -= 50;
+					}
+					me.build = false;
+				}
+			}
+			if (event.keyCode == 51){
+				if(me.guess){
 					me.hexgrid.getUnit(me.guess).guess(2);
 					me.hexgrid.matrix[me.guess.X][me.guess.Y].guessing = false;
 					me.guess = null;
 				}
-				if (event.keyCode == 52){
+				if(me.build){
+					if(me.resource >= 50){
+						me.toBuild = 2;
+						me.resource -= 50;
+					}
+					me.build = false;
+				}
+			}
+			if (event.keyCode == 52){
+				if(me.guess){
 					me.hexgrid.getUnit(me.guess).guess(3);
 					me.hexgrid.matrix[me.guess.X][me.guess.Y].guessing = false;
 					me.guess = null;
 				}
-				if (event.keyCode == 53){
+				if(me.build){
+					if(me.resource >= 50){
+						me.toBuild = 3;
+						me.resource -= 50;
+					}
+					me.build = false;
+				}
+			}
+			if (event.keyCode == 53){
+				if(me.guess){
 					me.hexgrid.getUnit(me.guess).guess(4);
 					me.hexgrid.matrix[me.guess.X][me.guess.Y].guessing = false;
 					me.guess = null;
 				}
-				if (event.keyCode == 54){
+				if(me.build){
+					if(me.resource >= 50){
+						me.toBuild = 4;
+						me.resource -= 50;
+					}
+					me.build = false;
+				}
+			}
+			if (event.keyCode == 54){
+				if(me.guess){
 					me.hexgrid.getUnit(me.guess).guess(5);
 					me.hexgrid.matrix[me.guess.X][me.guess.Y].guessing = false;
 					me.guess = null;
-				}	
+				}
+				gc.build = false;
+				gc.toBuild = null;
+			}	
+			if (event.keyCode == 81){
+				me.build = true;
+				me.toBuild = null;
 			}
 		};
 		document.addEventListener('keydown', keydown);
@@ -181,13 +236,6 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 			img.onload = isAppLoaded;
 			img.src = url;
 			return img;
-		};
-		
-		var load_audio = function(url) {
-			var audio = new Audio();
-			audio.addEventListener('canplaythrough', isAppLoaded, false);
-			audio.src = url;
-			return audio;
 		};
 		
 		var isAppLoaded = function() {
@@ -267,6 +315,22 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		CONSTANTS.flagTerrain.image = this.flagImg;
 		CONSTANTS.resourceTerrain.image = this.resourceImg;
         CONSTANTS.heart = this.heartImg;
+		
+
+		 var backgroundsound = soundManager.createSound({
+			  id: 'background',
+			  url: '/sounds/forest.mp3'
+		});
+		//backgroundsound.play();
+		
+		this.gothitsound = soundManager.createSound({
+			  id: 'gothitsound',
+			  url: '/sounds/gothit.mp3'
+		});
+
+		
+
+
 	};
 
 	game_core_client.prototype.onnetmessage = function(data){
@@ -538,7 +602,13 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 			}
 			
 			var unitplayer = -1;
-			if (gc.hexgrid.getUnit(coord)!=null) {
+			if (gc.hexgrid.getUnit(coord)==null) {
+				if(!(gc.toBuild===null)){
+					gc.socket.send('1 build ' + gc.toBuild + ' ' + coord.X +' ' + coord.Y);
+				}
+				gc.build = false;
+				gc.toBuild = null;
+			}else{
 				unitplayer = gc.hexgrid.getUnit(coord).player;
 			}
 			
@@ -558,6 +628,8 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				gc.hexgrid.clearReachable();
 				gc.hexgrid.clearAttackable();
 				gc.last_click_coord = null;
+				gc.build = false;
+				gc.toBuild = null;
 			}
 	
 			// some hexagon with this player's unit has been clicked, select that unit
@@ -569,11 +641,15 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 					gc.hexgrid.markReachable(coord);
 					gc.hexgrid.markAttackable(coord,coord);
 				}
+				gc.build = false;
+				gc.toBuild = null;
 			}else{
 				if(gc.hexgrid.getUnit(coord)){
 					gc.guess = coord;
 					gc.hexgrid.matrix[coord.X][coord.Y].guessing = true;
 				}
+				gc.build = false;
+				gc.toBuild = null;
 			}
 		};
 		

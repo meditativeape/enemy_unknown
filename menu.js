@@ -51,3 +51,18 @@ var menuBack = function(){
 	howToMenu.style.visibility = "hidden";
 	startMenu.style.visibility = "visible";
 }
+
+//Load sounds
+soundManager.setup({
+  url: '/lib/',
+  flashVersion: 8, // optional: shiny features (default = 8)
+  useFlashBlock: true, // optionally, enable when you're ready to dive in
+  /**
+   * read up on HTML5 audio support, if you're feeling adventurous.
+   * iPad/iPhone and devices without flash installed will always attempt to use it.
+   */
+  ontimeout: function() {
+		alert("soundManager failed to load");	
+	}
+});
+
