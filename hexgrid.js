@@ -127,7 +127,10 @@ var BuildMap = function(/*string*/mapName, /*camera*/camera, /*layer*/layer, /*f
 	}
 	
 	this.getUnit = function(/*Coordinate*/toCheck){
-		return this.matrix[toCheck.X][toCheck.Y].piece;
+        if (this.matrix[toCheck.X] && this.matrix[toCheck.X][toCheck.Y])
+            return this.matrix[toCheck.X][toCheck.Y].piece;
+        else
+            return null;
 	};
 	
 	this.addUnit = function(/*Unit */ toAdd, /*Coordinate*/dest){

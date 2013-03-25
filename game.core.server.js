@@ -108,6 +108,45 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 		this.resources[id] += offset;
 		this.sendMsg(this.players[id], "1 resource " + this.resources[id]);
 	};
+    
+    game_core_server.prototype.buildUnit = function(type, coord, player){
+        var id = player.id;
+        var team = player.team;
+        // check if coord is empty
+        if (this.hexgrid.getUnit(coord))
+            return;
+        // check if there is any ally unit nearby
+        hasAllyNearby = false;
+        var x = coord.X;
+        var y = coord.Y;
+        var unit;
+        xs = [x-1, x-1, x, x, x+1, x+1];
+        ys = [y, y+1, y-1, y+1, y-1, y];
+        for (var i = 0; i < 6; i++) {
+            unit = this.hexgrid.getUnit(new helper.Coordinate(xs[i], ys[i]));
+            if (unit && unit.team = team) {
+                hasAllyNearby = true;
+                break;
+            }
+        }
+        // TODO: hardcoded cost!
+        if (hasAllyNearby && this.resources[id]>50) {
+            // deduct resource
+            this.resources[id] -= 50;
+            this.sendMsg(this.players[id], "1 resource " + this.resources[id]);
+            // add unit
+            var u = new Unit(id, team, 4, type, coord);
+            pieces.push(u);
+			this.hexgrid.addUnit(u, coord);
+            for (var i in this.players) {
+                if (this.hexgrid.scenario.revealtype || this.players[i].team == team) {
+                    this.sendMsg(this.players[i], "1 add {0} {1} {2} {3} {4}".format([id, team, type, coord.X, coord.Y]));
+                } else {
+                    this.sendMsg(this.players[i], "1 add {0} {1} {2} {3} {4}".format([id, team, 5, coord.X, coord.Y]));
+                }
+            }
+        }
+    };
 
 	game_core_server.prototype.checkObjectives = function(){
 		for(var x in this.hexgrid.matrix){ // brute force!
@@ -191,11 +230,10 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 		
 		case 1:  // game state messages
 			switch (keywords[1]) {
-			case "add":
-				var coord = new helper.Coordinate(parseInt(keywords[2]), parseInt(keywords[3]));
-				if(this.canAdd()){
-					this.hexgrid.addUnit(new Unit(parseInt(keywords[2]),parseInt(keywords[3]),4,parseInt(keywords[4]),new Coordinate(parseInt(keywords[5]),parseInt(keywords[6])),null,null),coord);
-				}
+			case "build":
+                var type = parseInt(2);
+				var coord = new helper.Coordinate(parseInt(keywords[3]), parseInt(keywords[4]));
+				
 				break;
 			case "move":
 				var coord1 = new helper.Coordinate(parseInt(keywords[2]), parseInt(keywords[3]));
@@ -331,7 +369,7 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 			shuffle(types);
 			var sp = this.hexgrid.scenario.startpoint[i];
 			for (var j = 0; j < types.length; j++) {
-				var u = new Unit(i, i, 4, types[j], new helper.Coordinate(sp[j][0], sp[j][1]), null);
+				var u = new Unit(i, i, 4, types[j], new helper.Coordinate(sp[j][0], sp[j][1]));
 				pieces.push(u);
 				this.hexgrid.addUnit(u, new helper.Coordinate(sp[j][0], sp[j][1]));
 			}
