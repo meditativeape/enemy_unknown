@@ -182,6 +182,27 @@ var BuildMap = function(/*string*/mapName, /*camera*/camera, /*layer*/layer, /*f
 		}
 	};
 	
+	this.markBuildable = function(/*Coordinate*/coord){
+		var selectedHex = this.matrix[coord.X][coord.Y];
+		for(var x in this.matrix){ // brute force!
+			for(var y in this.matrix[x]){
+				var range = selectedHex.piece.buff?selectedHex.piece.range+selectedHex.piece.buff.rangeBuff:selectedHex.piece.range;
+				if (this.hexDist(selectedHex, this.matrix[x][y]) <= range && !this.matrix[x][y].piece) { // in range and not occupied
+					if(this.matrix[x][y].terrain){
+						if(this.matrix[x][y].terrain.moveable){
+							this.matrix[x][y].reachable = true;
+							this.reachables.push(this.matrix[x][y]);
+						}
+					}else{
+						this.matrix[x][y].reachable = true;
+						this.reachables.push(this.matrix[x][y]);
+					}
+				}
+			
+			}
+		}
+	};
+	
 	this.clearReachable = function(){
 		for (var i in this.reachables){  // clear reachables
 			var check = this.reachables[i];
@@ -352,6 +373,8 @@ Hexagon.prototype.update = function() {
 		this.hexagonToDraw.setFill('rgba(255, 0, 0, 0.3)');
 	}else if (this.guessing){
 		this.hexagonToDraw.setFill('rgba(0,0,255,0.3)');
+	}else if (this.canBuild){
+		this.hexagonToDraw.setFill('rgba(0,255,0,0.3)');
 	}
 	
 	// add/update terrain
