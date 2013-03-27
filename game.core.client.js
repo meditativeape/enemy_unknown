@@ -210,6 +210,8 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 			if (event.keyCode == 81){
 				me.build = true;
 				me.toBuild = null;
+				gc.hexgrid.clearReachable();
+				gc.hexgrid.clearAttackable();
 				gc.hexgrid.clearBuildable();
 			}
 		};
