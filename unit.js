@@ -118,43 +118,6 @@ Unit.prototype.draw = function(/*Point*/p, /*int*/height) {
 	return groupToDraw;
 };
 
-/**
- * Unit Method: return a Kinetic.Group to be put into the hp group.
- * @this {Unit}
- */
-Unit.prototype.drawHP = function(/*Point*/p, /*int*/height) {
-
-	var hpToDraw = new Kinetic.Group({listening: false});
-	
-	hpToDraw.add(new Kinetic.Line({
-		points: [Math.floor(p.X - this.imageWithNum.width/4), Math.floor(p.Y - this.imageWithNum.height/2 + 18), Math.floor(p.X + this.imageWithNum.width/4), Math.floor(p.Y - this.imageWithNum.height/2 + 18)],
-		stroke: "white",
-		strokeWidth: 3
-	}));
-	hpToDraw.add(new Kinetic.Line({
-		points: [Math.floor(p.X - this.imageWithNum.width/4), Math.floor(p.Y - this.imageWithNum.height/2 + 18), Math.floor(p.X - this.imageWithNum.width/4 + this.imageWithNum.width/2 * this.hp / 100), Math.floor(p.Y - this.imageWithNum.height/2 + 18)],
-		stroke: "red",
-		strokeWidth: 3
-	}));
-	if (this.losingHP) {
-		hpToDraw.add(new Kinetic.Text({
-			text: "-" + this.lostHP,
-			fill: "white",
-			fontFamily: "Arial",
-			fontSize: 16,
-			x: p.X - this.imageWithNum.width/8,
-			y: p.Y - this.hpfloat
-		}));
-		this.hpfloat += 0.5;
-		if(this.hpfloat >= this.imageWithNum.width/2-20){
-			this.losingHP = false;
-			this.hpfloat = 0;
-		}
-	}
-	
-	return hpToDraw;
-};
-
 Unit.prototype.guess = function(/*int*/ guess){
     this.type = guess;
 	this.image = gc.sprites[this.player][guess];
@@ -195,21 +158,6 @@ Unit.prototype.gotHit = function(/*Unit*/enemy){
 			enemy.hp = enemy.hp - 1;
 		}
 	}
-	//My advantage
-//    if (flag>2){
-//    	this.hp = this.hp - Math.floor(damage/2 * defense); 
-//		//enemy.hp = enemy.hp - floor(damage/2);
-//	}
-//	//Enemy advantage
-//    else if (flag!=0){
-//        this.hp = this.hp - Math.floor(damage * 2 * defense);
-//		//enemy.hp = enemy.hp - damage;
-//	}
-//	//Tie
-//    else{
-//        this.hp = this.hp - Math.floor(damage * defense);
-//		//enemy.hp = enemy.hp - damage;
-//	}
 	if(this.hp < 0){
 		this.hp = 0;
 	}

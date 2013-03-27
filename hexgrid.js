@@ -186,30 +186,24 @@ var BuildMap = function(/*string*/mapName, /*camera*/camera, /*layer*/layer, /*f
 	this.markBuildable = function(/*int*/player){
 		for(var x in this.matrix){ // brute force!
 			for(var y in this.matrix[x]){
-				if(this.matrix[x][y].piece){
-					if(this.matrix[x][y].piece.player == player){
-						var coord;
-						xs = [x-1, x-1, x, x, parseInt(x)+1, parseInt(x)+1];
-						ys = [y, parseInt(y)+1, y-1, parseInt(y)+1, y-1, y];
-						for (var i = 0; i < 6; i++) {
-							if(this.matrix[xs[i]]){				
-								if(this.matrix[xs[i]][ys[i]]){				
-									if(!this.matrix[xs[i]][ys[i]].piece){
-										if(this.matrix[xs[i]][ys[i]].terrain){
-											if(this.matrix[xs[i]][ys[i]].terrain.moveable){
-												this.matrix[xs[i]][ys[i]].buildable = true;
-												this.buildables.push(this.matrix[xs[i]][ys[i]]);
-											}
-										}else{
-											this.matrix[xs[i]][ys[i]].buildable = true;
-											this.buildables.push(this.matrix[xs[i]][ys[i]]);
+				if(this.matrix[x][y].piece && this.matrix[x][y].piece.player == player){
+                    var coord;
+                    xs = [x-1, x-1, x, x, parseInt(x)+1, parseInt(x)+1];
+                    ys = [y, parseInt(y)+1, y-1, parseInt(y)+1, y-1, y];
+                    for (var i = 0; i < 6; i++) {
+                        if(this.matrix[xs[i]] && this.matrix[xs[i]][ys[i]] && !this.matrix[xs[i]][ys[i]].piece){
+                            if(this.matrix[xs[i]][ys[i]].terrain){
+                                if(this.matrix[xs[i]][ys[i]].terrain.moveable){
+                                    this.matrix[xs[i]][ys[i]].buildable = true;
+                                    this.buildables.push(this.matrix[xs[i]][ys[i]]);
+                                }
+                            }else{
+                                this.matrix[xs[i]][ys[i]].buildable = true;
+                                this.buildables.push(this.matrix[xs[i]][ys[i]]);
 
-										}
-									}
-								}
-							}
-       					 }
-					}
+                            }
+                        }
+                    }
 				}
 			}
 		}
@@ -335,8 +329,7 @@ function Hexagon(id, mx, my, x, y, spec, camera, map, callback) {
 		if (this.callback) {
 			var me = this;
 			this.hexagonToDraw.on('click tap', function(event){
-				if (event.which != 2)  // does work with right click
-					me.callback(new Coordinate(me.matrixx, me.matrixy));
+                me.callback(new Coordinate(me.matrixx, me.matrixy), event);
 			});
 		}
 		this.map.hexGroup.add(this.hexagonToDraw);
@@ -409,12 +402,8 @@ Hexagon.prototype.update = function() {
 	// add/update unit and hp
 	if (this.unitToDraw)
 		this.unitToDraw.destroy();
-	// if (this.hpToDraw)
-		// this.hpToDraw.destroy();
 	if (this.piece != null) {
 		this.unitToDraw = this.piece.draw(midPoint, this.spec.height);
 		this.map.unitGroup.add(this.unitToDraw);
-		// this.hpToDraw = this.piece.drawHP(midPoint, this.spec.height);
-		// this.map.hpGroup.add(this.hpToDraw);
 	}
 };
