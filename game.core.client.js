@@ -315,9 +315,8 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		CONSTANTS.flagTerrain.image = this.flagImg;
 		CONSTANTS.resourceTerrain.image = this.resourceImg;
         CONSTANTS.heart = this.heartImg;
-		
-
-		 var backgroundsound = soundManager.createSound({
+        
+		var backgroundsound = soundManager.createSound({
 			  id: 'background',
 			  url: '/sounds/forest.mp3'
 		});
@@ -600,13 +599,21 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		}));
 		
         // resource
+        UILayer.add(new Kinetic.Image({
+            image: this.resourceImg,
+            x: 215,
+            y: 10,
+            scale: {x:0.5, y:0.5},
+            listening: false
+        }));
         var resourceText = new Kinetic.Text({
             fontFamily: "Impact",
-            fontSize: 30,
-            stroke: "white",
+            fontSize: 18,
+            fill: "white",
             text: this.resource,
-            x: 280,
-            y: 50
+            x: 255,
+            y: 15,
+            listening: false
         });
         UILayer.add(resourceText);
         this.UILayerAnim = new Kinetic.Animation(function(frame) {
