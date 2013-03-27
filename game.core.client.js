@@ -112,6 +112,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				}
 				gc.build = false;
 				gc.toBuild = null;
+				gc.hexgrid.clearBuildable();
 			}
 		};
 		document.addEventListener('contextmenu', contextmenu);
@@ -204,10 +205,12 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				}
 				gc.build = false;
 				gc.toBuild = null;
+				gc.hexgrid.clearBuildable();
 			}	
 			if (event.keyCode == 81){
 				me.build = true;
 				me.toBuild = null;
+				gc.hexgrid.clearBuildable();
 			}
 		};
 		document.addEventListener('keydown', keydown);
@@ -637,6 +640,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				}
 				gc.build = false;
 				gc.toBuild = null;
+				gc.hexgrid.clearBuildable();
 			}else{
 				unitplayer = gc.hexgrid.getUnit(coord).player;
 			}
@@ -656,6 +660,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				}
 				gc.hexgrid.clearReachable();
 				gc.hexgrid.clearAttackable();
+				gc.hexgrid.clearBuildable();
 				gc.last_click_coord = null;
 				gc.build = false;
 				gc.toBuild = null;
@@ -672,6 +677,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				}
 				gc.build = false;
 				gc.toBuild = null;
+				gc.hexgrid.clearBuildable();
 			}else{
 				if(gc.hexgrid.getUnit(coord)){
 					gc.guess = coord;
@@ -679,6 +685,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				}
 				gc.build = false;
 				gc.toBuild = null;
+				gc.hexgrid.clearBuildable();
 			}
 		};
 		

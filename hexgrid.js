@@ -37,6 +37,7 @@ var BuildMap = function(/*string*/mapName, /*camera*/camera, /*layer*/layer, /*f
 	this.matrix = [];
 	this.reachables = [];
 	this.attackables = [];
+	this.buildables = [];
 	
 	var spec = findHexSpecs(side,ratio);
 	var xpos = offset;
@@ -194,8 +195,16 @@ var BuildMap = function(/*string*/mapName, /*camera*/camera, /*layer*/layer, /*f
 							if(this.matrix[xs[i]]){				
 								if(this.matrix[xs[i]][ys[i]]){				
 									if(!this.matrix[xs[i]][ys[i]].piece){
-										this.matrix[xs[i]][ys[i]].buildable = true;
-										//this.buildables.push(this.matrix[xs[i]][ys[i]]);
+										if(this.matrix[xs[i]][ys[i]].terrain){
+											if(this.matrix[xs[i]][ys[i]].terrain.moveable){
+												this.matrix[xs[i]][ys[i]].buildable = true;
+												this.buildables.push(this.matrix[xs[i]][ys[i]]);
+											}
+										}else{
+											this.matrix[xs[i]][ys[i]].buildable = true;
+											this.buildables.push(this.matrix[xs[i]][ys[i]]);
+
+										}
 									}
 								}
 							}
@@ -220,6 +229,14 @@ var BuildMap = function(/*string*/mapName, /*camera*/camera, /*layer*/layer, /*f
 			check.attackable = false;
 		}
 		this.attackables = [];
+	};
+	
+	this.clearBuildable = function(){
+		for (var i in this.buildables){  // clear reachables
+			var check = this.buildables[i];
+			check.buildable = false;
+		}
+		this.buildables = [];
 	};
 	
 	this.isReachable = function(/*Coordinate*/coord){
