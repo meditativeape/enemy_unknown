@@ -37,6 +37,7 @@ var BuildMap = function(/*string*/mapName, /*camera*/camera, /*layer*/layer, /*f
 	this.reachables = [];
 	this.attackables = [];
 	this.buildables = [];
+	this.viewables = [];
 	
 	var spec = findHexSpecs(side,ratio);
 	var xpos = offset;
@@ -147,35 +148,48 @@ var BuildMap = function(/*string*/mapName, /*camera*/camera, /*layer*/layer, /*f
 	
 	this.markReachable = function(/*Coordinate*/coord){
 		var selectedHex = this.matrix[coord.X][coord.Y];
-		for(var x in this.matrix){ // brute force!
-			for(var y in this.matrix[x]){
+		xs = [coord.X-1, coord.X, coord.X+1, coord.X-2, coord.X+2];
+		ys = [coord.Y, coord.Y+1, coord.Y-1, coord.Y-2,coord.Y+2];
+		for (var i = 0; i < 5; i++) {
+			for(var j = 0; j < 5; j++){
 				var range = selectedHex.piece.buff?selectedHex.piece.range+selectedHex.piece.buff.rangeBuff:selectedHex.piece.range;
-				if (this.hexDist(selectedHex, this.matrix[x][y]) <= range && !this.matrix[x][y].piece) { // in range and not occupied
-					if(this.matrix[x][y].terrain){
-						if(this.matrix[x][y].terrain.moveable){
-							this.matrix[x][y].reachable = true;
-							this.reachables.push(this.matrix[x][y]);
-						}
-					}else{
-						this.matrix[x][y].reachable = true;
-						this.reachables.push(this.matrix[x][y]);
-					}
+					if(this.matrix[xs[i]]){				
+								if(this.matrix[xs[i]][ys[j]]){		
+									if(this.hexDist(this.matrix[xs[i]][ys[j]], selectedHex) <= range  && !this.matrix[xs[i]][ys[j]].piece){
+										if(this.matrix[xs[i]][ys[j]].terrain){
+											if(this.matrix[xs[i]][ys[j]].terrain.moveable){
+												this.matrix[xs[i]][ys[j]].reachable = true;
+												this.reachables.push(this.matrix[xs[i]][ys[j]]);
+											}
+										}else{
+											this.matrix[xs[i]][ys[j]].reachable = true;
+											this.reachables.push(this.matrix[xs[i]][ys[j]]);
+										}
+									}
+								}
 				}
-			
 			}
 		}
+		
+
 	};
 	
 	this.markAttackable = function(/*Coordinate*/coord){
 		var selectedHex = this.matrix[coord.X][coord.Y];
-		for(var x in this.matrix){ // brute force!
-			for(var y in this.matrix[x]){
+		xs = [coord.X-1, coord.X, coord.X+1, coord.X-2, coord.X+2];
+		ys = [coord.Y, coord.Y+1, coord.Y-1, coord.Y-2,coord.Y+2];
+		for (var i = 0; i < 5; i++) {
+			for(var j = 0; j < 5; j++){
 				var range = selectedHex.piece.buff?selectedHex.piece.range+selectedHex.piece.buff.rangeBuff:selectedHex.piece.range;
-				if (this.hexDist(selectedHex, this.matrix[x][y]) <= range && this.matrix[x][y].piece && (selectedHex !=this.matrix[x][y])) { // in range and occupied by enemys
-					if(this.matrix[coord.X][coord.Y].piece.team!=this.matrix[x][y].piece.team){
-						this.matrix[x][y].attackable = true;
-						this.attackables.push(this.matrix[x][y]);
-					}
+					if(this.matrix[xs[i]]){				
+								if(this.matrix[xs[i]][ys[j]]){		
+									if(this.hexDist(this.matrix[xs[i]][ys[j]], selectedHex) <= range  && this.matrix[xs[i]][ys[j]].piece && (selectedHex !=this.matrix[xs[i]][ys[j]])){
+										if(this.matrix[xs[i]][ys[j]].piece.team != selectedHex.piece.team){
+											this.matrix[xs[i]][ys[j]].attackable = true;
+											this.attackables.push(this.matrix[xs[i]][ys[j]]);
+										}
+									}
+								}
 				}
 			}
 		}
@@ -184,8 +198,7 @@ var BuildMap = function(/*string*/mapName, /*camera*/camera, /*layer*/layer, /*f
 	this.markBuildable = function(/*int*/player){
 		for(var x in this.matrix){ // brute force!
 			for(var y in this.matrix[x]){
-				if(this.matrix[x][y].piece && this.matrix[x][y].piece.player == player){
-                    var coord;
+			if(this.matrix[x][y].piece && this.matrix[x][y].piece.player == player){
                     xs = [x-1, x-1, x, x, parseInt(x)+1, parseInt(x)+1];
                     ys = [y, parseInt(y)+1, y-1, parseInt(y)+1, y-1, y];
                     for (var i = 0; i < 6; i++) {
@@ -198,7 +211,6 @@ var BuildMap = function(/*string*/mapName, /*camera*/camera, /*layer*/layer, /*f
                             }else{
                                 this.matrix[xs[i]][ys[i]].buildable = true;
                                 this.buildables.push(this.matrix[xs[i]][ys[i]]);
-
                             }
                         }
                     }
@@ -206,6 +218,32 @@ var BuildMap = function(/*string*/mapName, /*camera*/camera, /*layer*/layer, /*f
 			}
 		}
 	};
+	
+	this.markViewable = function(/*int*/team){
+		for(var x in this.matrix){ // brute force!
+			for(var y in this.matrix[x]){
+				if(this.matrix[x][y].piece){
+					if(this.matrix[x][y].piece.team == team){
+						xs = [x-1, x, parseInt(x)+1, x-2, parseInt(x)+2];
+						ys = [y, parseInt(y)+1, y-1, y-2,parseInt(y)+2];
+						for (var i = 0; i < 5; i++) {
+							for(var j = 0; j < 5; j++){
+								if(this.matrix[xs[i]]){				
+									if(this.matrix[xs[i]][ys[J]]){		
+										if(this.hexDist(this.matrix[xs[i]][ys[j]], this.matrix[x][y]) <= 2){
+											this.matrix[xs[i]][ys[j]].viewable = true;
+											this.viewables.push(this.matrix[xs[i]][ys[j]]);
+										}
+									}
+								}
+							}
+       					}
+					}
+				}
+			}
+		}
+	};
+	
 	
 	this.clearReachable = function(){
 		for (var i in this.reachables){  // clear reachables
@@ -229,6 +267,15 @@ var BuildMap = function(/*string*/mapName, /*camera*/camera, /*layer*/layer, /*f
 			check.buildable = false;
 		}
 		this.buildables = [];
+	};
+	
+		
+	this.clearViewable = function(){
+		for (var i in this.viewables){  // clear reachables
+			var check = this.viewables[i];
+			check.viewable = false;
+		}
+		this.viewables = [];
 	};
 	
 	this.isReachable = function(/*Coordinate*/coord){
