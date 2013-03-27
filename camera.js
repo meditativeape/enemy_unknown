@@ -74,12 +74,6 @@ var BuildCamera = function(mapSize, movingSpeed, img, layer) {
 		this.y = newY;
 	};
 	
-	// this.draw = function(img){
-		// var ctx = CONSTANTS.getContext('2d');
-		// ctx.drawImage(img, this.x, this.y, CONSTANTS.width, CONSTANTS.height, 
-			// 0, 0, CONSTANTS.width, CONSTANTS.height);
-	// };
-	
 	this.moveLeft = function(){
 		var i = me.x - me.speed;
 		if (i >= 0)

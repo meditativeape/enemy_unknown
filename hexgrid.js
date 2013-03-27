@@ -31,7 +31,6 @@ var BuildMap = function(/*string*/mapName, /*camera*/camera, /*layer*/layer, /*f
 		this.hexGroup = new Kinetic.Group();  // only hexagons listen to events
 		this.terrainGroup = new Kinetic.Group({listening: false});
 		this.unitGroup = new Kinetic.Group({listening: false});
-		// this.hpGroup = new Kinetic.Group({listening: false});
 	}
 	
 	this.matrix = [];
@@ -72,7 +71,6 @@ var BuildMap = function(/*string*/mapName, /*camera*/camera, /*layer*/layer, /*f
 		layer.add(this.terrainGroup);
 		layer.add(this.hexGroup);
 		layer.add(this.unitGroup);
-		// layer.add(this.hpGroup);
 		var me = this;
 		this.anim = new Kinetic.Animation(function(frame) {
 			for(var x in me.matrix){
@@ -200,29 +198,22 @@ var BuildMap = function(/*string*/mapName, /*camera*/camera, /*layer*/layer, /*f
 	this.markBuildable = function(/*int*/player){
 		for(var x in this.matrix){ // brute force!
 			for(var y in this.matrix[x]){
-				if(this.matrix[x][y].piece){
-					if(this.matrix[x][y].piece.player == player){
-						xs = [x-1, x-1, x, x, parseInt(x)+1, parseInt(x)+1];
-						ys = [y, parseInt(y)+1, y-1, parseInt(y)+1, y-1, y];
-						for (var i = 0; i < 6; i++) {
-							if(this.matrix[xs[i]]){				
-								if(this.matrix[xs[i]][ys[i]]){				
-									if(!this.matrix[xs[i]][ys[i]].piece){
-										if(this.matrix[xs[i]][ys[i]].terrain){
-											if(this.matrix[xs[i]][ys[i]].terrain.moveable){
-												this.matrix[xs[i]][ys[i]].buildable = true;
-												this.buildables.push(this.matrix[xs[i]][ys[i]]);
-											}
-										}else{
-											this.matrix[xs[i]][ys[i]].buildable = true;
-											this.buildables.push(this.matrix[xs[i]][ys[i]]);
-
-										}
-									}
-								}
-							}
-       					 }
-					}
+			if(this.matrix[x][y].piece && this.matrix[x][y].piece.player == player){
+                    xs = [x-1, x-1, x, x, parseInt(x)+1, parseInt(x)+1];
+                    ys = [y, parseInt(y)+1, y-1, parseInt(y)+1, y-1, y];
+                    for (var i = 0; i < 6; i++) {
+                        if(this.matrix[xs[i]] && this.matrix[xs[i]][ys[i]] && !this.matrix[xs[i]][ys[i]].piece){
+                            if(this.matrix[xs[i]][ys[i]].terrain){
+                                if(this.matrix[xs[i]][ys[i]].terrain.moveable){
+                                    this.matrix[xs[i]][ys[i]].buildable = true;
+                                    this.buildables.push(this.matrix[xs[i]][ys[i]]);
+                                }
+                            }else{
+                                this.matrix[xs[i]][ys[i]].buildable = true;
+                                this.buildables.push(this.matrix[xs[i]][ys[i]]);
+                            }
+                        }
+                    }
 				}
 			}
 		}
@@ -380,13 +371,23 @@ function Hexagon(id, mx, my, x, y, spec, camera, map, callback) {
 			hexagonConfig.points.push([this.Points[i].X-this.camera.x, this.Points[i].Y-this.camera.y]);
 		}
 		this.hexagonToDraw = new Kinetic.Polygon(hexagonConfig);
+        
+        // register event listener
+        var me = this;
 		if (this.callback) {
-			var me = this;
 			this.hexagonToDraw.on('click tap', function(event){
-				if (event.which != 2)  // does work with right click
-					me.callback(new Coordinate(me.matrixx, me.matrixy));
+                me.callback(new Coordinate(me.matrixx, me.matrixy), event);
 			});
 		}
+        this.hexagonToDraw.on('mouseover', function(){
+            if (me.unitToDraw || me.reachable || me.attackable || me.buildable) {
+                me.hexagonToDraw.setStroke("orange");
+                me.hexagonToDraw.moveToTop();
+            }
+        });
+        this.hexagonToDraw.on('mouseout', function(){
+            me.hexagonToDraw.setStroke("white");
+        });
 		this.map.hexGroup.add(this.hexagonToDraw);
 	}
 };
@@ -457,12 +458,8 @@ Hexagon.prototype.update = function() {
 	// add/update unit and hp
 	if (this.unitToDraw)
 		this.unitToDraw.destroy();
-	// if (this.hpToDraw)
-		// this.hpToDraw.destroy();
 	if (this.piece != null) {
 		this.unitToDraw = this.piece.draw(midPoint, this.spec.height);
 		this.map.unitGroup.add(this.unitToDraw);
-		// this.hpToDraw = this.piece.drawHP(midPoint, this.spec.height);
-		// this.map.hpGroup.add(this.hpToDraw);
 	}
 };
