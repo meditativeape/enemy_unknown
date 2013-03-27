@@ -120,8 +120,8 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
         var x = coord.X;
         var y = coord.Y;
         var unit;
-        xs = [x-1, x-1, x, x, x+1, x+1];
-        ys = [y, y+1, y-1, y+1, y-1, y];
+		xs = [x-1, x-1, x, x, parseInt(x)+1, parseInt(x)+1];
+		ys = [y, parseInt(y)+1, y-1, parseInt(y)+1, y-1, y];
         for (var i = 0; i < 6; i++) {
             unit = this.hexgrid.getUnit(new helper.Coordinate(xs[i], ys[i]));
             if (unit && (unit.team == team)) {

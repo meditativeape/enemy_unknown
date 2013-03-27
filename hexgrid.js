@@ -182,23 +182,26 @@ var BuildMap = function(/*string*/mapName, /*camera*/camera, /*layer*/layer, /*f
 		}
 	};
 	
-	this.markBuildable = function(/*Coordinate*/coord){
-		var selectedHex = this.matrix[coord.X][coord.Y];
+	this.markBuildable = function(/*int*/player){
 		for(var x in this.matrix){ // brute force!
 			for(var y in this.matrix[x]){
-				var range = selectedHex.piece.buff?selectedHex.piece.range+selectedHex.piece.buff.rangeBuff:selectedHex.piece.range;
-				if (this.hexDist(selectedHex, this.matrix[x][y]) <= range && !this.matrix[x][y].piece) { // in range and not occupied
-					if(this.matrix[x][y].terrain){
-						if(this.matrix[x][y].terrain.moveable){
-							this.matrix[x][y].reachable = true;
-							this.reachables.push(this.matrix[x][y]);
-						}
-					}else{
-						this.matrix[x][y].reachable = true;
-						this.reachables.push(this.matrix[x][y]);
+				if(this.matrix[x][y].piece){
+					if(this.matrix[x][y].piece.player == player){
+						var coord;
+						xs = [x-1, x-1, x, x, parseInt(x)+1, parseInt(x)+1];
+						ys = [y, parseInt(y)+1, y-1, parseInt(y)+1, y-1, y];
+						for (var i = 0; i < 6; i++) {
+							if(this.matrix[xs[i]]){				
+								if(this.matrix[xs[i]][ys[i]]){				
+									if(!this.matrix[xs[i]][ys[i]].piece){
+										this.matrix[xs[i]][ys[i]].buildable = true;
+										//this.buildables.push(this.matrix[xs[i]][ys[i]]);
+									}
+								}
+							}
+       					 }
 					}
 				}
-			
 			}
 		}
 	};
@@ -268,6 +271,7 @@ function Hexagon(id, mx, my, x, y, spec, camera, map, callback) {
 	this.matrixy = my;
 	this.reachable = false;
 	this.attackable = false;
+	this.buildable = false;
 	this.guessing = false;
 	this.Points = [];//Polygon Base
 	this.spec = spec;
@@ -367,16 +371,13 @@ Hexagon.prototype.update = function() {
 	}
 	this.hexagonToDraw.setPoints(points);
 	this.hexagonToDraw.setFill('transparent');
-	if (this.reachable) {
+	if (this.reachable || this.buildable) {
 		this.hexagonToDraw.setFill('rgba(120, 255,120, 0.3)');
 	} else if (this.attackable) {
 		this.hexagonToDraw.setFill('rgba(255, 0, 0, 0.3)');
 	}else if (this.guessing){
 		this.hexagonToDraw.setFill('rgba(0,0,255,0.3)');
-	}else if (this.canBuild){
-		this.hexagonToDraw.setFill('rgba(0,255,0,0.3)');
 	}
-	
 	// add/update terrain
 	var midPoint = new Point(this.MidPoint.X - this.camera.x, this.MidPoint.Y - this.camera.y);
 	if (this.terrain) {

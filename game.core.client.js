@@ -135,6 +135,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				if(me.build){
 					if(me.resource >= 50){
 						me.toBuild = 0;
+						me.hexgrid.markBuildable(me.player);
 					}
 					me.build = false;
 				}
@@ -148,6 +149,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				if(me.build){
 					if(me.resource >= 50){
 						me.toBuild = 1;
+						me.hexgrid.markBuildable(me.player);
 					}
 					me.build = false;
 				}
@@ -161,6 +163,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				if(me.build){
 					if(me.resource >= 50){
 						me.toBuild = 2;
+						me.hexgrid.markBuildable(me.player);
 					}
 					me.build = false;
 				}
@@ -174,6 +177,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				if(me.build){
 					if(me.resource >= 50){
 						me.toBuild = 3;
+						me.hexgrid.markBuildable(me.player);
 					}
 					me.build = false;
 				}
@@ -187,6 +191,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				if(me.build){
 					if(me.resource >= 50){
 						me.toBuild = 4;
+						me.hexgrid.markBuildable(me.player);
 					}
 					me.build = false;
 				}
