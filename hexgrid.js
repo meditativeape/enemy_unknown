@@ -31,7 +31,6 @@ var BuildMap = function(/*string*/mapName, /*camera*/camera, /*layer*/layer, /*f
 		this.hexGroup = new Kinetic.Group();  // only hexagons listen to events
 		this.terrainGroup = new Kinetic.Group({listening: false});
 		this.unitGroup = new Kinetic.Group({listening: false});
-		// this.hpGroup = new Kinetic.Group({listening: false});
 	}
 	
 	this.matrix = [];
@@ -71,7 +70,6 @@ var BuildMap = function(/*string*/mapName, /*camera*/camera, /*layer*/layer, /*f
 		layer.add(this.terrainGroup);
 		layer.add(this.hexGroup);
 		layer.add(this.unitGroup);
-		// layer.add(this.hpGroup);
 		var me = this;
 		this.anim = new Kinetic.Animation(function(frame) {
 			for(var x in me.matrix){
@@ -326,12 +324,23 @@ function Hexagon(id, mx, my, x, y, spec, camera, map, callback) {
 			hexagonConfig.points.push([this.Points[i].X-this.camera.x, this.Points[i].Y-this.camera.y]);
 		}
 		this.hexagonToDraw = new Kinetic.Polygon(hexagonConfig);
+        
+        // register event listener
+        var me = this;
 		if (this.callback) {
-			var me = this;
 			this.hexagonToDraw.on('click tap', function(event){
                 me.callback(new Coordinate(me.matrixx, me.matrixy), event);
 			});
 		}
+        this.hexagonToDraw.on('mouseover', function(){
+            if (me.unitToDraw || me.reachable || me.attackable || me.buildable) {
+                me.hexagonToDraw.setStroke("orange");
+                me.hexagonToDraw.moveToTop();
+            }
+        });
+        this.hexagonToDraw.on('mouseout', function(){
+            me.hexagonToDraw.setStroke("white");
+        });
 		this.map.hexGroup.add(this.hexagonToDraw);
 	}
 };
