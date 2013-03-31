@@ -242,7 +242,7 @@ var BuildMap = function(/*string*/mapName, /*camera*/camera, /*layer*/layer, /*f
 							for(var j = 0; j < 7; j++){
 								if(this.matrix[xs[i]]){				
 									if(this.matrix[xs[i]][ys[j]]){		
-										if(this.hexDist(this.matrix[xs[i]][ys[j]], this.matrix[x][y]) <= 2){
+										if(this.hexDist(this.matrix[xs[i]][ys[j]], this.matrix[x][y]) <= 3){
 											if(this.matrix[xs[i]][ys[j]].clientViewable == false){
 												//Do something that shows transition
 												//TODO
@@ -304,7 +304,6 @@ var BuildMap = function(/*string*/mapName, /*camera*/camera, /*layer*/layer, /*f
 		}
 		this.clientBuildables = [];
 	};
-	
 		
 	this.clientClearViewable = function(){
 		for (var i in this.clientViewables){  // clear clientReachables
@@ -338,7 +337,7 @@ var BuildMap = function(/*string*/mapName, /*camera*/camera, /*layer*/layer, /*f
                 if (this.matrix[x+i] && this.matrix[x+i][y+j] && (this.hexDist(this.matrix[x][y], 
                 this.matrix[x+i][y+j]) <= 3) && this.matrix[x+i][y+j].piece && 
                 (this.matrix[x+i][y+j].piece.team != myTeam))  // there is an enemy piece beside
-                {   console.log(x + " " + y + "is visible");
+                {   console.log(x + " " + y + " is visible");
                     return this.matrix[x][y].piece.serverSetVisible(true);}
             }
         return this.matrix[x][y].piece.serverSetVisible(false);
