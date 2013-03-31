@@ -424,6 +424,10 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				// update minimap
 				var pointOnMap = this.hexgrid.toMap(new Coordinate(parseInt(keywords[5]), parseInt(keywords[6])));
 				this.minimap.addUnit(pointOnMap, parseInt(keywords[2]));
+				this.hexgrid.clientClearViewable();
+				this.hexgrid.clientMarkViewable(this.team);
+				this.hexgrid.clientRemoveUnseeable(this.minimap);
+				this.updateRA();
 				break;
 			case "resource":
 				this.resource = parseInt(keywords[2]);
@@ -432,14 +436,16 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				this.hexgrid.move(new Coordinate(parseInt(keywords[2]),parseInt(keywords[3])),new Coordinate(parseInt(keywords[4]),parseInt(keywords[5])))
 				this.hexgrid.matrix[parseInt(keywords[4])][parseInt(keywords[5])].piece.setcd(parseInt(keywords[6]));
 				
-				this.hexgrid.clientClearViewable();
-				this.hexgrid.clientMarkViewable(this.team);
-				this.hexgrid.clientRemoveUnseeable();
-				this.updateRA();
+
+				
 				// update minimap
 				var oldPointOnMap = this.hexgrid.toMap(new Coordinate(parseInt(keywords[2]), parseInt(keywords[3])));
 				var newPointOnMap = this.hexgrid.toMap(new Coordinate(parseInt(keywords[4]), parseInt(keywords[5])));
 				this.minimap.moveUnit(oldPointOnMap, newPointOnMap);
+				this.hexgrid.clientClearViewable();
+				this.hexgrid.clientMarkViewable(this.team);
+				this.hexgrid.clientRemoveUnseeable(this.minimap);
+				this.updateRA();
 				break;
 			case "attack":
 				this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece.minusHP(parseInt(keywords[4]));
@@ -472,7 +478,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				
 				this.hexgrid.clientClearViewable();
 				this.hexgrid.clientMarkViewable(this.team);
-				this.hexgrid.clientRemoveUnseeable();
+				this.hexgrid.clientRemoveUnseeable(this.minimap);
 				this.updateRA();
 				break;
 			}
