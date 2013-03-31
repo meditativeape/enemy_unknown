@@ -386,9 +386,9 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 			// this.players[i].resource = CONSTANTS.init_resource;
 			for (var j in pieces) {
 				if (this.hexgrid.scenario.revealtype || this.players[i].team == pieces[j].team)
-					this.sendMsg(this.players[i], "1 add {0} {1} {2} {3} {4}".format([pieces[j].player, pieces[j].team, pieces[j].type, pieces[j].x, pieces[j].y]));
+					this.sendMsg(this.players[i], "1 add {0} {1} {2} {3} {4} {5}".format([pieces[j].player, pieces[j].team, pieces[j].type, pieces[j].x, pieces[j].y], CONSTANTS.cd));
 				else
-					this.sendMsg(this.players[i], "1 add {0} {1} {2} {3} {4}".format([pieces[j].player, pieces[j].team, 5, pieces[j].x, pieces[j].y]));
+					this.sendMsg(this.players[i], "1 add {0} {1} {2} {3} {4} {5}".format([pieces[j].player, pieces[j].team, 5, pieces[j].x, pieces[j].y], CONSTANTS.cd));
 			}
 		}
 		
