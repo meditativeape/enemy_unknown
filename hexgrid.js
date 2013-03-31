@@ -229,7 +229,7 @@ var BuildMap = function(/*string*/mapName, /*camera*/camera, /*layer*/layer, /*f
 						for (var i = 0; i < 5; i++) {
 							for(var j = 0; j < 5; j++){
 								if(this.matrix[xs[i]]){				
-									if(this.matrix[xs[i]][ys[J]]){		
+									if(this.matrix[xs[i]][ys[j]]){		
 										if(this.hexDist(this.matrix[xs[i]][ys[j]], this.matrix[x][y]) <= 2){
 											this.matrix[xs[i]][ys[j]].viewable = true;
 											this.viewables.push(this.matrix[xs[i]][ys[j]]);
@@ -377,11 +377,13 @@ function Hexagon(id, mx, my, x, y, spec, camera, map, callback) {
         var me = this;
 		if (this.callback) {
 			this.hexagonToDraw.on('click tap', function(event){
-                me.callback(new Coordinate(me.matrixx, me.matrixy), event);
+				if(	me.viewable){
+               		me.callback(new Coordinate(me.matrixx, me.matrixy), event);
+				}
 			});
 		}
         this.hexagonToDraw.on('mouseover', function(){
-            if (me.piece || me.reachable || me.attackable || me.buildable) {
+            if ((me.piece || me.reachable || me.attackable || me.buildable)&&me.viewable) {
                 me.hexagonToDraw.setStroke("orange");
                 me.hexagonToDraw.moveToTop();
             }
@@ -444,6 +446,8 @@ Hexagon.prototype.update = function() {
 		this.hexagonToDraw.setFill('rgba(255, 0, 0, 0.3)');
 	}else if (this.guessing){
 		this.hexagonToDraw.setFill('rgba(0,0,255,0.3)');
+	}else if(!this.viewable){
+		this.hexagonToDraw.setFill('rgba(120,0,0,0.3)');
 	}
 	// add/update terrain
 	var midPoint = new Point(this.MidPoint.X - this.camera.x, this.MidPoint.Y - this.camera.y);
