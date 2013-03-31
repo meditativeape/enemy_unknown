@@ -328,6 +328,7 @@ function Hexagon(id, mx, my, x, y, spec, camera, map, callback) {
 	this.reachable = false;
 	this.attackable = false;
 	this.buildable = false;
+	this.viewable = false;
 	this.guessing = false;
 	this.Points = [];//Polygon Base
 	this.spec = spec;
@@ -458,7 +459,7 @@ Hexagon.prototype.update = function() {
 	// add/update unit and hp
 	if (this.unitToDraw)
 		this.unitToDraw.destroy();
-	if (this.piece != null) {
+	if (this.piece != null && this.viewable) {
 		this.unitToDraw = this.piece.draw(midPoint, this.spec.height);
 		this.map.unitGroup.add(this.unitToDraw);
 	}
