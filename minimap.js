@@ -64,58 +64,7 @@
 		cameraBox.setY(Math.floor(camera.y*me.height/me.mapSize[1]));
 	}, layer);
 	this.anime.start();
-	
-	// methods
-	// this.draw = function(img){
-		// var ctx = this.canvas.getContext('2d');
-		// // draw on top-left corner
-		// ctx.drawImage(img, 0, 0, this.mapSize[0], this.mapSize[1], 0, 0, this.width, this.height);
-		// // draw the rims
-		// ctx.lineWidth = 2;
-		// ctx.strokeStyle = 'rgb(255, 255, 255)';
-		// ctx.beginPath();
-		// ctx.moveTo(this.width+1, 0);
-		// ctx.lineTo(this.width+1, this.height+1);
-		// ctx.stroke();
-		// ctx.beginPath();
-		// ctx.moveTo(0, this.height+1);
-		// ctx.lineTo(this.width+1, this.height+1);
-		// ctx.stroke();
-		// // draw the camera box
-		// ctx.lineWidth = 1;
-		// ctx.strokeStyle = 'rgb(255, 165, 0)';
-		// var boxSize = [Math.floor(this.width*this.canvas.width/mapSize[0]), Math.floor(this.height*this.canvas.height/mapSize[1])];
-		// var boxPos = new Point(Math.floor(camera.x*this.width/mapSize[0]), Math.floor(camera.y*this.height/mapSize[1]));
-		// ctx.strokeRect(boxPos.X, boxPos.Y, boxSize[0], boxSize[1]);
-		// // draw the units
-		// for (var i in this.units) {
-			// var x = this.units[i][0] / this.mapSize[0] * this.width;
-			// var y = this.units[i][1] / this.mapSize[1] * this.height;
-			// var color;
-			// switch (this.units[i][2]) {
-			
-			// case 0:
-				// color = "lightskyblue";
-				// break;
-				
-			// case 1:
-				// color = "yellow";
-				// break;
-				
-			// case 2:
-				// color = "red";
-				// break;
-				
-			// case 3:
-				// color = "green";
-				// break;
-			// }
-			// ctx.fillStyle = color;
-			// ctx.beginPath();
-			// ctx.arc(x, y, 3, 0, 2 * Math.PI, true);
-			// ctx.fill();
-		// }
-	// };
+
 	
 	this.stop = function(){
 		if (this.anime) {

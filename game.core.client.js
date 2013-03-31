@@ -104,15 +104,15 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 			if (x >= offsetLeft && x <= offsetLeft+CONSTANTS.width && y >= offsetTop && y <= offsetTop+CONSTANTS.height) {
 				event.preventDefault();
 				me.last_click_coord = null;
-				me.hexgrid.clearReachable();
-				me.hexgrid.clearAttackable();
+				me.hexgrid.clientClearReachable();
+				me.hexgrid.clientClearAttackable();
 				if(me.guess){
 					me.hexgrid.matrix[me.guess.X][me.guess.Y].guessing = false;
 					me.guess = null;
 				}
 				gc.build = false;
 				gc.toBuild = null;
-				gc.hexgrid.clearBuildable();
+				gc.hexgrid.clientClearBuildable();
 			}
 		};
 		document.addEventListener('contextmenu', contextmenu);
@@ -137,7 +137,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				if(me.build){
 					if(me.resource >= 50){
 						me.toBuild = 0;
-						me.hexgrid.markBuildable(me.player);
+						me.hexgrid.clientMarkBuildable(me.player);
 					}
 					me.build = false;
 				}
@@ -151,7 +151,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				if(me.build){
 					if(me.resource >= 50){
 						me.toBuild = 1;
-						me.hexgrid.markBuildable(me.player);
+						me.hexgrid.clientMarkBuildable(me.player);
 					}
 					me.build = false;
 				}
@@ -165,7 +165,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				if(me.build){
 					if(me.resource >= 50){
 						me.toBuild = 2;
-						me.hexgrid.markBuildable(me.player);
+						me.hexgrid.clientMarkBuildable(me.player);
 					}
 					me.build = false;
 				}
@@ -179,7 +179,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				if(me.build){
 					if(me.resource >= 50){
 						me.toBuild = 3;
-						me.hexgrid.markBuildable(me.player);
+						me.hexgrid.clientMarkBuildable(me.player);
 					}
 					me.build = false;
 				}
@@ -193,7 +193,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				if(me.build){
 					if(me.resource >= 50){
 						me.toBuild = 4;
-						me.hexgrid.markBuildable(me.player);
+						me.hexgrid.clientMarkBuildable(me.player);
 					}
 					me.build = false;
 				}
@@ -206,14 +206,14 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				}
 				gc.build = false;
 				gc.toBuild = null;
-				gc.hexgrid.clearBuildable();
+				gc.hexgrid.clientClearBuildable();
 			}	
 			if (event.keyCode == 81){
 				me.build = true;
 				me.toBuild = null;
-				gc.hexgrid.clearReachable();
-				gc.hexgrid.clearAttackable();
-				gc.hexgrid.clearBuildable();
+				gc.hexgrid.clientClearReachable();
+				gc.hexgrid.clientClearAttackable();
+				gc.hexgrid.clientClearBuildable();
 			}
 		};
 		document.addEventListener('keydown', keydown);
@@ -417,8 +417,9 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				this.hexgrid.matrix[parseInt(keywords[5])][parseInt(keywords[6])].piece = new Unit(parseInt(keywords[2]), parseInt(keywords[3]),
                         4, parseInt(keywords[4]), new Coordinate(parseInt(keywords[5]),parseInt(keywords[6])), sprite, cd, this.showNum);
 				this.hexgrid.matrix[parseInt(keywords[5])][parseInt(keywords[6])].piece.setcd(parseInt(keywords[7]));
-				this.hexgrid.clearViewable();
-				this.hexgrid.markViewable(this.team);
+				this.hexgrid.clientClearViewable();
+				this.hexgrid.clientMarkViewable(this.team);
+				this.hexgrid.clientRemoveUnseeable();
 				this.updateRA();
 				// update minimap
 				var pointOnMap = this.hexgrid.toMap(new Coordinate(parseInt(keywords[5]), parseInt(keywords[6])));
@@ -430,8 +431,10 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 			case "move":
 				this.hexgrid.move(new Coordinate(parseInt(keywords[2]),parseInt(keywords[3])),new Coordinate(parseInt(keywords[4]),parseInt(keywords[5])))
 				this.hexgrid.matrix[parseInt(keywords[4])][parseInt(keywords[5])].piece.setcd(parseInt(keywords[6]));
-				this.hexgrid.clearViewable();
-				this.hexgrid.markViewable(this.team);
+				
+				this.hexgrid.clientClearViewable();
+				this.hexgrid.clientMarkViewable(this.team);
+				this.hexgrid.clientRemoveUnseeable();
 				this.updateRA();
 				// update minimap
 				var oldPointOnMap = this.hexgrid.toMap(new Coordinate(parseInt(keywords[2]), parseInt(keywords[3])));
@@ -466,8 +469,10 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 						}
 					}
 				}	
-				this.hexgrid.clearViewable();
-				this.hexgrid.markViewable(this.team);
+				
+				this.hexgrid.clientClearViewable();
+				this.hexgrid.clientMarkViewable(this.team);
+				this.hexgrid.clientRemoveUnseeable();
 				this.updateRA();
 				break;
 			}
@@ -485,12 +490,12 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 	};
 	
 	game_core_client.prototype.updateRA = function(){
-		this.hexgrid.clearReachable();
-		this.hexgrid.clearAttackable();
+		this.hexgrid.clientClearReachable();
+		this.hexgrid.clientClearAttackable();
 		if(this.last_click_coord){
 			if(this.hexgrid.getUnit(this.last_click_coord)){
-				this.hexgrid.markReachable(this.last_click_coord);
-				this.hexgrid.markAttackable(this.last_click_coord);
+				this.hexgrid.clientMarkReachable(this.last_click_coord);
+				this.hexgrid.clientMarkAttackable(this.last_click_coord);
 			}
 		}
 	}; 
@@ -639,7 +644,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				}
 				gc.build = false;
 				gc.toBuild = null;
-				gc.hexgrid.clearBuildable();
+				gc.hexgrid.clientClearBuildable();
 			}else{
 				unitplayer = gc.hexgrid.getUnit(coord).player;
 			}
@@ -657,9 +662,9 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				} else if (isAttackable) {  // Attack unit
 					gc.socket.send('1 attack ' + gc.last_click_coord.X +' ' + gc.last_click_coord.Y + ' ' + coord.X + ' ' + coord.Y);
 				}
-				gc.hexgrid.clearReachable();
-				gc.hexgrid.clearAttackable();
-				gc.hexgrid.clearBuildable();
+				gc.hexgrid.clientClearReachable();
+				gc.hexgrid.clientClearAttackable();
+				gc.hexgrid.clientClearBuildable();
 				gc.last_click_coord = null;
 				gc.build = false;
 				gc.toBuild = null;
@@ -667,16 +672,16 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 	
 			// some hexagon with this player's unit has been clicked, select that unit
 			else if (unitplayer == gc.player) {
-				gc.hexgrid.clearReachable();
-				gc.hexgrid.clearAttackable();
+				gc.hexgrid.clientClearReachable();
+				gc.hexgrid.clientClearAttackable();
 				if (gc.hexgrid.getUnit(coord).cooldown<=0) {
 					gc.last_click_coord = coord;
-					gc.hexgrid.markReachable(coord);
-					gc.hexgrid.markAttackable(coord,coord);
+					gc.hexgrid.clientMarkReachable(coord);
+					gc.hexgrid.clientMarkAttackable(coord,coord);
 				}
 				gc.build = false;
 				gc.toBuild = null;
-				gc.hexgrid.clearBuildable();
+				gc.hexgrid.clientClearBuildable();
 			}else{
 				if(gc.hexgrid.getUnit(coord)){
 					gc.guess = coord;
@@ -684,7 +689,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				}
 				gc.build = false;
 				gc.toBuild = null;
-				gc.hexgrid.clearBuildable();
+				gc.hexgrid.clientClearBuildable();
 			}
 		};
 		
