@@ -246,7 +246,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		
 		var isAppLoaded = function() {
 			files_loaded++;
-			if (files_loaded >= 30) {
+			if (files_loaded >= 31) {
 				gc.initiate(scenario,type);
 			}
 		}
@@ -257,7 +257,8 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		this.resourceImg = load_image("sprites\\resource.png");
 		this.flagImg = load_image("sprites\\tile-flag.png");
 		this.thronImg = load_image("sprites\\thron.png");
-		this.whokillswhoImg = load_image("sprites\\whokillswho.png");
+		this.whokillswhoImg = load_image("sprites\\whokillswho2.png");
+        this.ibuttonImg = load_image("sprites\\ibutton.png");
 
 		this.sprites[0][0] = load_image("sprites\\vampire6_red.png");
 		this.sprites[0][1] = load_image("sprites\\wolf6_red.png");

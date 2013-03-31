@@ -381,7 +381,7 @@ function Hexagon(id, mx, my, x, y, spec, camera, map, callback) {
 			});
 		}
         this.hexagonToDraw.on('mouseover', function(){
-            if (me.unitToDraw || me.reachable || me.attackable || me.buildable) {
+            if (me.piece || me.reachable || me.attackable || me.buildable) {
                 me.hexagonToDraw.setStroke("orange");
                 me.hexagonToDraw.moveToTop();
             }

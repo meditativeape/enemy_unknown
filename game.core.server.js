@@ -137,6 +137,7 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
             // add unit
             var u = new Unit(id, team, 4, type, coord);
 			this.hexgrid.addUnit(u, coord);
+            this.units[team]++;
             for (var i in this.players) {
                 if (this.hexgrid.scenario.revealtype || this.players[i].team == team) {
                     this.sendMsg(this.players[i], "1 add {0} {1} {2} {3} {4}".format([id, team, type, coord.X, coord.Y]));
