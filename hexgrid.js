@@ -250,16 +250,20 @@ var BuildMap = function(/*string*/mapName, /*camera*/camera, /*layer*/layer, /*f
 		}
 	};
 	
-	this.clientRemoveUnseeable = function(){
+	this.clientRemoveUnseeable = function(minimap){
 		for(var x in this.matrix){ // brute force!
 			for(var y in this.matrix[x]){
 				if(this.matrix[x][y].clientViewable == false){
+					if(this.matrix[x][y].piece){
+						minimap.removeUnit(this.toMap(new Coordinate(x,y)));
+					}
 					if(this.matrix[x][y].clientPastViewable == true){
 						//Do something that shows transition
 						//TODO
 						this.matrix[x][y].piece = null;
 					}
-					this.matrix[x][y].piece = null;
+					this.matrix[x][y].piece = null;			
+					
 				}
 			}
 		}
