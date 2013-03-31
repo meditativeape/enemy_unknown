@@ -140,9 +140,9 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
             this.units[team]++;
             for (var i in this.players) {
                 if (this.hexgrid.scenario.revealtype || this.players[i].team == team) {
-                    this.sendMsg(this.players[i], "1 add {0} {1} {2} {3} {4}".format([id, team, type, coord.X, coord.Y, CONSTANTS.cd]));
+                    this.sendMsg(this.players[i], "1 add {0} {1} {2} {3} {4} {5}".format([id, team, type, coord.X, coord.Y, CONSTANTS.cd]));
                 } else {
-                    this.sendMsg(this.players[i], "1 add {0} {1} {2} {3} {4}".format([id, team, 5, coord.X, coord.Y, CONSTANTS.cd]));
+                    this.sendMsg(this.players[i], "1 add {0} {1} {2} {3} {4} {5}".format([id, team, 5, coord.X, coord.Y, CONSTANTS.cd]));
                 }
             }
         }
@@ -242,7 +242,7 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 					this.makeMove(coord1, coord2);  // move in our local game
 					this.hexgrid.getUnit(coord2).setcd(CONSTANTS.cd);
 					for (var i in this.players) {  // tell each player the result of move
-						this.sendMsg(this.players[i], message + ", " + CONSTANTS.cd);
+						this.sendMsg(this.players[i], message + " " + CONSTANTS.cd);
 					}
 				}
 				this.checkObjectives();
@@ -386,9 +386,9 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 			// this.players[i].resource = CONSTANTS.init_resource;
 			for (var j in pieces) {
 				if (this.hexgrid.scenario.revealtype || this.players[i].team == pieces[j].team)
-					this.sendMsg(this.players[i], "1 add {0} {1} {2} {3} {4} {5}".format([pieces[j].player, pieces[j].team, pieces[j].type, pieces[j].x, pieces[j].y], CONSTANTS.cd));
+					this.sendMsg(this.players[i], "1 add {0} {1} {2} {3} {4} {5}".format([pieces[j].player, pieces[j].team, pieces[j].type, pieces[j].x, pieces[j].y, CONSTANTS.cd]));
 				else
-					this.sendMsg(this.players[i], "1 add {0} {1} {2} {3} {4} {5}".format([pieces[j].player, pieces[j].team, 5, pieces[j].x, pieces[j].y], CONSTANTS.cd));
+					this.sendMsg(this.players[i], "1 add {0} {1} {2} {3} {4} {5}".format([pieces[j].player, pieces[j].team, 5, pieces[j].x, pieces[j].y, CONSTANTS.cd]));
 			}
 		}
 		
