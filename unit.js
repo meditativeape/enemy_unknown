@@ -18,18 +18,19 @@ var Unit = function(/*int*/player, /*int*/ team, /*int*/hp, /*int*/type, /*Coord
 	this.range = 2;
 	this.x = startCoord.X;
 	this.y = startCoord.Y;
+    this.visible = false; // visible to enemy
+    this.lastSeenX = null; // last seen coordinate
+    this.lastSeenY = null;
 	this.cooldown = 0;
 	this.moved = false;
 	this.attacked = false;
-    this.heartImage = CONSTANTS.heart;
-	this.image = pic;
-	this.cd = cd;
+    this.heartImage = CONSTANTS.heart; // hp image
+	this.image = pic; // unit image
+	this.cd = cd; // cd image
 	this.attacking = false;
 	this.damaged = false;
 	this.death = null;
 	this.lostHP = 0;
-	this.losingHP = false;
-	this.hpfloat = 0;
 	this.terrain = null;
 	this.buff = null;
 	this.attack = 50;
@@ -130,9 +131,6 @@ Unit.prototype.minusHP = function(/*int*/hp){
 		gc.gothitsound.play();
 	}
 	this.hp = hp;
-	var self = this;
-	this.losingHP = true;
-	this.hpfloat = 0;
 }
 
 Unit.prototype.gotHit = function(/*Unit*/enemy){

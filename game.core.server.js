@@ -378,17 +378,15 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 			this.units.push(types.length);
 		}
 		
-		// TODO: do not work for 2v2 yet
 		var k = 0;
 		for (var i in this.players) {
 			this.players[i].player = k;
 			this.players[i].team = k++;
-			// this.players[i].resource = CONSTANTS.init_resource;
 			for (var j in pieces) {
 				if (this.hexgrid.scenario.revealtype || this.players[i].team == pieces[j].team)
-					this.sendMsg(this.players[i], "1 add {0} {1} {2} {3} {4} {5}".format([pieces[j].player, pieces[j].team, pieces[j].type, pieces[j].x, pieces[j].y, CONSTANTS.cd]));
+					this.sendMsg(this.players[i], "1 add {0} {1} {2} {3} {4} {5}".format([pieces[j].player, pieces[j].team, pieces[j].type, pieces[j].x, pieces[j].y, 0]));
 				else
-					this.sendMsg(this.players[i], "1 add {0} {1} {2} {3} {4} {5}".format([pieces[j].player, pieces[j].team, 5, pieces[j].x, pieces[j].y, CONSTANTS.cd]));
+					this.sendMsg(this.players[i], "1 add {0} {1} {2} {3} {4} {5}".format([pieces[j].player, pieces[j].team, 5, pieces[j].x, pieces[j].y, 0]));
 			}
 		}
 		
