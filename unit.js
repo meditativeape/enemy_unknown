@@ -10,7 +10,7 @@ if( 'undefined' != typeof global ) {
 * Prototype for a unit
 * @constructor
 */
-var Unit = function(/*int*/player, /*int*/ team, /*int*/hp, /*int*/type, /*Coordinate*/startCoord, /*image*/pic, /*image*/cd, /*int*/showNum){
+var Unit = function(/*int*/player, /*int*/ team, /*int*/hp, /*int*/type, /*Coordinate*/startCoord, /*image*/pic, /*image*/cdImage, /*int*/showNum){
 	this.player = player; //Starts from 0
 	this.team = team; //Starts from 0
 	this.hp = hp;
@@ -18,15 +18,12 @@ var Unit = function(/*int*/player, /*int*/ team, /*int*/hp, /*int*/type, /*Coord
 	this.range = 2;
 	this.x = startCoord.X;
 	this.y = startCoord.Y;
-    this.visible = false; // visible to enemy
-    this.lastSeenX = null; // last seen coordinate
-    this.lastSeenY = null;
-	this.cooldown = 0;
-	this.moved = false;
+    this.serverIsVisible = false; // visible to enemy
 	this.attacked = false;
     this.heartImage = CONSTANTS.heart; // hp image
 	this.image = pic; // unit image
-	this.cd = cd; // cd image
+	this.cdImage = cdImage; // cd image
+    this.cooldown = 0;
 	this.attacking = false;
 	this.damaged = false;
 	this.death = null;
@@ -45,7 +42,7 @@ if( 'undefined' != typeof global ) {
     module.exports = Unit;
 }
 
-Unit.prototype.setcd = function(/*int*/ time){
+Unit.prototype.setcd = function(/*float*/ time){
 	this.cooldown = time;
 	var self = this;
 	var now, before = new Date();
@@ -73,9 +70,9 @@ Unit.prototype.draw = function(/*Point*/p, /*int*/height) {
     var groupToDraw = new Kinetic.Group();
     // draw unit
 	var unitToDraw;
-	if (this.cooldown > 0.2 && this.cd) {
+	if (this.cooldown > 0.2 && this.cdImage) {
 		unitToDraw = new Kinetic.Image({
-			image: this.cd,
+			image: this.cdImage,
 			x: Math.floor(p.X - this.image.width/2),
 			y: Math.floor(p.Y + height*2/5 - this.image.height + 5),
 			width: this.image.width,
@@ -164,4 +161,11 @@ Unit.prototype.gotHit = function(/*Unit*/enemy){
 	}
 };
 
-
+Unit.prototype.serverSetVisible = function(/*boolean*/ isVisible) {
+    var old = this.serverIsVisible;
+    this.serverIsVisible = isVisible;
+    if (!old && isVisible)
+        return true;
+    else
+        return false;
+}

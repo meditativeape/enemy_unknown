@@ -113,6 +113,8 @@ var BuildMap = function(/*string*/mapName, /*camera*/camera, /*layer*/layer, /*f
 		var toMove = this.matrix[origin.X][origin.Y].piece;
 		this.matrix[origin.X][origin.Y].piece = null;
 		this.matrix[dest.X][dest.Y].piece = toMove;
+        toMove.x = dest.X;
+        toMove.y = dest.Y;
 		this.matrix[dest.X][dest.Y].piece.buff = this.matrix[dest.X][dest.Y].terrain?this.matrix[dest.X][dest.Y].terrain.buff:null;
 	};
 	
@@ -145,7 +147,15 @@ var BuildMap = function(/*string*/mapName, /*camera*/camera, /*layer*/layer, /*f
 	this.addTerrain = function(toAdd, /*Coordinate*/dest){
 		this.matrix[dest.X][dest.Y].terrain = toAdd;
 	}
+		
+	this.isReachable = function(/*Coordinate*/coord){
+		return this.matrix[coord.X][coord.Y].reachable;
+	};
 	
+	this.isAttackable = function(/*Coordinate*/coord){
+		return this.matrix[coord.X][coord.Y].clientAttackable;
+	};
+    
 	this.clientMarkReachable = function(/*Coordinate*/coord){
 		var selectedHex = this.matrix[coord.X][coord.Y];
 		xs = [coord.X-1, coord.X, coord.X+1, coord.X-2, coord.X+2];
@@ -153,21 +163,21 @@ var BuildMap = function(/*string*/mapName, /*camera*/camera, /*layer*/layer, /*f
 		for (var i = 0; i < 5; i++) {
 			for(var j = 0; j < 5; j++){
 				var range = selectedHex.piece.buff?selectedHex.piece.range+selectedHex.piece.buff.rangeBuff:selectedHex.piece.range;
-					if(this.matrix[xs[i]]){				
-								if(this.matrix[xs[i]][ys[j]]){		
-									if(this.hexDist(this.matrix[xs[i]][ys[j]], selectedHex) <= range  && !this.matrix[xs[i]][ys[j]].piece){
-										if(this.matrix[xs[i]][ys[j]].terrain){
-											if(this.matrix[xs[i]][ys[j]].terrain.moveable){
-												this.matrix[xs[i]][ys[j]].reachable = true;
-												this.clientReachables.push(this.matrix[xs[i]][ys[j]]);
-											}
-										}else{
-											this.matrix[xs[i]][ys[j]].reachable = true;
-											this.clientReachables.push(this.matrix[xs[i]][ys[j]]);
-										}
-									}
-								}
-				}
+                if(this.matrix[xs[i]]){				
+                    if(this.matrix[xs[i]][ys[j]]){		
+                        if(this.hexDist(this.matrix[xs[i]][ys[j]], selectedHex) <= range  && !this.matrix[xs[i]][ys[j]].piece){
+                            if(this.matrix[xs[i]][ys[j]].terrain){
+                                if(this.matrix[xs[i]][ys[j]].terrain.moveable){
+                                    this.matrix[xs[i]][ys[j]].reachable = true;
+                                    this.clientReachables.push(this.matrix[xs[i]][ys[j]]);
+                                }
+                            }else{
+                                this.matrix[xs[i]][ys[j]].reachable = true;
+                                this.clientReachables.push(this.matrix[xs[i]][ys[j]]);
+                            }
+                        }
+                    }
+                }
 			}
 		}
 		
@@ -181,16 +191,16 @@ var BuildMap = function(/*string*/mapName, /*camera*/camera, /*layer*/layer, /*f
 		for (var i = 0; i < 5; i++) {
 			for(var j = 0; j < 5; j++){
 				var range = selectedHex.piece.buff?selectedHex.piece.range+selectedHex.piece.buff.rangeBuff:selectedHex.piece.range;
-					if(this.matrix[xs[i]]){				
-								if(this.matrix[xs[i]][ys[j]]){		
-									if(this.hexDist(this.matrix[xs[i]][ys[j]], selectedHex) <= range  && this.matrix[xs[i]][ys[j]].piece && (selectedHex !=this.matrix[xs[i]][ys[j]])){
-										if(this.matrix[xs[i]][ys[j]].piece.team != selectedHex.piece.team){
-											this.matrix[xs[i]][ys[j]].clientAttackable = true;
-											this.clientAttackables.push(this.matrix[xs[i]][ys[j]]);
-										}
-									}
-								}
-				}
+                if(this.matrix[xs[i]]){				
+                    if(this.matrix[xs[i]][ys[j]]){		
+                        if(this.hexDist(this.matrix[xs[i]][ys[j]], selectedHex) <= range  && this.matrix[xs[i]][ys[j]].piece && (selectedHex !=this.matrix[xs[i]][ys[j]])){
+                            if(this.matrix[xs[i]][ys[j]].piece.team != selectedHex.piece.team){
+                                this.matrix[xs[i]][ys[j]].clientAttackable = true;
+                                this.clientAttackables.push(this.matrix[xs[i]][ys[j]]);
+                            }
+                        }
+                    }
+                }
 			}
 		}
 	};
@@ -198,7 +208,7 @@ var BuildMap = function(/*string*/mapName, /*camera*/camera, /*layer*/layer, /*f
 	this.clientMarkBuildable = function(/*int*/player){
 		for(var x in this.matrix){ // brute force!
 			for(var y in this.matrix[x]){
-			if(this.matrix[x][y].piece && this.matrix[x][y].piece.player == player){
+                if(this.matrix[x][y].piece && this.matrix[x][y].piece.player == player){
                     xs = [x-1, x-1, x, x, parseInt(x)+1, parseInt(x)+1];
                     ys = [y, parseInt(y)+1, y-1, parseInt(y)+1, y-1, y];
                     for (var i = 0; i < 6; i++) {
@@ -214,7 +224,7 @@ var BuildMap = function(/*string*/mapName, /*camera*/camera, /*layer*/layer, /*f
                             }
                         }
                     }
-				}
+                }
 			}
 		}
 	};
@@ -224,10 +234,12 @@ var BuildMap = function(/*string*/mapName, /*camera*/camera, /*layer*/layer, /*f
 			for(var y in this.matrix[x]){
 				if(this.matrix[x][y].piece){
 					if(this.matrix[x][y].piece.team == team){
-						xs = [x-1, x, parseInt(x)+1, x-2, parseInt(x)+2];
-						ys = [y, parseInt(y)+1, y-1, y-2,parseInt(y)+2];
-						for (var i = 0; i < 5; i++) {
-							for(var j = 0; j < 5; j++){
+                        x = parseInt(x);
+                        y = parseInt(y);
+						xs = [x-3, x-2, x-1, x, x+1, x+2, x+3];
+						ys = [y-3, y-2, y-1, y, y+1, y+2, y+3];
+						for (var i = 0; i < 7; i++) {
+							for(var j = 0; j < 7; j++){
 								if(this.matrix[xs[i]]){				
 									if(this.matrix[xs[i]][ys[j]]){		
 										if(this.hexDist(this.matrix[xs[i]][ys[j]], this.matrix[x][y]) <= 2){
@@ -298,14 +310,35 @@ var BuildMap = function(/*string*/mapName, /*camera*/camera, /*layer*/layer, /*f
 		}
 		this.clientViewables = [];
 	};
-	
-	this.isReachable = function(/*Coordinate*/coord){
-		return this.matrix[coord.X][coord.Y].reachable;
-	};
-	
-	this.isAttackable = function(/*Coordinate*/coord){
-		return this.matrix[coord.X][coord.Y].clientAttackable;
-	};
+
+    this.serverUpdateVisible = function() {
+        var piecesToAdd = [[], []];
+        for (var x in this.matrix)
+            for (var y in this.matrix[x])
+                if (this.matrix[x][y].piece) {  // for each piece, check surrounding hexs
+                    if (this.serverUpdatePieceVisible(x, y)) {  // if a piece becomes visible, add to the list
+                        piecesToAdd[this.matrix[x][y].piece.team].push(new Coordinate(x, y));
+                    }
+                }
+        return piecesToAdd;
+    }
+    
+    this.serverUpdatePieceVisible = function(/*int*/ x, /*int*/ y) {
+        x = parseInt(x);
+        y = parseInt(y);
+        var myTeam = this.matrix[x][y].piece.team;
+        for (var i = -3; i <= 3; i++)
+            for (var j = -3; j <= 3; j++) {
+                i = parseInt(i);
+                j = parseInt(j);
+                if (this.matrix[x+i] && this.matrix[x+i][y+j] && (this.hexDist(this.matrix[x][y], 
+                this.matrix[x+i][y+j]) <= 3) && this.matrix[x+i][y+j].piece && 
+                (this.matrix[x+i][y+j].piece.team != myTeam))  // there is an enemy piece beside
+                {   console.log(x + " " + y + "is visible");
+                    return this.matrix[x][y].piece.serverSetVisible(true);}
+            }
+        return this.matrix[x][y].piece.serverSetVisible(false);
+    }
 }
 
 // server side we export BuildMap.
