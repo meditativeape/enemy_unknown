@@ -416,6 +416,9 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				var cd = this.cooldown[parseInt(keywords[2])][parseInt(keywords[4])];
 				this.hexgrid.matrix[parseInt(keywords[5])][parseInt(keywords[6])].piece = new Unit(parseInt(keywords[2]), parseInt(keywords[3]),
                         4, parseInt(keywords[4]), new Coordinate(parseInt(keywords[5]),parseInt(keywords[6])), sprite, cd, this.showNum);
+				this.hexgrid.matrix[parseInt(keywords[5])][parseInt(keywords[6])].piece.setcd(parseInt(keywords[7]));
+				this.hexgrid.clearViewable();
+				this.hexgrid.markViewable(this.team);
 				this.updateRA();
 				// update minimap
 				var pointOnMap = this.hexgrid.toMap(new Coordinate(parseInt(keywords[5]), parseInt(keywords[6])));
@@ -426,7 +429,9 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				break;
 			case "move":
 				this.hexgrid.move(new Coordinate(parseInt(keywords[2]),parseInt(keywords[3])),new Coordinate(parseInt(keywords[4]),parseInt(keywords[5])))
-				this.hexgrid.matrix[parseInt(keywords[4])][parseInt(keywords[5])].piece.setcd(CONSTANTS.cd);
+				this.hexgrid.matrix[parseInt(keywords[4])][parseInt(keywords[5])].piece.setcd(parseInt(keywords[6]));
+				this.hexgrid.clearViewable();
+				this.hexgrid.markViewable(this.team);
 				this.updateRA();
 				// update minimap
 				var oldPointOnMap = this.hexgrid.toMap(new Coordinate(parseInt(keywords[2]), parseInt(keywords[3])));
@@ -461,6 +466,8 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 						}
 					}
 				}	
+				this.hexgrid.clearViewable();
+				this.hexgrid.markViewable(this.team);
 				this.updateRA();
 				break;
 			}
