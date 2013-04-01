@@ -147,40 +147,41 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 		for(var x in this.hexgrid.matrix){ // brute force!
 			for(var y in this.hexgrid.matrix[x]){
 				if(this.hexgrid.matrix[x][y].terrain){
-					var t = this.hexgrid.matrix[x][y].terrain;
+					var hexagon = this.hexgrid.matrix[x][y];
+                    var t = hexagon.terrain;
 					if(t.objectiveType == 'flag'){  // is a flag
 						var self = this;
-						if (this.hexgrid.matrix[x][y].piece && !t.captured) {
+						if (this.hexgrid.matrix[x][y].piece && !hexagon.captured) {
 							this.winner = self.hexgrid.matrix[x][y].piece.team;
 							for (var i in this.players) {
 								this.sendMsg(this.players[i], "1 countdown " + this.winner);
 							}
-							t.countdown = window.setTimeout(function(){
+							hexagon.countdown = window.setTimeout(function(){
 								self.endGame(self.winner);
-								}, t.objectiveTime*1000);
-							t.captured = true;
-						} else if (!this.hexgrid.matrix[x][y].piece && t.captured) {
+								}, hexagon.objectiveTime*1000);
+							hexagon.captured = true;
+						} else if (!this.hexgrid.matrix[x][y].piece && hexagon.captured) {
 							this.winner = null;
-							window.clearTimeout(t.countdown);
+							window.clearTimeout(hexagon.countdown);
 							for (var i in this.players) {
 								this.sendMsg(this.players[i], "1 countdown " + -1);
 							}
-							t.captured = false;
+							hexagon.captured = false;
 						}
 					}
 					if (t.resource) {  // provide resource
                         var r = t.resource;
 						var self = this;
-						if (this.hexgrid.matrix[x][y].piece && !t.captured) {
+						if (this.hexgrid.matrix[x][y].piece && !hexagon.captured) {
                             var id = this.hexgrid.matrix[x][y].piece.player;
-							t.interval = window.setInterval(function(){
+							hexagon.interval = window.setInterval(function(){
 								self.updateResource(id, r);
 								}, t.gatheringSpeed*1000);
-							t.captured = true;
-						} else if (!this.hexgrid.matrix[x][y].piece && t.captured) {
-							window.clearInterval(t.interval);
-                            t.interval = -1;
-							t.captured = false;
+							hexagon.captured = true;
+						} else if (!this.hexgrid.matrix[x][y].piece && hexagon.captured) {
+							window.clearInterval(hexagon.interval);
+                            hexagon.interval = -1;
+							hexagon.captured = false;
 						}
 					}
 				}
@@ -315,7 +316,7 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
     
     game_core_server.prototype.updateVisible = function(){  // only works for 1v1
         var piecesToAdd = this.hexgrid.serverUpdateVisible();
-        console.log(piecesToAdd);
+        // console.log(piecesToAdd);
         for (var i in piecesToAdd)
             for (var j in piecesToAdd[i]) {
                 var piece = this.hexgrid.getUnit(piecesToAdd[i][j]);

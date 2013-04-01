@@ -84,6 +84,8 @@ var Scenarios = {
 			terrain[8][4] = "thron";
 			// add resource
 			terrain[5][5] = "resource";
+            terrain[0][10] = "resource";
+            terrain[10][0] = "resource";
 			return terrain;
 		})(),
 		"startpoint": {

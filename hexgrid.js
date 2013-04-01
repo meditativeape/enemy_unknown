@@ -336,9 +336,10 @@ var BuildMap = function(/*string*/mapName, /*camera*/camera, /*layer*/layer, /*f
                 j = parseInt(j);
                 if (this.matrix[x+i] && this.matrix[x+i][y+j] && (this.hexDist(this.matrix[x][y], 
                 this.matrix[x+i][y+j]) <= 3) && this.matrix[x+i][y+j].piece && 
-                (this.matrix[x+i][y+j].piece.team != myTeam))  // there is an enemy piece beside
-                {   console.log(x + " " + y + " is visible");
-                    return this.matrix[x][y].piece.serverSetVisible(true);}
+                (this.matrix[x+i][y+j].piece.team != myTeam))  { // there is an enemy piece beside
+                    //console.log(x + " " + y + " is visible");
+                    return this.matrix[x][y].piece.serverSetVisible(true);
+                }
             }
         return this.matrix[x][y].piece.serverSetVisible(false);
     }
