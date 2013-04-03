@@ -112,6 +112,7 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
     game_core_server.prototype.buildUnit = function(type, coord, player){
         var id = player.player;
         var team = player.team;
+        var cost = CONSTANTS.cost[type];
         // check if coord is empty
         if (this.hexgrid.getUnit(coord))
             return;
@@ -130,9 +131,9 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
             }
         }
         // TODO: hardcoded cost!
-        if (hasAllyNearby && this.resources[id]>=50) {
+        if (hasAllyNearby && this.resources[id] >= cost) {
             // deduct resource
-            this.resources[id] -= 50;
+            this.resources[id] -= cost;
             this.sendMsg(this.players[id], "1 resource " + this.resources[id]);
             // add unit
             var u = new Unit(id, team, 4, type, coord);
@@ -180,7 +181,7 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 							hexagon.captured = true;
 						} else if (!this.hexgrid.matrix[x][y].piece && hexagon.captured) {
 							window.clearInterval(hexagon.interval);
-                            hexagon.interval = -1;
+                            hexagon.interval = 0;
 							hexagon.captured = false;
 						}
 					}
@@ -432,10 +433,8 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
         // clear all intervals in terrains
         for(var x in this.hexgrid.matrix){ // brute force!
 			for(var y in this.hexgrid.matrix[x]){
-				if(this.hexgrid.matrix[x][y].terrain){
-					var t = this.hexgrid.matrix[x][y].terrain;
-                    if (t.interval != -1)
-                        window.clearInterval(t.interval);
+				if(this.hexgrid.matrix[x][y].interval){
+                    window.clearInterval(this.hexgrid.matrix[x][y].interval);
                 }
             }
         }

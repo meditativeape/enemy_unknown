@@ -135,7 +135,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 					me.guess = null;
 				}
 				if(me.build){
-					if(me.resource >= 50){
+					if(me.resource >= CONSTANTS.cost[0]){
 						me.toBuild = 0;
 						me.hexgrid.clientMarkBuildable(me.player);
 					}
@@ -149,7 +149,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 					me.guess = null;
 				}
 				if(me.build){
-					if(me.resource >= 50){
+					if(me.resource >= CONSTANTS.cost[1]){
 						me.toBuild = 1;
 						me.hexgrid.clientMarkBuildable(me.player);
 					}
@@ -163,7 +163,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 					me.guess = null;
 				}
 				if(me.build){
-					if(me.resource >= 50){
+					if(me.resource >= CONSTANTS.cost[2]){
 						me.toBuild = 2;
 						me.hexgrid.clientMarkBuildable(me.player);
 					}
@@ -177,7 +177,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 					me.guess = null;
 				}
 				if(me.build){
-					if(me.resource >= 50){
+					if(me.resource >= CONSTANTS.cost[3]){
 						me.toBuild = 3;
 						me.hexgrid.clientMarkBuildable(me.player);
 					}
@@ -191,7 +191,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 					me.guess = null;
 				}
 				if(me.build){
-					if(me.resource >= 50){
+					if(me.resource >= CONSTANTS.cost[4]){
 						me.toBuild = 4;
 						me.hexgrid.clientMarkBuildable(me.player);
 					}
@@ -435,9 +435,6 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 			case "move":
 				this.hexgrid.move(new Coordinate(parseInt(keywords[2]),parseInt(keywords[3])),new Coordinate(parseInt(keywords[4]),parseInt(keywords[5])))
 				this.hexgrid.matrix[parseInt(keywords[4])][parseInt(keywords[5])].piece.setcd(parseInt(keywords[6]));
-				
-
-				
 				// update minimap
 				var oldPointOnMap = this.hexgrid.toMap(new Coordinate(parseInt(keywords[2]), parseInt(keywords[3])));
 				var newPointOnMap = this.hexgrid.toMap(new Coordinate(parseInt(keywords[4]), parseInt(keywords[5])));

@@ -24,7 +24,8 @@ var CONSTANTS = {
 	cd: 10,
 	init_resource: 100,
 	hexSideLength: 60,
-	hexRatio: 2.0
+	hexRatio: 2.0,
+    cost: [50, 40, 10, 30, 50]
 };
 
 // server side we export Point and Coordinate.
