@@ -275,6 +275,7 @@ var BuildMap = function(/*string*/mapName, /*camera*/camera, /*layer*/layer, /*f
 						// reset opacity to 0
 						this.matrix[x][y].opacity = 0;
 						this.matrix[x][y].piece = null;
+                        this.matrix[x][y].clientPastViewable = false;
 					}
 					this.matrix[x][y].piece = null;			
 					
@@ -544,7 +545,7 @@ Hexagon.prototype.update = function() {
     if (!this.clientViewable) {   
         if (this.opacity < 0.5) {
             this.fog.setOpacity(this.opacity);
-            this.opacity += 0.005;
+            this.opacity += 0.01;
         } else {
             this.fog.setOpacity(0.5);
         }
