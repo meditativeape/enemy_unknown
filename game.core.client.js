@@ -246,7 +246,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		
 		var isAppLoaded = function() {
 			files_loaded++;
-			if (files_loaded >= 31) {
+			if (files_loaded >= 34) {
 				gc.initiate(scenario,type);
 			}
 		}
@@ -259,6 +259,9 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		this.thronImg = load_image("sprites\\thron.png");
 		this.whokillswhoImg = load_image("sprites\\whokillswho2.png");
         this.ibuttonImg = load_image("sprites\\ibutton.png");
+        this.topbarImg = load_image("sprites\\topbar.png");
+        this.topResourceImg = load_image("sprites\\topresource.png");
+        this.fogImg = load_image("sprites\\fog.png");
 
 		this.sprites[0][0] = load_image("sprites\\vampire6_red.png");
 		this.sprites[0][1] = load_image("sprites\\wolf6_red.png");
@@ -598,6 +601,15 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		}, msgLayer);
 		this.msgLayerAnim.start();
         
+        // topbar
+        UILayer.add(new Kinetic.Image({
+            x: 0,
+            y: 0,
+            image: this.topbarImg,
+            scale: {x:1, y:0.5},
+            listening: false
+        }));
+        
         // who kills whom image
 		UILayer.add(new Kinetic.Image({
 			x: CONSTANTS.width - this.whokillswhoImg.width,
@@ -608,10 +620,10 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		
         // resource
         UILayer.add(new Kinetic.Image({
-            image: this.resourceImg,
+            image: this.topResourceImg,
             x: 215,
             y: 10,
-            scale: {x:0.5, y:0.5},
+            // scale: {x:0.5, y:0.5},
             listening: false
         }));
         var resourceText = new Kinetic.Text({
@@ -700,7 +712,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		var scenario = Scenarios[this.mapName];
 		this.camera = new BuildCamera([scenario.size.x + scenario.offset*2, scenario.size.y], 10, this.background, mapLayer);
 		this.minimap = new BuildMiniMap(this.camera, [scenario.size.x + scenario.offset*2, scenario.size.y], 200, this.background, UILayer, stage);
-		this.hexgrid = new BuildMap(this.mapName, this.camera, mapLayer, clickCallback);
+		this.hexgrid = new BuildMap(this.mapName, this.camera, mapLayer, clickCallback, this.fogImg);
 		
 		// initialize terrain
 		var terrain = scenario.terrain;

@@ -17,7 +17,7 @@ if( 'undefined' != typeof global ) {
 * callback could be null on server, since no click event will be fired there.
 * @constructor
 */
-var BuildMap = function(/*string*/mapName, /*camera*/camera, /*layer*/layer, /*function*/callback){
+var BuildMap = function(/*string*/mapName, /*camera*/camera, /*layer*/layer, /*function*/callback, /*img*/fogImg){
 	
 	var side = CONSTANTS.hexSideLength;
 	var ratio = CONSTANTS.hexRatio;
@@ -31,6 +31,7 @@ var BuildMap = function(/*string*/mapName, /*camera*/camera, /*layer*/layer, /*f
 		this.hexGroup = new Kinetic.Group();  // only hexagons listen to events
 		this.terrainGroup = new Kinetic.Group({listening: false});
 		this.unitGroup = new Kinetic.Group({listening: false});
+        this.fogGroup = new Kinetic.Group({listening: false});
 	}
 	
 	this.matrix = [];
@@ -54,7 +55,7 @@ var BuildMap = function(/*string*/mapName, /*camera*/camera, /*layer*/layer, /*f
 					rows =  rows + 1;
 				}			
 			}
-			var hexagon = new Hexagon(id, matrixx, matrixy, xpos, ypos, spec, camera, this, callback);
+			var hexagon = new Hexagon(id, matrixx, matrixy, xpos, ypos, spec, camera, this, callback, fogImg);
 			this.matrix[matrixx][matrixy] = hexagon;
 			ypos = ypos + spec.height/2;
 			xpos = xpos + spec.width/2 + spec.side/2;
@@ -71,6 +72,7 @@ var BuildMap = function(/*string*/mapName, /*camera*/camera, /*layer*/layer, /*f
 		layer.add(this.terrainGroup);
 		layer.add(this.hexGroup);
 		layer.add(this.unitGroup);
+        layer.add(this.fogGroup);
 		var me = this;
 		this.anim = new Kinetic.Animation(function(frame) {
 			for(var x in me.matrix){
@@ -270,8 +272,8 @@ var BuildMap = function(/*string*/mapName, /*camera*/camera, /*layer*/layer, /*f
 						minimap.removeUnit(this.toMap(new Coordinate(x,y)));
 					}
 					if(this.matrix[x][y].clientPastViewable == true){
-						//Do something that shows transition
-						//TODO
+						// reset opacity to 0
+						this.matrix[x][y].opacity = 0;
 						this.matrix[x][y].piece = null;
 					}
 					this.matrix[x][y].piece = null;			
@@ -375,10 +377,10 @@ function findHexSpecs(/*double*/side, /*double*/ratio){
 
 /**
 * Constructs a hexagon.
-* camera could be null on server side, since no visualization is needed.
+* camera and fogImg could be null on server side, since no visualization is needed.
 * @constructor
 */
-function Hexagon(id, mx, my, x, y, spec, camera, map, callback) {
+function Hexagon(id, mx, my, x, y, spec, camera, map, callback, fogImg) {
 	this.piece = null;
 	this.map = map;
 	this.matrixx = mx;
@@ -387,6 +389,7 @@ function Hexagon(id, mx, my, x, y, spec, camera, map, callback) {
 	this.clientAttackable = false;
 	this.clientBuildable = false;
 	this.clientViewable = false;
+    this.opacity = 1;
 	this.clientPastViewable = false;
 	this.guessing = false;
 	this.Points = [];//Polygon Base
@@ -421,6 +424,7 @@ function Hexagon(id, mx, my, x, y, spec, camera, map, callback) {
 	
 	if (camera) {
 		this.camera = camera;
+        this.fogImg = fogImg;
 		
 		// add hexagon
 		var hexagonConfig = {
@@ -503,9 +507,10 @@ Hexagon.prototype.update = function() {
 		this.hexagonToDraw.setFill('rgba(255, 0, 0, 0.3)');
 	}else if (this.guessing){
 		this.hexagonToDraw.setFill('rgba(0,0,255,0.3)');
-	}else if(!this.clientViewable){
-		this.hexagonToDraw.setFill('rgba(120,0,0,0.3)');
 	}
+    // else if(!this.clientViewable){
+		// this.hexagonToDraw.setFill('rgba(120,0,0,0.3)');
+	// }
 	// add/update terrain
 	var midPoint = new Point(this.MidPoint.X - this.camera.x, this.MidPoint.Y - this.camera.y);
 	if (this.terrain) {
@@ -516,7 +521,6 @@ Hexagon.prototype.update = function() {
 			this.map.terrainGroup.add(this.terrainToDraw);
 		}
 	}
-	
 	// add/update unit and hp
 	if (this.unitToDraw)
 		this.unitToDraw.destroy();
@@ -524,4 +528,27 @@ Hexagon.prototype.update = function() {
 		this.unitToDraw = this.piece.draw(midPoint, this.spec.height);
 		this.map.unitGroup.add(this.unitToDraw);
 	}
+    // add fog of war
+    if (!this.fog) {
+        this.fog = new Kinetic.Image({
+            image: this.fogImg,
+            x: midPoint.X - this.fogImg.width/4,
+            y: midPoint.Y - this.fogImg.height/4,
+            opacity: 0,
+            scale: {x:0.6, y:0.6}
+        });
+        this.map.fogGroup.add(this.fog);
+    }
+    this.fog.setX(midPoint.X - this.fogImg.width/3);
+    this.fog.setY(midPoint.Y - this.fogImg.height/3);
+    if (!this.clientViewable) {   
+        if (this.opacity < 0.5) {
+            this.fog.setOpacity(this.opacity);
+            this.opacity += 0.005;
+        } else {
+            this.fog.setOpacity(0.5);
+        }
+    } else {
+        this.fog.setOpacity(0);
+    }
 };
