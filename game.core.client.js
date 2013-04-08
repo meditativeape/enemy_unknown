@@ -48,6 +48,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		// Container for all unit cooldown images
 		this.cooldown = [[], [], [], []];
         // flags
+        this.flagsImg = [];
         this.flags = [];
         
 		this.last_click_coord = null;
@@ -61,7 +62,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		this.type = null;
 		this.alive = true;
 		this.winner = false;
-		this.countdown = 60;
+		this.countdown = CONSTANTS.countdown;
 		this.capping = 0;
 		this.countdownTimer = null;
 		this.resource = 0;
@@ -248,7 +249,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		
 		var isAppLoaded = function() {
 			files_loaded++;
-			if (files_loaded >= 33) {
+			if (files_loaded >= 35) {
 				gc.initiate(scenario,type);
 			}
 		}
@@ -310,7 +311,6 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
         // load flags
         this.flagsImg[0] = load_image("sprites\\redflag.png");
         this.flagsImg[1] = load_image("sprites\\blueflag.png");
-        this.flags = [];
         
 		// add terrain images
 		CONSTANTS.thronTerrain.image = this.thronImg;
@@ -369,7 +369,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 					window.clearInterval(this.countdownTimer);
 				}
 				this.capping = 0;
-				this.countdown = 60;
+				this.countdown = CONSTANTS.countdown;
 				this.winner = parseInt(keywords[2]);
 				this.alive = false;
 				this.last_click_coord = null;
@@ -406,14 +406,14 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
                 // draw flag
                 for (var i = 0; i < this.flags.length; i++) {
                     if (i == capteam) {
-                        console.log(i + " haha");
-                        this.flags[i].setOpacity(1);
+                        this.flags[i].setVisible(true);
+                        this.flags[i].moveToTop();
                     } else {
-                        this.flags[i].setOpacity(0);
+                        this.flags[i].setVisible(false);
                     }
                 }
                 // setup countdown timer
-				if(!(keywords[2]==-1)){
+				if(keywords[2] != -1){
 					if(this.team == capteam){
 						this.capping = 1;
 					}else{
@@ -426,7 +426,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 					,1000);
 				}else{
 					window.clearInterval(this.countdownTimer);
-					this.countdown = 60;
+					this.countdown = CONSTANTS.countdown;
 					this.capping = 0;
 				}
 				break;
@@ -572,31 +572,31 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 						msgLayer.add(centerMsg);
 					}
 				} else if (me.capping){  // TODO: hardcoded!
-					if (me.capping == 1){
-						centerMsg.setText("Capturing flag: " + me.countdown + " seconds until win.");
-						centerMsg.setFill('white');
-						centerMsg.setX(200);
-						centerMsg.setY(50);
-						centerMsg.setFontSize(28);
-						centerMsg.setFontStyle('normal');
-						centerMsg.setFontFamily('Calibri');
-						if (!msgLayer.isAncestorOf(centerMsg)) {
-							msgLayer.add(centerMsg);
-						}
-					} else {
-						centerMsg.setText("Defend flag: " + me.countdown + " seconds until lose.");
-						centerMsg.setFill('white');
-						if (me.countdown <= 10)
-							centerMsg.setFill('red');
-						centerMsg.setX(210);
-						centerMsg.setY(50);
-						centerMsg.setFontSize(28);
-						centerMsg.setFontStyle('normal');
-						centerMsg.setFontFamily('Calibri');
-						if (!msgLayer.isAncestorOf(centerMsg)) {
-							msgLayer.add(centerMsg);
-						}
-					}
+					// if (me.capping == 1){
+						// centerMsg.setText("Capturing flag: " + me.countdown + " seconds until win.");
+						// centerMsg.setFill('white');
+						// centerMsg.setX(200);
+						// centerMsg.setY(50);
+						// centerMsg.setFontSize(28);
+						// centerMsg.setFontStyle('normal');
+						// centerMsg.setFontFamily('Calibri');
+						// if (!msgLayer.isAncestorOf(centerMsg)) {
+							// msgLayer.add(centerMsg);
+						// }
+					// } else {
+						// centerMsg.setText("Defend flag: " + me.countdown + " seconds until lose.");
+						// centerMsg.setFill('white');
+						// if (me.countdown <= 10)
+							// centerMsg.setFill('red');
+						// centerMsg.setX(210);
+						// centerMsg.setY(50);
+						// centerMsg.setFontSize(28);
+						// centerMsg.setFontStyle('normal');
+						// centerMsg.setFontFamily('Calibri');
+						// if (!msgLayer.isAncestorOf(centerMsg)) {
+							// msgLayer.add(centerMsg);
+						// }
+					// }
 				} else if (!me.alive && me.winner === false){
 					centerMsg.setText("All your units are dead!");
 					centerMsg.setFill('white');
@@ -626,12 +626,12 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
         }));
         
         // who kills whom image
-		UILayer.add(new Kinetic.Image({
-			x: CONSTANTS.width - this.whokillswhoImg.width,
-			y: 0,
-			image: this.whokillswhoImg,
-			listening: false
-		}));
+		// UILayer.add(new Kinetic.Image({
+			// x: CONSTANTS.width - this.whokillswhoImg.width,
+			// y: 0,
+			// image: this.whokillswhoImg,
+			// listening: false
+		// }));
 		
         // resource
         var resourceText = new Kinetic.Text({
@@ -648,17 +648,30 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
         // flags
         for (var i = 0; i < this.flagsImg.length; i++) {
             this.flags.push(new Kinetic.Image({
-                img: this.flagsImg[i],
-                x: 300,
-                y: 5,
-                opacity: 0,
+                image: this.flagsImg[i],
+                x: 304,
+                y: 2,
+                visible: false,
                 listening: false
             }));
             UILayer.add(this.flags[i]);
+            this.flags[i].moveToTop();
         }
+        
+        var flagText = new Kinetic.Text({
+            fontFamily: "Impact",
+            fontSize: 18,
+            fill: "white",
+            text: CONSTANTS.countdown-this.countdown + "/" + CONSTANTS.countdown,
+            x: 340,
+            y: 5,
+            listening: false
+        });
+        UILayer.add(flagText);
         
         this.UILayerAnim = new Kinetic.Animation(function(frame) {
             resourceText.setText(me.resource);
+            flagText.setText(CONSTANTS.countdown-me.countdown + "/" + CONSTANTS.countdown);
         }, UILayer);
         this.UILayerAnim.start();
 	
