@@ -405,10 +405,8 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
         this.updateVisible();
 		
 		console.log(":: " + this.id.substring(0,8) + " :: Game started!");
-		k = -1;
-		for (var i in this.players) {
-			k += this.hexgrid.scenario.startunits[parseInt(i)].length;
-			this.sendMsg(this.players[i], "0 start {0} {1}".format([pieces[k].x, pieces[k].y]));
+		for (var i = 0; i < this.players.length; i++) {
+			this.sendMsg(this.players[i], "0 start {0} {1}".format([this.hexgrid.scenario.startcamera[i][0], this.hexgrid.scenario.startcamera[i][1]]));
 		}
 	};
 	
