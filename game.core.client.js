@@ -308,8 +308,9 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		this.cooldown[1][5] = load_image("sprites\\unknown9_blue_cd.png");
 
         // load flags
-        this.flags[0] = load_image("sprites\\redflag.png");
-        this.flags[1] = load_image("sprites\\blueflag.png");
+        this.flagsImg[0] = load_image("sprites\\redflag.png");
+        this.flagsImg[1] = load_image("sprites\\blueflag.png");
+        this.flags = [];
         
 		// add terrain images
 		CONSTANTS.thronTerrain.image = this.thronImg;
@@ -402,6 +403,16 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 			switch (keywords[1]) {
 			case "countdown":
 				var capteam = parseInt(keywords[2]);
+                // draw flag
+                for (var i = 0; i < this.flags.length; i++) {
+                    if (i == capteam) {
+                        console.log(i + " haha");
+                        this.flags[i].setOpacity(1);
+                    } else {
+                        this.flags[i].setOpacity(0);
+                    }
+                }
+                // setup countdown timer
 				if(!(keywords[2]==-1)){
 					if(this.team == capteam){
 						this.capping = 1;
@@ -635,13 +646,15 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
         UILayer.add(resourceText);
         
         // flags
-        for (var i = 0; i < this.flags.length; i++) {
-            this.flags[i] = new Kinetic.Image({
-                img: this.flags[i];
-                x: ,
-                y: ,
-                opacity: 0
-            });
+        for (var i = 0; i < this.flagsImg.length; i++) {
+            this.flags.push(new Kinetic.Image({
+                img: this.flagsImg[i],
+                x: 300,
+                y: 5,
+                opacity: 0,
+                listening: false
+            }));
+            UILayer.add(this.flags[i]);
         }
         
         this.UILayerAnim = new Kinetic.Animation(function(frame) {
