@@ -47,6 +47,8 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
         this.sprites = [[], [], [], []];
 		// Container for all unit cooldown images
 		this.cooldown = [[], [], [], []];
+        // flags
+        this.flags = [];
         
 		this.last_click_coord = null;
 		this.background = null;
@@ -246,7 +248,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		
 		var isAppLoaded = function() {
 			files_loaded++;
-			if (files_loaded >= 34) {
+			if (files_loaded >= 33) {
 				gc.initiate(scenario,type);
 			}
 		}
@@ -260,7 +262,6 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		this.whokillswhoImg = load_image("sprites\\whokillswho2.png");
         this.ibuttonImg = load_image("sprites\\ibutton.png");
         this.topbarImg = load_image("sprites\\topbar.png");
-        this.topResourceImg = load_image("sprites\\topresource.png");
         this.fogImg = load_image("sprites\\fog.png");
 
 		this.sprites[0][0] = load_image("sprites\\vampire6_red.png");
@@ -306,6 +307,10 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		this.cooldown[1][4] = load_image("sprites\\wizard9_blue_cd.png");
 		this.cooldown[1][5] = load_image("sprites\\unknown9_blue_cd.png");
 
+        // load flags
+        this.flags[0] = load_image("sprites\\redflag.png");
+        this.flags[1] = load_image("sprites\\blueflag.png");
+        
 		// add terrain images
 		CONSTANTS.thronTerrain.image = this.thronImg;
 		CONSTANTS.flagTerrain.image = this.flagImg;
@@ -557,7 +562,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 					}
 				} else if (me.capping){  // TODO: hardcoded!
 					if (me.capping == 1){
-						centerMsg.setText("Caputring flag: " + me.countdown + " seconds until win.");
+						centerMsg.setText("Capturing flag: " + me.countdown + " seconds until win.");
 						centerMsg.setFill('white');
 						centerMsg.setX(200);
 						centerMsg.setY(50);
@@ -606,7 +611,6 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
             x: 0,
             y: 0,
             image: this.topbarImg,
-            scale: {x:1, y:0.5},
             listening: false
         }));
         
@@ -619,23 +623,27 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		}));
 		
         // resource
-        UILayer.add(new Kinetic.Image({
-            image: this.topResourceImg,
-            x: 215,
-            y: 10,
-            // scale: {x:0.5, y:0.5},
-            listening: false
-        }));
         var resourceText = new Kinetic.Text({
             fontFamily: "Impact",
             fontSize: 18,
             fill: "white",
             text: this.resource,
-            x: 255,
-            y: 15,
+            x: 258,
+            y: 5,
             listening: false
         });
         UILayer.add(resourceText);
+        
+        // flags
+        for (var i = 0; i < this.flags.length; i++) {
+            this.flags[i] = new Kinetic.Image({
+                img: this.flags[i];
+                x: ,
+                y: ,
+                opacity: 0
+            });
+        }
+        
         this.UILayerAnim = new Kinetic.Animation(function(frame) {
             resourceText.setText(me.resource);
         }, UILayer);

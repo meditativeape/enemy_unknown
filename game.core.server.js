@@ -159,7 +159,7 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 							}
 							hexagon.countdown = window.setTimeout(function(){
 								self.endGame(self.winner);
-								}, hexagon.objectiveTime*1000);
+								}, t.objectiveTime*1000);
 							hexagon.captured = true;
 						} else if (!this.hexgrid.matrix[x][y].piece && hexagon.captured) {
 							this.winner = null;
