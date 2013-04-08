@@ -368,6 +368,9 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				if (this.countdownTimer){
 					window.clearInterval(this.countdownTimer);
 				}
+                for (var i = 0; i < this.flags.length; i++) {
+                    this.flags[i].setVisible(false);
+                }
 				this.capping = 0;
 				this.countdown = CONSTANTS.countdown;
 				this.winner = parseInt(keywords[2]);
@@ -571,7 +574,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 					if (!msgLayer.isAncestorOf(centerMsg)) {
 						msgLayer.add(centerMsg);
 					}
-				} else if (me.capping){  // TODO: hardcoded!
+				} else if ((me.capping == -1) && (me.countdown <= 30)){  // TODO: hardcoded!
 					// if (me.capping == 1){
 						// centerMsg.setText("Capturing flag: " + me.countdown + " seconds until win.");
 						// centerMsg.setFill('white');
@@ -584,18 +587,16 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 							// msgLayer.add(centerMsg);
 						// }
 					// } else {
-						// centerMsg.setText("Defend flag: " + me.countdown + " seconds until lose.");
-						// centerMsg.setFill('white');
-						// if (me.countdown <= 10)
-							// centerMsg.setFill('red');
-						// centerMsg.setX(210);
-						// centerMsg.setY(50);
-						// centerMsg.setFontSize(28);
-						// centerMsg.setFontStyle('normal');
-						// centerMsg.setFontFamily('Calibri');
-						// if (!msgLayer.isAncestorOf(centerMsg)) {
-							// msgLayer.add(centerMsg);
-						// }
+						centerMsg.setText("Defend flag: " + me.countdown + " seconds until lose!");
+						centerMsg.setFill('red');
+						centerMsg.setX(210);
+						centerMsg.setY(50);
+						centerMsg.setFontSize(28);
+						centerMsg.setFontStyle('normal');
+						centerMsg.setFontFamily('Calibri');
+						if (!msgLayer.isAncestorOf(centerMsg)) {
+							msgLayer.add(centerMsg);
+						}
 					// }
 				} else if (!me.alive && me.winner === false){
 					centerMsg.setText("All your units are dead!");
