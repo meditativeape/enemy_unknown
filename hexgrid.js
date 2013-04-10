@@ -448,10 +448,12 @@ function Hexagon(id, mx, my, x, y, spec, camera, map, callback, fogImg) {
             if (me.piece || me.reachable || me.clientAttackable || me.clientBuildable) {
                 me.hexagonToDraw.setStroke("orange");
                 me.hexagonToDraw.moveToTop();
+                document.body.style.cursor = "pointer";
             }
         });
         this.hexagonToDraw.on('mouseout', function(){
             me.hexagonToDraw.setStroke("white");
+            document.body.style.cursor = "auto";
         });
 		this.map.hexGroup.add(this.hexagonToDraw);
 	}

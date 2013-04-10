@@ -3,7 +3,7 @@
  */
 var Scenarios = {
 	"tutorial_1": {
-		"size": {"x": 2300, "y": 1500, "numRows": 11, "numCols": 11},
+		"size": {"x": 2400, "y": 1500, "numRows": 11, "numCols": 11},
 		"offset": 50,
 		"terrain": (function(){
 			var terrain = [];
@@ -52,7 +52,7 @@ var Scenarios = {
 	},
 	
 	"slayer": {
-		"size": {"x": 2300, "y": 1500, "numRows": 11, "numCols": 11},
+		"size": {"x": 2400, "y": 1500, "numRows": 11, "numCols": 11},
 		"offset": 50,
 		"terrain": (function(){
 			var terrain = [];
@@ -112,7 +112,7 @@ var Scenarios = {
 	},
 	
 	"captureflag": {
-		"size": {"x": 2300, "y": 1500, "numRows": 11, "numCols": 11},
+		"size": {"x": 2400, "y": 1500, "numRows": 11, "numCols": 11},
 		"offset": 50,
 		"terrain": (function(){
 			var terrain = [];
@@ -151,7 +151,7 @@ var Scenarios = {
 	},
 
 	"vampirehunter": {
-		"size": {"x": 2300, "y": 1500, "numRows": 11, "numCols": 11},
+		"size": {"x": 2400, "y": 1500, "numRows": 11, "numCols": 11},
 		"offset": 50,
 		"terrain": (function(){
 			var terrain = [];
@@ -186,7 +186,7 @@ var Scenarios = {
 	},
     
 	"zombieisbetter": {
-		"size": {"x": 2300, "y": 1500, "numRows": 11, "numCols": 11},
+		"size": {"x": 2400, "y": 1500, "numRows": 11, "numCols": 11},
 		"offset": 50,
 		"terrain": (function(){
 			var terrain = [];
@@ -220,7 +220,7 @@ var Scenarios = {
 		"revealtype": false
 	},
 	"rockpapersissors": {
-		"size": {"x": 2300, "y": 1500, "numRows": 11, "numCols": 11},
+		"size": {"x": 2400, "y": 1500, "numRows": 11, "numCols": 11},
 		"offset": 50,
 		"terrain": (function(){
 			var terrain = [];
@@ -255,7 +255,7 @@ var Scenarios = {
 	},
 	
 	"warzone": {
-		"size": {"x": 2300, "y": 1500, "numRows": 11, "numCols": 11},
+		"size": {"x": 2400, "y": 1500, "numRows": 11, "numCols": 11},
 		"offset": 50,
 		"terrain": (function(){
 			var terrain = [];

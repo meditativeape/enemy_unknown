@@ -42,14 +42,20 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 
 	var game_core_client = function() {
 	
+        // Teams: 0:red, 1:blue, 2:yellow, 3:green
 		// Container for all unit images
-		// 0:red, 1:blue, 2:yellow, 3:green
         this.sprites = [[], [], [], []];
 		// Container for all unit cooldown images
 		this.cooldown = [[], [], [], []];
-        // flags
-        this.flagsImg = [];
+        // Button images
+        this.buttonImgs = {lit: {}, unlit: {}};
+        this.buttons = {};
+        // Flag images
+        this.flagImgs = [];
         this.flags = [];
+        // Topbar images
+        this.topbarImgs = [];
+        this.topbar = null;
         
 		this.last_click_coord = null;
 		this.background = null;
@@ -69,6 +75,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
         this.showNum = 1;
 		this.build = false;
 		this.toBuild = null;
+        this.soundOn = true;
 		
 		var me = this;
 		var mousemove = function(event) {  // mouse move event listener
@@ -261,9 +268,8 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		this.flagImg = load_image("sprites\\tile-flag.png");
 		this.thronImg = load_image("sprites\\thron.png");
 		this.whokillswhoImg = load_image("sprites\\whokillswho2.png");
-        this.ibuttonImg = load_image("sprites\\ibutton.png");
-        this.topbarImg = load_image("sprites\\topbar.png");
         this.fogImg = load_image("sprites\\fog.png");
+        this.buttonbarImg = load_image("sprites\\buttonbar.png");
 
 		this.sprites[0][0] = load_image("sprites\\vampire6_red.png");
 		this.sprites[0][1] = load_image("sprites\\wolf6_red.png");
@@ -278,20 +284,6 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		this.sprites[1][3] = load_image("sprites\\zombie6_blue.png");
 		this.sprites[1][4] = load_image("sprites\\wizard6_blue.png");
 		this.sprites[1][5] = load_image("sprites\\unknown6_blue.png");
-		
-		// this.sprites[2][0] = load_image("sprites\\vampire6_yellow.png");
-		// this.sprites[2][1] = load_image("sprites\\wolf6_yellow.png");
-		// this.sprites[2][2] = load_image("sprites\\hunter6_yellow.png");
-		// this.sprites[2][3] = load_image("sprites\\zombie6_yellow.png");
-		// this.sprites[2][4] = load_image("sprites\\wizard6_yellow.png");
-		// this.sprites[2][5] = load_image("sprites\\unknown6_yellow.png");
-		
-		// this.sprites[3][0] = load_image("sprites\\vampire6_green.png");
-		// this.sprites[3][1] = load_image("sprites\\wolf6_green.png");
-		// this.sprites[3][2] = load_image("sprites\\hunter6_green.png");
-		// this.sprites[3][3] = load_image("sprites\\zombie6_green.png");
-		// this.sprites[3][4] = load_image("sprites\\wizard6_green.png");
-		// this.sprites[3][5] = load_image("sprites\\unknown6_green.png");
 
 		// load cooldown spritesheets
 		this.cooldown[0][0] = load_image("sprites\\vampire9_red_cd.png");
@@ -308,9 +300,21 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		this.cooldown[1][4] = load_image("sprites\\wizard9_blue_cd.png");
 		this.cooldown[1][5] = load_image("sprites\\unknown9_blue_cd.png");
 
-        // load flags
-        this.flagsImg[0] = load_image("sprites\\redflag.png");
-        this.flagsImg[1] = load_image("sprites\\blueflag.png");
+        // load team specific UI images
+        this.flagImgs[0] = load_image("sprites\\redflag.png");
+        this.flagImgs[1] = load_image("sprites\\blueflag.png");
+        this.topbarImgs[0] = load_image("sprites\\topbar1.png");
+        this.topbarImgs[1] = load_image("sprites\\topbar2.png");
+        
+        // load buttons
+        this.buttonImgs.unlit.build = load_image("sprites\\hammerunlit.png");
+        this.buttonImgs.lit.build = load_image("sprites\\hammerlit.png");
+        this.buttonImgs.unlit.menu = load_image("sprites\\menuunlit.png");
+        this.buttonImgs.lit.menu = load_image("sprites\\menulit.png");
+        this.buttonImgs.unlit.mute = load_image("sprites\\muteunlit.png");
+        this.buttonImgs.lit.mute = load_image("sprites\\mutelit.png");
+        this.buttonImgs.unlit.sound = load_image("sprites\\soundunlit.png");
+        this.buttonImgs.lit.sound = load_image("sprites\\soundlit.png");
         
 		// add terrain images
 		CONSTANTS.thronTerrain.image = this.thronImg;
@@ -619,39 +623,32 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		this.msgLayerAnim.start();
         
         // topbar
-        UILayer.add(new Kinetic.Image({
-            x: 0,
+        this.topbar = new Kinetic.Image({
+            x: CONSTANTS.minimapWidth,
             y: 0,
-            image: this.topbarImg,
+            image: this.topbarImgs[this.team],
             listening: false
-        }));
-        
-        // who kills whom image
-		// UILayer.add(new Kinetic.Image({
-			// x: CONSTANTS.width - this.whokillswhoImg.width,
-			// y: 0,
-			// image: this.whokillswhoImg,
-			// listening: false
-		// }));
+        });
+        UILayer.add(this.topbar);
 		
-        // resource
+        // resource text
         var resourceText = new Kinetic.Text({
-            fontFamily: "Impact",
-            fontSize: 18,
+            fontFamily: "Courier New",
+            fontSize: 15,
             fill: "white",
             text: this.resource,
-            x: 258,
-            y: 5,
+            x: 402,
+            y: 8,
             listening: false
         });
         UILayer.add(resourceText);
         
         // flags
-        for (var i = 0; i < this.flagsImg.length; i++) {
+        for (var i = 0; i < this.flagImgs.length; i++) {
             this.flags.push(new Kinetic.Image({
-                image: this.flagsImg[i],
-                x: 304,
-                y: 2,
+                image: this.flagImgs[i],
+                x: 448,
+                y: 5,
                 visible: false,
                 listening: false
             }));
@@ -660,15 +657,109 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
         }
         
         var flagText = new Kinetic.Text({
-            fontFamily: "Impact",
-            fontSize: 18,
+            fontFamily: "Courier New",
+            fontSize: 15,
             fill: "white",
             text: CONSTANTS.countdown-this.countdown + "/" + CONSTANTS.countdown,
-            x: 340,
-            y: 5,
+            x: 475,
+            y: 8,
             listening: false
         });
         UILayer.add(flagText);
+        
+        // button bar
+        this.buttonbar = new Kinetic.Image({
+            x: CONSTANTS.minimapWidth + this.topbar.getWidth(),
+            y: 0,
+            image: this.buttonbarImg,
+            listening: false
+        });
+        UILayer.add(this.buttonbar);
+        
+        // buttons
+        this.buttons.build = new Kinetic.Image({
+            x: 572,
+            y: 4,
+            image: this.buttonImgs.unlit.build,
+            listening: true
+        });
+        this.buttons.build.on('mouseover', function(){
+            me.buttons.build.setImage(me.buttonImgs.lit.build);
+            document.body.style.cursor = "pointer";
+        });
+        this.buttons.build.on('mouseout', function(){
+            me.buttons.build.setImage(me.buttonImgs.unlit.build);
+            document.body.style.cursor = "auto";
+        });
+        this.buttons.build.on('click', function(){
+            // click event listener goes here
+            alert("clicked!");
+        });
+        UILayer.add(this.buttons.build);
+        
+        this.buttons.menu = new Kinetic.Image({
+            x: 602,
+            y: 4,
+            image: this.buttonImgs.unlit.menu,
+            listening: true
+        });
+        this.buttons.menu.on('mouseover', function(){
+            me.buttons.menu.setImage(me.buttonImgs.lit.menu);
+            document.body.style.cursor = "pointer";
+        });
+        this.buttons.menu.on('mouseout', function(){
+            me.buttons.menu.setImage(me.buttonImgs.unlit.menu);
+            document.body.style.cursor = "auto";
+        });
+        this.buttons.menu.on('click', function(){
+            // click event listener goes here
+            alert("clicked!");
+        });
+        UILayer.add(this.buttons.menu);
+        
+        this.buttons.sound = new Kinetic.Image({
+            x: 630,
+            y: 4,
+            image: this.buttonImgs.unlit.sound,
+            listening: true
+        });
+        if (!this.soundOn) {
+            this.buttons.sound.setImage(this.buttonImgs.unlit.mute);
+        }
+        this.buttons.sound.on('mouseover', function(){
+            if (me.soundOn) {
+                me.buttons.sound.setImage(me.buttonImgs.lit.sound);
+            } else {
+                me.buttons.sound.setImage(me.buttonImgs.lit.mute);
+            }
+            document.body.style.cursor = "pointer";
+        });
+        this.buttons.sound.on('mouseout', function(){
+            if (me.soundOn) {
+                me.buttons.sound.setImage(me.buttonImgs.unlit.sound);
+            } else {
+                me.buttons.sound.setImage(me.buttonImgs.unlit.mute);
+            }
+            document.body.style.cursor = "auto";
+        });
+        this.buttons.sound.on('click', function(){
+            if (me.soundOn) {
+                me.soundOn = false;
+                me.buttons.sound.setImage(me.buttonImgs.lit.mute);
+            } else {
+                me.soundOn = true;
+                me.buttons.sound.setImage(me.buttonImgs.lit.sound);
+            }
+        });
+        UILayer.add(this.buttons.sound);
+        
+        // who kills whom image
+		// UILayer.add(new Kinetic.Image({
+			// x: CONSTANTS.width - this.whokillswhoImg.width,
+			// y: 0,
+			// image: this.whokillswhoImg,
+			// listening: false
+		// }));
         
         this.UILayerAnim = new Kinetic.Animation(function(frame) {
             resourceText.setText(me.resource);
@@ -743,10 +834,10 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 			}
 		};
 		
-		// hard-coded game instance for demo!!!
+		// initialize game instance
 		var scenario = Scenarios[this.mapName];
 		this.camera = new BuildCamera([scenario.size.x + scenario.offset*2, scenario.size.y], 10, this.background, mapLayer);
-		this.minimap = new BuildMiniMap(this.camera, [scenario.size.x + scenario.offset*2, scenario.size.y], 200, this.background, UILayer, stage);
+		this.minimap = new BuildMiniMap(this.camera, [scenario.size.x + scenario.offset*2, scenario.size.y], CONSTANTS.minimapWidth, this.background, UILayer, stage);
 		this.hexgrid = new BuildMap(this.mapName, this.camera, mapLayer, clickCallback, this.fogImg);
 		
 		// initialize terrain
