@@ -318,16 +318,14 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		CONSTANTS.resourceTerrain.image = this.resourceImg;
         CONSTANTS.heart = this.heartImg;
         
-		var backgroundsound = soundManager.createSound({
-			  id: 'background',
-			  url: '/sounds/forest.mp3'
-		});
-		//backgroundsound.play();
+
 		
-		this.gothitsound = soundManager.createSound({
+		soundAssets.gothitsound = soundManager.createSound({
 			  id: 'gothitsound',
 			  url: '/sounds/gothit.mp3'
 		});
+		//soundAssets.gothitsound.load();
+		
 	};
 
 	game_core_client.prototype.onnetmessage = function(data){
@@ -359,10 +357,41 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 					,2000);
 				start();
 				this.started = true;
-				// TODO: set camera position!
 				var p = this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].MidPoint;
 				this.camera.setPos(new Point(p.X-CONSTANTS.width/2,p.Y-CONSTANTS.height/2))
-				//playSound('sounds\\forest.mp3');
+				soundAssets.menusound.setVolume(soundAssets.menusound.volume-1);
+				var now, before = new Date();
+				var fadeOut = window.setInterval(function(){
+						now = new Date();
+						if(soundAssets.menusound.volume>=0){
+							var elapsedTime = now.getTime() - before.getTime();
+							if (elapsedTime > 100)  // in case tab is not active in Chrome
+								soundAssets.menusound.setVolume(soundAssets.menusound.volume-Math.round(elapsedTime/100));
+							else
+								soundAssets.menusound.setVolume(soundAssets.menusound.volume-1);
+						}else{
+							window.clearInterval(fadeOut);
+						}
+						before = new Date();
+					} ,100);
+				
+				window.setTimeout(function(){
+						soundAssets.menusound.stop();
+						soundAssets.backgroundsound = soundManager.createSound({
+							  id: 'background',
+							  url: '/sounds/background.mp3',
+							  volume: 50,
+							  onfinish: function(){soundAssets.backgroundsound.play();},
+							  //onsuspend: function(){soundAssets.backgroundsound.play();}
+						});
+						soundAssets.backgroundsound.play();
+						if(!blurred){
+							soundAssets.backgroundsound.unmute();
+						}
+					}
+				,3000);
+
+				
 				break;
 			case "end":
 				if (this.countdownTimer){

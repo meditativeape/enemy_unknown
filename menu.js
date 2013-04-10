@@ -61,8 +61,39 @@ soundManager.setup({
    * read up on HTML5 audio support, if you're feeling adventurous.
    * iPad/iPhone and devices without flash installed will always attempt to use it.
    */
+  onready: function() {
+    	soundAssets.menusound = soundManager.createSound({
+			  id: 'menu',
+			  url: '/sounds/menu.mp3',
+			  onfinish: function(){soundAssets.menusound.play();},
+			  volume: 30
+		});
+		soundAssets.menusound.play();
+  },
   ontimeout: function() {
 		alert("soundManager failed to load");	
 	}
 });
 
+var soundAssets = {};
+
+var blurred = false;
+
+function onBlur() {
+	if(!blurred){
+		soundManager.mute();
+		blurred = true;
+	}
+};
+function onFocus(){
+	if(blurred){
+		soundManager.unmute();
+		blurred = false;
+	}
+};
+
+//document.onfocusin = onFocus;
+//document.onfocusout = onBlur;
+window.onfocus = onFocus;
+
+window.onblur = onBlur;
