@@ -130,15 +130,11 @@
 		var mapY = y/me.height*me.mapSize[1] - CONSTANTS.height/2;
 		me.camera.setPos(new Point(mapX, mapY));
 	});
-	
-	// this.checkClick = function(event){
-		// var x = event.pageX - me.canvas.offsetLeft;
-		// var y = event.pageY - me.canvas.offsetTop;
-		// if (x <= me.width && y <= me.height) {
-			// return true;
-		// } else {
-			// return false;
-		// }
-	// };
+    bg.on('mouseover', function(event){
+        document.body.style.cursor = "pointer";
+    });
+    bg.on('mouseout', function(event){
+        document.body.style.cursor = "auto";
+    });
 	
  };

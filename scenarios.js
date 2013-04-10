@@ -3,7 +3,7 @@
  */
 var Scenarios = {
 	"tutorial_1": {
-		"size": {"x": 2300, "y": 1500, "numRows": 11, "numCols": 11},
+		"size": {"x": 2400, "y": 1500, "numRows": 11, "numCols": 11},
 		"offset": 50,
 		"terrain": (function(){
 			var terrain = [];
@@ -44,11 +44,20 @@ var Scenarios = {
 			0: [0, 3],
 			1: [1, 4]
 		},
-		"revealtype": true
+        "startcamera": {
+            0: [5, 5],
+            1: [5, 5]
+        },
+        "resource": {
+			0: 30,
+			1: 30
+		},
+		"revealtype": true,
+        "fog": false
 	},
 	
 	"slayer": {
-		"size": {"x": 2300, "y": 1500, "numRows": 11, "numCols": 11},
+		"size": {"x": 2400, "y": 1500, "numRows": 11, "numCols": 11},
 		"offset": 50,
 		"terrain": (function(){
 			var terrain = [];
@@ -90,27 +99,26 @@ var Scenarios = {
 		})(),
 		"startpoint": {
 			0: [[0,4], [1,3], [2,2], [3,1], [4,0]],
-			1: [[6,10], [7,9], [8,8], [9,7], [10,6]],
-			2: [],
-			3: []
+			1: [[6,10], [7,9], [8,8], [9,7], [10,6]]
 		},
 		"startunits": {
 			0: [0, 1, 2, 3, 4],
-			1: [0, 1, 2, 3, 4],
-			2: [0, 1, 2, 3, 4],
-			3: [0, 1, 2, 3, 4]
+			1: [0, 1, 2, 3, 4]
 		},
 		"resource": {
 			0: 30,
-			1: 30,
-			2: 30,
-			3: 30
+			1: 30
 		},
-		"revealtype": false
+        "startcamera": {
+            0: [2, 4],
+            1: [7, 7]
+        },
+		"revealtype": false,
+        "fog": true
 	},
 	
 	"captureflag": {
-		"size": {"x": 2300, "y": 1500, "numRows": 11, "numCols": 11},
+		"size": {"x": 2400, "y": 1500, "numRows": 11, "numCols": 11},
 		"offset": 50,
 		"terrain": (function(){
 			var terrain = [];
@@ -141,11 +149,16 @@ var Scenarios = {
 			2: [0, 1, 2, 3, 4],
 			3: [0, 1, 2, 3, 4]
 		},
-		"revealtype": false
+        "startcamera": {
+            0: [2, 4],
+            1: [7, 7]
+        },
+		"revealtype": false,
+        "fog": true
 	},
 
 	"vampirehunter": {
-		"size": {"x": 2300, "y": 1500, "numRows": 11, "numCols": 11},
+		"size": {"x": 2400, "y": 1500, "numRows": 11, "numCols": 11},
 		"offset": 50,
 		"terrain": (function(){
 			var terrain = [];
@@ -172,10 +185,16 @@ var Scenarios = {
 			0: [0, 1, 1 ,3,3],
 			1: [2,2,2,2, 4]
 		},
-		"revealtype": false
+        "startcamera": {
+            0: [4, 4],
+            1: [5, 6]
+        },
+		"revealtype": false,
+        "fog": true
 	},
+    
 	"zombieisbetter": {
-		"size": {"x": 2300, "y": 1500, "numRows": 11, "numCols": 11},
+		"size": {"x": 2400, "y": 1500, "numRows": 11, "numCols": 11},
 		"offset": 50,
 		"terrain": (function(){
 			var terrain = [];
@@ -202,10 +221,15 @@ var Scenarios = {
 			0: [0, 0, 0 ,0,2],
 			1: [1,4,4,4, 4]
 		},
-		"revealtype": false
+        "startcamera": {
+            0: [4, 4],
+            1: [5, 6]
+        },
+		"revealtype": false,
+        "fog": true
 	},
 	"rockpapersissors": {
-		"size": {"x": 2300, "y": 1500, "numRows": 11, "numCols": 11},
+		"size": {"x": 2400, "y": 1500, "numRows": 11, "numCols": 11},
 		"offset": 50,
 		"terrain": (function(){
 			var terrain = [];
@@ -232,11 +256,16 @@ var Scenarios = {
 			0: [4, 3, 0],
 			1: [4, 3, 0]
 		},
-		"revealtype": false
+        "startcamera": {
+            0: [4, 4],
+            1: [5, 6]
+        },
+		"revealtype": false,
+        "fog": true
 	},
 	
 	"warzone": {
-		"size": {"x": 2300, "y": 1500, "numRows": 11, "numCols": 11},
+		"size": {"x": 2400, "y": 1500, "numRows": 11, "numCols": 11},
 		"offset": 50,
 		"terrain": (function(){
 			var terrain = [];
@@ -263,7 +292,12 @@ var Scenarios = {
 			0: [0, 1,1,2,2,3,4],
 			1: [0,1,1,2,2,3,4]
 		},
-		"revealtype": false
+        "startcamera": {
+            0: [3, 3],
+            1: [7, 7]
+        },
+		"revealtype": false,
+        "fog": true
 	}
 };
 
