@@ -139,9 +139,19 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
             var u = new Unit(id, team, 4, type, coord);
 			this.hexgrid.addUnit(u, coord);
             this.units[team]++;
-            this.sendMsg(this.players[id], "1 add {0} {1} {2} {3} {4} {5}".format([id, team, type, coord.X, coord.Y, CONSTANTS.cd]));
+            if (this.fogOn) {
+                this.sendMsg(this.players[id], "1 add {0} {1} {2} {3} {4} {5}".format([id, team, type, coord.X, coord.Y, CONSTANTS.cd]));
+                this.updateVisible();
+            } else {
+                for (var i in this.players) {
+                    if (this.revealType || i==id) {
+                        this.sendMsg(this.players[i], "1 add {0} {1} {2} {3} {4} {5}".format([id, team, type, coord.X, coord.Y, CONSTANTS.cd]));
+                    } else {
+                        this.sendMsg(this.players[i], "1 add {0} {1} {2} {3} {4} {5}".format([id, team, 5, coord.X, coord.Y, CONSTANTS.cd]));
+                    }
+                }
+            }
         }
-        this.updateVisible();
     };
 
 	game_core_server.prototype.checkObjectives = function(){
@@ -240,11 +250,13 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
                     var unit = this.hexgrid.getUnit(coord2);
 					unit.setcd(CONSTANTS.cd);
 					for (var i in this.players) {  // tell players the result of move
-                        if (unit.player == i || unit.serverIsVisible)  // only works for 1v1
+                        if (unit.player == i || !this.fogOn || unit.serverIsVisible)  // only works for 1v1
                             this.sendMsg(this.players[i], message + " " + CONSTANTS.cd);
 					}
 				}
-                this.updateVisible();
+                if (this.fogOn) {
+                    this.updateVisible();
+                }
 				this.checkObjectives();
 				break;
 			case "attack":
@@ -261,7 +273,9 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 					}
 					this.checkGameStatus();
 				}
-                this.updateVisible(); // in case some unit dies
+                if (this.fogOn) {
+                    this.updateVisible(); // in case some unit dies
+                }
 				this.checkObjectives();
 				break;
 			default:
@@ -353,6 +367,8 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 		// hardcoded game instance for demo!
 		var pieces = [];
 		this.hexgrid = new BuildMap(this.scenario);
+        this.fogOn = this.hexgrid.scenario.fog;
+        this.revealType = this.hexgrid.scenario.revealtype;
 		
 		// initialize terrain
 		var terrain = this.hexgrid.scenario.terrain;
@@ -394,15 +410,26 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 		}
 		
 		var k = 0;
+        console.log(this.revealType);
 		for (var i in this.players) {
 			this.players[i].player = k;
 			this.players[i].team = k++;
 			for (var j in pieces) {
-				if (this.players[i].team == pieces[j].team)
+				if (this.players[i].team == pieces[j].team) {
 					this.sendMsg(this.players[i], "1 add {0} {1} {2} {3} {4} {5}".format([pieces[j].player, pieces[j].team, pieces[j].type, pieces[j].x, pieces[j].y, 0]));
-            }
+                } else if (!this.fogOn) {
+                    if (this.revealType) {
+                        this.sendMsg(this.players[i], "1 add {0} {1} {2} {3} {4} {5}".format([pieces[j].player, pieces[j].team, pieces[j].type, pieces[j].x, pieces[j].y, 0]));
+                    } else {
+                        this.sendMsg(this.players[i], "1 add {0} {1} {2} {3} {4} {5}".format([pieces[j].player, pieces[j].team, 5, pieces[j].x, pieces[j].y, 0]));
+                    }
+                }
+            }            
 		}
-        this.updateVisible();
+        
+        if (this.fogOn) {
+            this.updateVisible();
+        }
 		
 		console.log(":: " + this.id.substring(0,8) + " :: Game started!");
 		for (var i = 0; i < this.players.length; i++) {

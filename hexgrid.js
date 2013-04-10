@@ -17,7 +17,7 @@ if( 'undefined' != typeof global ) {
 * callback could be null on server, since no click event will be fired there.
 * @constructor
 */
-var BuildMap = function(/*string*/mapName, /*camera*/camera, /*layer*/layer, /*function*/callback, /*img*/fogImg){
+var BuildMap = function(/*string*/mapName, /*camera*/camera, /*layer*/layer, /*function*/callback, /*boolean*/ fogOn, /*img*/fogImg){
 	
 	var side = CONSTANTS.hexSideLength;
 	var ratio = CONSTANTS.hexRatio;
@@ -55,7 +55,7 @@ var BuildMap = function(/*string*/mapName, /*camera*/camera, /*layer*/layer, /*f
 					rows =  rows + 1;
 				}			
 			}
-			var hexagon = new Hexagon(id, matrixx, matrixy, xpos, ypos, spec, camera, this, callback, fogImg);
+			var hexagon = new Hexagon(id, matrixx, matrixy, xpos, ypos, spec, camera, this, callback, fogOn, fogImg);
 			this.matrix[matrixx][matrixy] = hexagon;
 			ypos = ypos + spec.height/2;
 			xpos = xpos + spec.width/2 + spec.side/2;
@@ -381,7 +381,7 @@ function findHexSpecs(/*double*/side, /*double*/ratio){
 * camera and fogImg could be null on server side, since no visualization is needed.
 * @constructor
 */
-function Hexagon(id, mx, my, x, y, spec, camera, map, callback, fogImg) {
+function Hexagon(id, mx, my, x, y, spec, camera, map, callback, fogOn, fogImg) {
 	this.piece = null;
 	this.map = map;
 	this.matrixx = mx;
@@ -390,6 +390,8 @@ function Hexagon(id, mx, my, x, y, spec, camera, map, callback, fogImg) {
 	this.clientAttackable = false;
 	this.clientBuildable = false;
 	this.clientViewable = false;
+    if (fogOn != true)
+        this.clientViewable = true;
     this.opacity = 1;
 	this.clientPastViewable = false;
 	this.guessing = false;

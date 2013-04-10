@@ -443,16 +443,20 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				this.hexgrid.matrix[parseInt(keywords[5])][parseInt(keywords[6])].piece = new Unit(parseInt(keywords[2]), parseInt(keywords[3]),
                         4, parseInt(keywords[4]), new Coordinate(parseInt(keywords[5]),parseInt(keywords[6])), sprite, cd, this.showNum);
 				this.hexgrid.matrix[parseInt(keywords[5])][parseInt(keywords[6])].piece.setcd(parseFloat(keywords[7]));
-				this.hexgrid.clientClearViewable();
-				this.hexgrid.clientMarkViewable(this.team);
-				this.hexgrid.clientRemoveUnseeable();
+				if (this.fogOn) {
+                    this.hexgrid.clientClearViewable();
+                    this.hexgrid.clientMarkViewable(this.team);
+                    this.hexgrid.clientRemoveUnseeable();
+                }
 				this.updateRA();
 				// update minimap
 				var pointOnMap = this.hexgrid.toMap(new Coordinate(parseInt(keywords[5]), parseInt(keywords[6])));
 				this.minimap.addUnit(pointOnMap, parseInt(keywords[2]));
-				this.hexgrid.clientClearViewable();
-				this.hexgrid.clientMarkViewable(this.team);
-				this.hexgrid.clientRemoveUnseeable(this.minimap);
+                if (this.fogOn) {
+                    this.hexgrid.clientClearViewable();
+                    this.hexgrid.clientMarkViewable(this.team);
+                    this.hexgrid.clientRemoveUnseeable(this.minimap);
+                }
 				this.updateRA();
 				break;
 			case "resource":
@@ -465,9 +469,11 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				var oldPointOnMap = this.hexgrid.toMap(new Coordinate(parseInt(keywords[2]), parseInt(keywords[3])));
 				var newPointOnMap = this.hexgrid.toMap(new Coordinate(parseInt(keywords[4]), parseInt(keywords[5])));
 				this.minimap.moveUnit(oldPointOnMap, newPointOnMap);
-				this.hexgrid.clientClearViewable();
-				this.hexgrid.clientMarkViewable(this.team);
-				this.hexgrid.clientRemoveUnseeable(this.minimap);
+				if (this.fogOn) {
+                    this.hexgrid.clientClearViewable();
+                    this.hexgrid.clientMarkViewable(this.team);
+                    this.hexgrid.clientRemoveUnseeable(this.minimap);
+                }
 				this.updateRA();
 				break;
 			case "attack":
@@ -497,11 +503,12 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 							this.alive = true;
 						}
 					}
-				}	
-				
-				this.hexgrid.clientClearViewable();
-				this.hexgrid.clientMarkViewable(this.team);
-				this.hexgrid.clientRemoveUnseeable(this.minimap);
+				}
+				if (this.fogOn) {
+                    this.hexgrid.clientClearViewable();
+                    this.hexgrid.clientMarkViewable(this.team);
+                    this.hexgrid.clientRemoveUnseeable(this.minimap);
+                }
 				this.updateRA();
 				break;
 			}
@@ -836,9 +843,10 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		
 		// initialize game instance
 		var scenario = Scenarios[this.mapName];
+        this.fogOn = scenario.fog;
 		this.camera = new BuildCamera([scenario.size.x + scenario.offset*2, scenario.size.y], 10, this.background, mapLayer);
 		this.minimap = new BuildMiniMap(this.camera, [scenario.size.x + scenario.offset*2, scenario.size.y], CONSTANTS.minimapWidth, this.background, UILayer, stage);
-		this.hexgrid = new BuildMap(this.mapName, this.camera, mapLayer, clickCallback, this.fogImg);
+		this.hexgrid = new BuildMap(this.mapName, this.camera, mapLayer, clickCallback, this.fogOn, this.fogImg);
 		
 		// initialize terrain
 		var terrain = scenario.terrain;
