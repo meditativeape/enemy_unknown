@@ -33,6 +33,10 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
         this.buildUnitImgs = {frame: null, unavailable: [], lit: [], unlit: []};
         this.buildUnit = [];
         this.buildUnitGroup = null;
+        // Mark unit images
+        this.markUnitImgs = {lit: [], unlit:[]};
+        this.markUnit = [];
+        this.markUnitGroup = null;
         
 		this.last_click_coord = null;
 		this.background = null;
@@ -312,13 +316,23 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
         this.buildUnitImgs.unlit[4] = load_image("sprites\\wizard_black.png");
         this.buildUnitImgs.lit[4] = load_image("sprites\\wizard_green.png");
         
+        // guess unit buttons
+        this.markUnitImgs.unlit[0] = load_image("sprites\\mark\\vampire_unlit");
+        this.markUnitImgs.lit[0] = load_image("sprites\\mark\\vampire_lit");
+        this.markUnitImgs.unlit[1] = load_image("sprites\\mark\\wolf_unlit");
+        this.markUnitImgs.lit[1] = load_image("sprites\\mark\\wolf_lit");
+        this.markUnitImgs.unlit[2] = load_image("sprites\\mark\\hunter_unlit");
+        this.markUnitImgs.lit[2] = load_image("sprites\\mark\\hunter_lit");
+        this.markUnitImgs.unlit[3] = load_image("sprites\\mark\\zombie_unlit");
+        this.markUnitImgs.lit[3] = load_image("sprites\\mark\\zombie_lit");
+        this.markUnitImgs.unlit[4] = load_image("sprites\\mark\\wizard_unlit");
+        this.markUnitImgs.lit[4] = load_image("sprites\\mark\\wizard_lit");
+        
 		// add terrain images
 		CONSTANTS.thronTerrain.image = this.thronImg;
 		CONSTANTS.flagTerrain.image = this.flagImg;
 		CONSTANTS.resourceTerrain.image = this.resourceImg;
         CONSTANTS.heart = this.heartImg;
-        
-
 		
 		soundAssets.gothitsound = soundManager.createSound({
 			  id: 'gothitsound',
