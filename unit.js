@@ -124,9 +124,9 @@ Unit.prototype.guess = function(/*int*/ guess){
 
 Unit.prototype.minusHP = function(/*int*/hp){
 	this.lostHP = this.hp - hp;
-	if(this.lostHP!=0){
+	/**if(this.lostHP!=0){
 		gc.gothitsound.play();
-	}
+	}*/
 	this.hp = hp;
 }
 

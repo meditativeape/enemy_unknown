@@ -26,7 +26,10 @@
 
 	// List to store games
 	game_server.games = [];
+	game_server.inMenu = [];
+	game_server.inMenu_count = 0;
 	game_server.game_count = 0;
+
 
     //Relay messages from the client
     game_server.onMessage = function(client,message) {
@@ -38,6 +41,14 @@
 			if(parseInt(keywords[0])==0){
 				if(keywords[1] == "join"){
 					game_server.findGame(client,parseInt(keywords[2]),keywords[3]);
+				}
+				if(keywords[1] == "menu"){
+					game_server.inMenu[game_server.inMenu_count] = client;
+					game_server.inMenu_count++;
+					client.send('0 menuReset');
+					for(var gameid in this.games) {
+						client.send('0 menu ' + this.games[gameid].scenario);
+					}				
 				}
 			}
 		} else if (client && client.game) {
@@ -81,6 +92,12 @@
 
     game_server.findGame = function(player,type,scenario) {
 
+		for(var playerNum in this.inMenu){
+			if(this.inMenu[playerNum] == player){
+				this.inMenu.splice(playerNum, playerNum+1);
+				this.game_count--;
+			}
+		}
 		var needed;
 		 if(type == 0){
 			 needed = 2;
@@ -146,6 +163,13 @@
                 //no games? create one!
             this.createGame(player,type,scenario);
         }
+		for(var playerNum in this.inMenu){
+			this.inMenu[playerNum].send('0 menuReset');
+			for(var gameid in this.games) {
+				this.inMenu[playerNum].send('0 menu ' + this.games[gameid].scenario);
+			}
+		}
+
 
     }; //game_server.findGame
 

@@ -76,7 +76,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		this.build = false;
 		this.toBuild = null;
         this.soundOn = true;
-		
+		this.newSocket();
 		var me = this;
 		var mousemove = function(event) {  // mouse move event listener
 			var x = event.pageX;
@@ -323,10 +323,23 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
         CONSTANTS.heart = this.heartImg;
         
 
-		
+		soundAssets.backgroundsound = soundManager.createSound({
+			id: 'background',
+			url: '/sounds/background.mp3',
+			volume: 30,
+			onfinish: function(){soundAssets.backgroundsound.play();},
+		});
+							
 		soundAssets.gothitsound = soundManager.createSound({
 			  id: 'gothitsound',
 			  url: '/sounds/gothit.mp3'
+		});
+		
+		soundAssets.flagcapsound = soundManager.createSound({
+			  id: 'flagcap',
+			  url: '/sounds/flagcap.mp3',
+			onfinish: function(){soundAssets.flagcapsound.play();},
+			  volume: 10
 		});
 		//soundAssets.gothitsound.load();
 		
@@ -341,6 +354,12 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		
 		case 0:
 			switch (keywords[1]) {
+			case "menuReset":
+				resetMenu();
+				break;
+			case "menu":
+				updateMenu(keywords[2]);
+				break;
 			case "init":  // game starts
 				this.mapName = keywords[2];
 				this.player = parseInt(keywords[3]);
@@ -375,25 +394,26 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 								soundAssets.menusound.setVolume(soundAssets.menusound.volume-1);
 						}else{
 							window.clearInterval(fadeOut);
+							soundAssets.menusound.stop();
+							soundAssets.backgroundsound.destruct();
+							soundAssets.backgroundsound = soundManager.createSound({
+								  id: 'background',
+								  url: '/sounds/background.mp3',
+								  volume: 30,
+								  onfinish: function(){soundAssets.backgroundsound.play();},
+							});
+							soundAssets.backgroundsound.play();
+							if(!blurred){
+								console.log("unmuting backgroundsound");
+								soundAssets.backgroundsound.unmute();
+							}else{
+								console.log("muting backgroundsound");
+								soundAssets.backgroundsound.mute();
+							}
 						}
 						before = new Date();
 					} ,100);
-				
-				window.setTimeout(function(){
-						soundAssets.menusound.stop();
-						soundAssets.backgroundsound = soundManager.createSound({
-							  id: 'background',
-							  url: '/sounds/background.mp3',
-							  volume: 50,
-							  onfinish: function(){soundAssets.backgroundsound.play();},
-							  //onsuspend: function(){soundAssets.backgroundsound.play();}
-						});
-						soundAssets.backgroundsound.play();
-						if(!blurred){
-							soundAssets.backgroundsound.unmute();
-						}
-					}
-				,3000);
+
 
 				
 				break;
@@ -425,6 +445,39 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				UILayer = new Kinetic.Layer();
 				msgLayer.destroy();
 				msgLayer = new Kinetic.Layer({listening: false});
+				soundAssets.flagcapsound.stop();
+				soundAssets.backgroundsound.setVolume(soundAssets.backgroundsound.volume-1);
+				var now, before = new Date();
+				var fadeOut = window.setInterval(function(){
+						now = new Date();
+						if(soundAssets.backgroundsound.volume>=0){
+							var elapsedTime = now.getTime() - before.getTime();
+							if (elapsedTime > 100)  // in case tab is not active in Chrome
+								soundAssets.backgroundsound.setVolume(soundAssets.backgroundsound.volume-Math.round(elapsedTime/100));
+							else
+								soundAssets.backgroundsound.setVolume(soundAssets.backgroundsound.volume-1);
+						}else{
+							window.clearInterval(fadeOut);
+							soundAssets.backgroundsound.stop();
+							soundAssets.menusound.destruct();
+							soundAssets.menusound = soundManager.createSound({
+								  id: 'menu',
+								  url: '/sounds/menu.mp3',
+								  onfinish: function(){soundAssets.menusound.play();},
+								  volume: 30
+							});
+							soundAssets.menusound.play();
+							if(!blurred){
+								console.log("unmuting menusound");
+								soundAssets.menusound.unmute();
+							}else{
+								console.log("muting menusound");
+								soundAssets.menusound.mute();
+							}
+						}
+						before = new Date();
+					} ,100);
+					
 				// switch back to menu
 				if (this.winner == this.team){
 					gameEnded(true);
@@ -438,7 +491,14 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		case 1:  // game control messages
 			switch (keywords[1]) {
 			case "countdown":
+			
 				var capteam = parseInt(keywords[2]);
+				if(this.team != capteam && capteam != -1){
+					soundAssets.flagcapsound.play();
+					soundAssets.flagcapsound.setVolume(3);
+				}else{
+					soundAssets.flagcapsound.stop();
+				}
                 // draw flag
                 for (var i = 0; i < this.flags.length; i++) {
                     if (i == capteam) {
@@ -565,24 +625,24 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		}
 	}; 
 	
-	game_core_client.prototype.initiate = function(/*string*/scenario ,/*int*/ type){  //Server connection functionality..
-
-		if (!this.socket) {
+	
+	game_core_client.prototype.newSocket = function (){
 			//Store a local reference to our connection to the server
-			this.socket = io.connect();
+			this.mainSocket = io.connect();
 			//When we connect, we are not 'connected' until we have a server id
 			//and are placed in a game by the server. The server sends us a message for that.
-			this.socket.on('connect', this.connecting.bind(this));
-
+			this.mainSocket.on('connect', this.connecting.bind(this));
 			//Sent when we are disconnected (network, server down, etc)
-			this.socket.on('disconnect', this.ondisconnect.bind(this));
+			this.mainSocket.on('disconnect', this.ondisconnect.bind(this));
 			//Handle when we connect to the server, showing state and storing id's.
-			this.socket.on('onconnected', this.onconnected.bind(this));
+			this.mainSocket.on('onconnected', this.onconnected.bind(this));
 			//On message from the server, we parse the commands and send it to the handlers
-			this.socket.on('message', this.onnetmessage.bind(this));
+			this.mainSocket.on('message', this.onnetmessage.bind(this));
 		}
-	    
-		this.socket.send('0 join '+ type + ' '+ scenario);
+		
+	
+	game_core_client.prototype.initiate = function(/*string*/scenario ,/*int*/ type){  //Server connection functionality..
+		this.mainSocket.send('0 join '+ type + ' '+ scenario);
 	};
 
 	game_core_client.prototype.initGame = function(){
@@ -817,7 +877,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 			var unitplayer = -1;
 			if (gc.hexgrid.getUnit(coord)==null) {
 				if(!(gc.toBuild===null)){
-					gc.socket.send('1 build ' + gc.toBuild + ' ' + coord.X +' ' + coord.Y);
+					gc.mainSocket.send('1 build ' + gc.toBuild + ' ' + coord.X +' ' + coord.Y);
 				}
 				gc.build = false;
 				gc.toBuild = null;
@@ -835,9 +895,9 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 			// some unit has been selected, and some hexagon without this player's unit has been clicked
 			if (gc.last_click_coord && (unitplayer != gc.player)) {
 				if (isReachable) {  // Move unit
-					gc.socket.send('1 move ' + gc.last_click_coord.X +' ' + gc.last_click_coord.Y + ' ' + coord.X +' ' + coord.Y);
+					gc.mainSocket.send('1 move ' + gc.last_click_coord.X +' ' + gc.last_click_coord.Y + ' ' + coord.X +' ' + coord.Y);
 				} else if (isAttackable) {  // Attack unit
-					gc.socket.send('1 attack ' + gc.last_click_coord.X +' ' + gc.last_click_coord.Y + ' ' + coord.X + ' ' + coord.Y);
+					gc.mainSocket.send('1 attack ' + gc.last_click_coord.X +' ' + gc.last_click_coord.Y + ' ' + coord.X + ' ' + coord.Y);
 				}
 				gc.hexgrid.clientClearReachable();
 				gc.hexgrid.clientClearAttackable();
