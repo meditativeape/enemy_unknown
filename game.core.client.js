@@ -1,32 +1,5 @@
 /* Client-side code. */
 
-/* Polyfill for requestAnimationFrame. */
-
-( function () {
-
-    var lastTime = 0;
-    var vendors = [ 'ms', 'moz', 'webkit', 'o' ];
-
-    for ( var x = 0; x < vendors.length && !window.requestAnimationFrame; ++ x ) {
-        window.requestAnimationFrame = window[ vendors[ x ] + 'RequestAnimationFrame' ];
-        window.cancelAnimationFrame = window[ vendors[ x ] + 'CancelAnimationFrame' ] || window[ vendors[ x ] + 'CancelRequestAnimationFrame' ];
-    }
-
-    if ( !window.requestAnimationFrame ) {
-        window.requestAnimationFrame = function ( callback, element ) {
-            var currTime = Date.now(), timeToCall = Math.max( 0, frame_time - ( currTime - lastTime ) );
-            var id = window.setTimeout( function() { callback( currTime + timeToCall ); }, timeToCall );
-            lastTime = currTime + timeToCall;
-            return id;
-        };
-    }
-
-    if ( !window.cancelAnimationFrame ) {
-        window.cancelAnimationFrame = function ( id ) { clearTimeout( id ); };
-    }
-
-}() );
-
 /* Setup stage and layers. */
 var stage = new Kinetic.Stage({
 	container: 'container',
@@ -56,6 +29,10 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
         // Topbar images
         this.topbarImgs = [];
         this.topbar = null;
+        // Build unit images
+        this.buildUnitImgs = {frame: null, unavailable: [], lit: [], unlit: []};
+        this.buildUnit = [];
+        this.buildUnitGroup = null;
         
 		this.last_click_coord = null;
 		this.background = null;
@@ -214,16 +191,17 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 					me.hexgrid.matrix[me.guess.X][me.guess.Y].guessing = false;
 					me.guess = null;
 				}
-				gc.build = false;
-				gc.toBuild = null;
-				gc.hexgrid.clientClearBuildable();
+				me.build = false;
+				me.toBuild = null;
+				me.hexgrid.clientClearBuildable();
 			}	
 			if (event.keyCode == 81){
 				me.build = true;
 				me.toBuild = null;
-				gc.hexgrid.clientClearReachable();
-				gc.hexgrid.clientClearAttackable();
-				gc.hexgrid.clientClearBuildable();
+				me.hexgrid.clientClearReachable();
+				me.hexgrid.clientClearAttackable();
+				me.hexgrid.clientClearBuildable();
+                me.buildUnitGroup.setVisible(true);
 			}
 		};
 		document.addEventListener('keydown', keydown);
@@ -315,6 +293,24 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
         this.buttonImgs.lit.mute = load_image("sprites\\mutelit.png");
         this.buttonImgs.unlit.sound = load_image("sprites\\soundunlit.png");
         this.buttonImgs.lit.sound = load_image("sprites\\soundlit.png");
+        
+        // build unit buttons
+        this.buildUnitImgs.frame = load_image("sprites\\buildframe.png");
+        this.buildUnitImgs.unavailable[0] = load_image("sprites\\vampire_grey.png");
+        this.buildUnitImgs.unlit[0] = load_image("sprites\\vampire_black.png");
+        this.buildUnitImgs.lit[0] = load_image("sprites\\vampire_green.png");
+        this.buildUnitImgs.unavailable[1] = load_image("sprites\\wolf_grey.png");
+        this.buildUnitImgs.unlit[1] = load_image("sprites\\wolf_black.png");
+        this.buildUnitImgs.lit[1] = load_image("sprites\\wolf_green.png");
+        this.buildUnitImgs.unavailable[2] = load_image("sprites\\hunter_grey.png");
+        this.buildUnitImgs.unlit[2] = load_image("sprites\\hunter_black.png");
+        this.buildUnitImgs.lit[2] = load_image("sprites\\hunter_green.png");
+        this.buildUnitImgs.unavailable[3] = load_image("sprites\\zombie_grey.png");
+        this.buildUnitImgs.unlit[3] = load_image("sprites\\zombie_black.png");
+        this.buildUnitImgs.lit[3] = load_image("sprites\\zombie_green.png");
+        this.buildUnitImgs.unavailable[4] = load_image("sprites\\wizard_grey.png");
+        this.buildUnitImgs.unlit[4] = load_image("sprites\\wizard_black.png");
+        this.buildUnitImgs.lit[4] = load_image("sprites\\wizard_green.png");
         
 		// add terrain images
 		CONSTANTS.thronTerrain.image = this.thronImg;
@@ -550,6 +546,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				break;
 			case "resource":
 				this.resource = parseInt(keywords[2]);
+                this.updateUnitAvailability();
 				break;
 			case "move":
 				this.hexgrid.move(new Coordinate(parseInt(keywords[2]),parseInt(keywords[3])),new Coordinate(parseInt(keywords[4]),parseInt(keywords[5])))
@@ -788,8 +785,17 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
             document.body.style.cursor = "auto";
         });
         this.buttons.build.on('click', function(){
-            // click event listener goes here
-            alert("clicked!");
+            if (!me.buildUnitGroup.getVisible()) {
+                me.build = true;
+				me.toBuild = null;
+				me.hexgrid.clientClearReachable();
+				me.hexgrid.clientClearAttackable();
+				me.hexgrid.clientClearBuildable();
+                me.buildUnitGroup.setVisible(true);
+            } else {
+                me.buildUnitGroup.setVisible(false);
+                me.build = false;
+            }
         });
         UILayer.add(this.buttons.build);
         
@@ -849,13 +855,50 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
         });
         UILayer.add(this.buttons.sound);
         
-        // who kills whom image
-		// UILayer.add(new Kinetic.Image({
-			// x: CONSTANTS.width - this.whokillswhoImg.width,
-			// y: 0,
-			// image: this.whokillswhoImg,
-			// listening: false
-		// }));
+        // build unit image
+        var buildUnitGroup = new Kinetic.Group({
+            visible: false,
+        });
+        this.buildUnitGroup = buildUnitGroup;
+        buildUnitGroup.add(new Kinetic.Image({
+            image: this.buildUnitImgs.frame,
+            x: 572,
+            y: 40
+        }));
+        for (var i = 0; i < 5; i++) {
+            this.buildUnit[i] = new Kinetic.Image({
+                image: this.buildUnitImgs.unavailable[i],
+                x: 573,
+                y: 60+31*i
+            });
+            this.buildUnit[i].available = false;
+            this.buildUnit[i].on('mouseover', function(temp) {
+                return function(){
+                    if (me.buildUnit[temp].available) {
+                        me.buildUnit[temp].setImage(me.buildUnitImgs.lit[temp]);
+                        document.body.style.cursor = "pointer";
+                    }
+                }
+            }(i));
+            this.buildUnit[i].on('mouseout', function(temp) {
+                return function(){
+                    if (me.buildUnit[temp].available) {
+                        me.buildUnit[temp].setImage(me.buildUnitImgs.unlit[temp]);
+                        document.body.style.cursor = "auto";
+                    }
+                }
+            }(i));
+            this.buildUnit[i].on('click', function(temp) {
+                return function(){
+                    if (me.buildUnit[temp].available) {
+                        me.toBuild = temp;
+                        me.hexgrid.clientMarkBuildable(me.player);
+                    }
+                }
+            }(i));
+            buildUnitGroup.add(this.buildUnit[i]);
+        }
+        UILayer.add(buildUnitGroup);
         
         this.UILayerAnim = new Kinetic.Animation(function(frame) {
             resourceText.setText(me.resource);
@@ -882,6 +925,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				gc.build = false;
 				gc.toBuild = null;
 				gc.hexgrid.clientClearBuildable();
+                gc.buildUnitGroup.setVisible(false);
 			}else{
 				unitplayer = gc.hexgrid.getUnit(coord).player;
 			}
@@ -959,5 +1003,17 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		stage.add(UILayer);
 		stage.add(msgLayer);
 	};
+    
+    game_core_client.prototype.updateUnitAvailability = function() {
+        for (var i = 0; i < 5; i++) {
+            if (this.resource >= CONSTANTS.cost[i]) {
+                this.buildUnit[i].available = true;
+                this.buildUnit[i].setImage(this.buildUnitImgs.unlit[i]);
+            } else {
+                this.buildUnit[i].available = false;
+                this.buildUnit[i].setImage(this.buildUnitImgs.unavailable[i]);
+            }
+        }
+    }
 
 var gc = new game_core_client();
