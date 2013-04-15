@@ -92,9 +92,10 @@ var Scenarios = {
 			terrain[8][3] = "thron";
 			terrain[8][4] = "thron";
 			// add resource
-			terrain[5][5] = "resource";
             terrain[0][10] = "resource";
             terrain[10][0] = "resource";
+            // add flag
+            terrain[5][5] = "flag";
 			return terrain;
 		})(),
 		"startpoint": {

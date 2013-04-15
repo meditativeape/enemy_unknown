@@ -992,7 +992,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		// initialize game instance
 		var scenario = Scenarios[this.mapName];
         this.fogOn = scenario.fog;
-		this.camera = new BuildCamera([scenario.size.x + scenario.offset*2, scenario.size.y], 10, this.background, mapLayer);
+		this.camera = new BuildCamera([scenario.size.x + scenario.offset*2, scenario.size.y], 15, this.background, mapLayer);
 		this.minimap = new BuildMiniMap(this.camera, [scenario.size.x + scenario.offset*2, scenario.size.y], CONSTANTS.minimapWidth, this.background, UILayer, stage);
 		this.hexgrid = new BuildMap(this.mapName, this.camera, mapLayer, clickCallback, this.fogOn, this.fogImg);
 		
