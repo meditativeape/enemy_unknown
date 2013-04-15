@@ -238,7 +238,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		
 		var isAppLoaded = function() {
 			files_loaded++;
-			if (files_loaded >= 35) {
+			if (files_loaded >= 60) {
 				gc.initiate(scenario,type);
 			}
 		}
@@ -317,16 +317,16 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
         this.buildUnitImgs.lit[4] = load_image("sprites\\wizard_green.png");
         
         // guess unit buttons
-        this.markUnitImgs.unlit[0] = load_image("sprites\\mark\\vampire_unlit");
-        this.markUnitImgs.lit[0] = load_image("sprites\\mark\\vampire_lit");
-        this.markUnitImgs.unlit[1] = load_image("sprites\\mark\\wolf_unlit");
-        this.markUnitImgs.lit[1] = load_image("sprites\\mark\\wolf_lit");
-        this.markUnitImgs.unlit[2] = load_image("sprites\\mark\\hunter_unlit");
-        this.markUnitImgs.lit[2] = load_image("sprites\\mark\\hunter_lit");
-        this.markUnitImgs.unlit[3] = load_image("sprites\\mark\\zombie_unlit");
-        this.markUnitImgs.lit[3] = load_image("sprites\\mark\\zombie_lit");
-        this.markUnitImgs.unlit[4] = load_image("sprites\\mark\\wizard_unlit");
-        this.markUnitImgs.lit[4] = load_image("sprites\\mark\\wizard_lit");
+        this.markUnitImgs.unlit[0] = load_image("sprites\\mark\\vampire_unlit.png");
+        this.markUnitImgs.lit[0] = load_image("sprites\\mark\\vampire_lit.png");
+        this.markUnitImgs.unlit[1] = load_image("sprites\\mark\\wolf_unlit.png");
+        this.markUnitImgs.lit[1] = load_image("sprites\\mark\\wolf_lit.png");
+        this.markUnitImgs.unlit[2] = load_image("sprites\\mark\\hunter_unlit.png");
+        this.markUnitImgs.lit[2] = load_image("sprites\\mark\\hunter_lit.png");
+        this.markUnitImgs.unlit[3] = load_image("sprites\\mark\\zombie_unlit.png");
+        this.markUnitImgs.lit[3] = load_image("sprites\\mark\\zombie_lit.png");
+        this.markUnitImgs.unlit[4] = load_image("sprites\\mark\\wizard_unlit.png");
+        this.markUnitImgs.lit[4] = load_image("sprites\\mark\\wizard_lit.png");
         
 		// add terrain images
 		CONSTANTS.thronTerrain.image = this.thronImg;
