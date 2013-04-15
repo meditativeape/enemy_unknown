@@ -4,7 +4,7 @@ var waiting = function(){
 		var sen = document.getElementById('scenario');
 		var typ = document.getElementById('type');
 		var senSelection = sen.options[sen.selectedIndex].value;
-		var typSelection = typ.options[typ.selectedIndex].value;
+		var typSelection = "0";
 		// gc = new game_core_client();
 		gc.load_assets(senSelection,parseInt(typSelection));
 		started = true;
@@ -18,6 +18,7 @@ var waiting = function(){
 var started = false;
 
 var selectLevel = function(){
+	gc.mainSocket.send('0 menu');
 	levelMenu.style.visibility = "visible";
 	startMenu.style.visibility = "hidden";
 	howToMenu.style.visibility = "hidden";
@@ -75,6 +76,8 @@ soundManager.setup({
 	}
 });
 
+
+
 var soundAssets = {};
 
 var blurred = false;
@@ -92,6 +95,33 @@ function onFocus(){
 	}
 };
 
+var senarioList = [];
+var senarioCount = 0;
+
+var resetMenu = function(){
+	document.getElementById('lobby').value = 'No created games, create one yourself.';
+	senarioList = [];
+	senarioCount = 0;
+}
+
+var updateMenu = function(/*string*/senario){
+	var string = ''
+	var flag = true;
+	for (var i in senarioList){
+		if(senarioList[i]  == senario){
+			flag = false;
+		}
+		string = string + ' ' + senarioList[i];
+	}
+	if(flag){
+		senarioList[senarioCount] = senario;
+		senarioCount++;
+		string = string + ' ' + senario;
+	}
+	
+	document.getElementById('lobby').value = 'Senarios created by players: ' + string + '.';
+	
+}
 //document.onfocusin = onFocus;
 //document.onfocusout = onBlur;
 window.onfocus = onFocus;
