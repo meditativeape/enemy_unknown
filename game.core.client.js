@@ -20,6 +20,8 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
         this.sprites = [[], [], [], []];
 		// Container for all unit cooldown images
 		this.cooldown = [[], [], [], []];
+        // Get hit images
+        this.getHitImgs = {small: [[], [], [], []], big: [[], [], [], []]};
         // Button images
         this.buttonImgs = {lit: {}, unlit: {}};
         this.buttons = {};
