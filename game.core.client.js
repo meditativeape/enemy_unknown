@@ -299,22 +299,22 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
         this.buttonImgs.lit.sound = load_image("sprites\\soundlit.png");
         
         // build unit buttons
-        this.buildUnitImgs.frame = load_image("sprites\\buildframe.png");
-        this.buildUnitImgs.unavailable[0] = load_image("sprites\\vampire_grey.png");
-        this.buildUnitImgs.unlit[0] = load_image("sprites\\vampire_black.png");
-        this.buildUnitImgs.lit[0] = load_image("sprites\\vampire_green.png");
-        this.buildUnitImgs.unavailable[1] = load_image("sprites\\wolf_grey.png");
-        this.buildUnitImgs.unlit[1] = load_image("sprites\\wolf_black.png");
-        this.buildUnitImgs.lit[1] = load_image("sprites\\wolf_green.png");
-        this.buildUnitImgs.unavailable[2] = load_image("sprites\\hunter_grey.png");
-        this.buildUnitImgs.unlit[2] = load_image("sprites\\hunter_black.png");
-        this.buildUnitImgs.lit[2] = load_image("sprites\\hunter_green.png");
-        this.buildUnitImgs.unavailable[3] = load_image("sprites\\zombie_grey.png");
-        this.buildUnitImgs.unlit[3] = load_image("sprites\\zombie_black.png");
-        this.buildUnitImgs.lit[3] = load_image("sprites\\zombie_green.png");
-        this.buildUnitImgs.unavailable[4] = load_image("sprites\\wizard_grey.png");
-        this.buildUnitImgs.unlit[4] = load_image("sprites\\wizard_black.png");
-        this.buildUnitImgs.lit[4] = load_image("sprites\\wizard_green.png");
+        this.buildUnitImgs.frame = load_image("sprites\\build\\buildframe.png");
+        this.buildUnitImgs.unavailable[0] = load_image("sprites\\build\\vampire_grey.png");
+        this.buildUnitImgs.unlit[0] = load_image("sprites\\build\\vampire_black.png");
+        this.buildUnitImgs.lit[0] = load_image("sprites\\build\\vampire_green.png");
+        this.buildUnitImgs.unavailable[1] = load_image("sprites\\build\\wolf_grey.png");
+        this.buildUnitImgs.unlit[1] = load_image("sprites\\build\\wolf_black.png");
+        this.buildUnitImgs.lit[1] = load_image("sprites\\build\\wolf_green.png");
+        this.buildUnitImgs.unavailable[2] = load_image("sprites\\build\\hunter_grey.png");
+        this.buildUnitImgs.unlit[2] = load_image("sprites\\build\\hunter_black.png");
+        this.buildUnitImgs.lit[2] = load_image("sprites\\build\\hunter_green.png");
+        this.buildUnitImgs.unavailable[3] = load_image("sprites\\build\\zombie_grey.png");
+        this.buildUnitImgs.unlit[3] = load_image("sprites\\build\\zombie_black.png");
+        this.buildUnitImgs.lit[3] = load_image("sprites\\build\\zombie_green.png");
+        this.buildUnitImgs.unavailable[4] = load_image("sprites\\build\\wizard_grey.png");
+        this.buildUnitImgs.unlit[4] = load_image("sprites\\build\\wizard_black.png");
+        this.buildUnitImgs.lit[4] = load_image("sprites\\build\\wizard_green.png");
         
         // guess unit buttons
         this.markUnitImgs.unlit[0] = load_image("sprites\\mark\\vampire_unlit.png");

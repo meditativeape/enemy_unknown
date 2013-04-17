@@ -113,8 +113,9 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
         var id = player.player;
         var team = player.team;
         var cost = CONSTANTS.cost[type];
-        // check if coord is empty
-        if (this.hexgrid.getUnit(coord))
+        var terrain = this.hexgrid.getTerrain(coord);
+        // check if coord is empty or buildable
+        if (this.hexgrid.getUnit(coord) || (terrain && !terrain.buildable))
             return;
         // check if there is any ally unit nearby
         hasAllyNearby = false;
