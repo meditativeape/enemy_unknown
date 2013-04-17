@@ -33,6 +33,10 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
         this.buildUnitImgs = {frame: null, unavailable: [], lit: [], unlit: []};
         this.buildUnit = [];
         this.buildUnitGroup = null;
+        // Mark unit images
+        this.markUnitImgs = {lit: [], unlit:[]};
+        this.markUnit = [];
+        this.markUnitGroup = null;
         
 		this.last_click_coord = null;
 		this.background = null;
@@ -234,7 +238,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		
 		var isAppLoaded = function() {
 			files_loaded++;
-			if (files_loaded >= 35) {
+			if (files_loaded >= 60) {
 				gc.initiate(scenario,type);
 			}
 		}
@@ -312,12 +316,23 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
         this.buildUnitImgs.unlit[4] = load_image("sprites\\wizard_black.png");
         this.buildUnitImgs.lit[4] = load_image("sprites\\wizard_green.png");
         
+        // guess unit buttons
+        this.markUnitImgs.unlit[0] = load_image("sprites\\mark\\vampire_unlit.png");
+        this.markUnitImgs.lit[0] = load_image("sprites\\mark\\vampire_lit.png");
+        this.markUnitImgs.unlit[1] = load_image("sprites\\mark\\wolf_unlit.png");
+        this.markUnitImgs.lit[1] = load_image("sprites\\mark\\wolf_lit.png");
+        this.markUnitImgs.unlit[2] = load_image("sprites\\mark\\hunter_unlit.png");
+        this.markUnitImgs.lit[2] = load_image("sprites\\mark\\hunter_lit.png");
+        this.markUnitImgs.unlit[3] = load_image("sprites\\mark\\zombie_unlit.png");
+        this.markUnitImgs.lit[3] = load_image("sprites\\mark\\zombie_lit.png");
+        this.markUnitImgs.unlit[4] = load_image("sprites\\mark\\wizard_unlit.png");
+        this.markUnitImgs.lit[4] = load_image("sprites\\mark\\wizard_lit.png");
+        
 		// add terrain images
 		CONSTANTS.thronTerrain.image = this.thronImg;
 		CONSTANTS.flagTerrain.image = this.flagImg;
 		CONSTANTS.resourceTerrain.image = this.resourceImg;
         CONSTANTS.heart = this.heartImg;
-        
 
 		soundAssets.backgroundsound = soundManager.createSound({
 			id: 'background',
@@ -325,6 +340,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 			volume: 30,
 			onfinish: function(){soundAssets.backgroundsound.play();},
 		});
+
 							
 		soundAssets.attack_1sound = soundManager.createSound({
 			  id: 'attack_1',
@@ -1004,7 +1020,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		// initialize game instance
 		var scenario = Scenarios[this.mapName];
         this.fogOn = scenario.fog;
-		this.camera = new BuildCamera([scenario.size.x + scenario.offset*2, scenario.size.y], 10, this.background, mapLayer);
+		this.camera = new BuildCamera([scenario.size.x + scenario.offset*2, scenario.size.y], 15, this.background, mapLayer);
 		this.minimap = new BuildMiniMap(this.camera, [scenario.size.x + scenario.offset*2, scenario.size.y], CONSTANTS.minimapWidth, this.background, UILayer, stage);
 		this.hexgrid = new BuildMap(this.mapName, this.camera, mapLayer, clickCallback, this.fogOn, this.fogImg);
 		
