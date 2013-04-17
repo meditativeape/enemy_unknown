@@ -216,7 +216,7 @@ var BuildMap = function(/*string*/mapName, /*camera*/camera, /*layer*/layer, /*f
                     for (var i = 0; i < 6; i++) {
                         if(this.matrix[xs[i]] && this.matrix[xs[i]][ys[i]] && !this.matrix[xs[i]][ys[i]].piece){
                             if(this.matrix[xs[i]][ys[i]].terrain){
-                                if(this.matrix[xs[i]][ys[i]].terrain.moveable){
+                                if(this.matrix[xs[i]][ys[i]].terrain.buildable){
                                     this.matrix[xs[i]][ys[i]].clientBuildable = true;
                                     this.clientBuildables.push(this.matrix[xs[i]][ys[i]]);
                                 }

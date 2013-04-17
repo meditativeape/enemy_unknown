@@ -6,10 +6,10 @@ if( 'undefined' != typeof global ) {
 	var CONSTANTS = helper.CONSTANTS;
 }
 
-var Terrain = function(/*int*/attackBuff,/*int*/ defenseBuff,/*int*/rangeBuff,/*boolean*/ moveable, /*string*/objectiveType, 
+var Terrain = function(/*boolean*/ moveable, /*boolean*/ buildable, /*string*/ objectiveType, 
 	/*int*/ objectiveTime,/*int*/ resource,/*double*/ gatheringSpeed,/*image*/image){
-	this.buff = new Buff(attackBuff,defenseBuff,rangeBuff);
 	this.moveable = moveable;
+    this.buildable = buildable;
 	this.objectiveType = objectiveType;
 	this.objectiveTime = objectiveTime;
 	this.resource = resource;
@@ -20,11 +20,11 @@ var Terrain = function(/*int*/attackBuff,/*int*/ defenseBuff,/*int*/rangeBuff,/*
     this.interval = -1;
 }
 
-var Buff = function(/*int*/attackBuff,/*int*/ defenseBuff,/*int*/rangeBuff){
-	this.attackBuff = attackBuff; 
-	this.defenseBuff = defenseBuff;
-	this.rangeBuff = rangeBuff;
-}
+// var Buff = function(/*int*/attackBuff,/*int*/ defenseBuff,/*int*/rangeBuff){
+	// this.attackBuff = attackBuff; 
+	// this.defenseBuff = defenseBuff;
+	// this.rangeBuff = rangeBuff;
+// }
 
 /**
  * Terrain Method: return a Kinetic.Image to be put into the terrain group.
@@ -50,6 +50,6 @@ Terrain.prototype.draw = function(/*Point*/p, /*int*/height, /*Kinetic.Image*/ol
 
 //Build terrains.
 
-CONSTANTS.thronTerrain = new Terrain(0,0,0,false,null,0,0,0,null);
-CONSTANTS.flagTerrain = new Terrain(0,1,0,true,'flag',CONSTANTS.countdown,0,0,null);
-CONSTANTS.resourceTerrain = new Terrain(0,0,0,true,'resource',0,1,2,null);
+CONSTANTS.thronTerrain = new Terrain(false,false,null,0,0,0,null);
+CONSTANTS.flagTerrain = new Terrain(true,false,'flag',CONSTANTS.countdown,0,0,null);
+CONSTANTS.resourceTerrain = new Terrain(true,false,'resource',0,1,2,null);

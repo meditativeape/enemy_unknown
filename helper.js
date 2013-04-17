@@ -26,7 +26,7 @@ var CONSTANTS = {
 	init_resource: 100,
 	hexSideLength: 60,
 	hexRatio: 2.0,
-    cost: [50, 40, 10, 30, 50],
+    cost: [50, 40, 20, 30, 40],
     minimapWidth: 200
 };
 
