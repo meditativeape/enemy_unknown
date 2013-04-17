@@ -58,6 +58,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		this.toBuild = null;
         this.soundOn = true;
 		this.newSocket();
+		this.vampireKO = false;
 		var me = this;
 		var mousemove = function(event) {  // mouse move event listener
 			var x = event.pageX;
@@ -341,7 +342,11 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 			onfinish: function(){soundAssets.backgroundsound.play();},
 		});
 
-							
+		soundAssets.attack_2sound = soundManager.createSound({
+			  id: 'attack_2',
+			  url: '/sounds/attack_2.mp3'
+		});
+					
 		soundAssets.attack_1sound = soundManager.createSound({
 			  id: 'attack_1',
 			  url: '/sounds/attack_1.mp3'
@@ -355,6 +360,11 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		soundAssets.attack2sound = soundManager.createSound({
 			  id: 'attack2',
 			  url: '/sounds/attack2.mp3'
+		});
+		
+		soundAssets.kosound = soundManager.createSound({
+			  id: 'ko',
+			  url: '/sounds/ko.mp3'
 		});
 		
 		soundAssets.diesound = soundManager.createSound({
@@ -617,7 +627,10 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				if(this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece.team == gc.team){
 					soundAssets.diesound.play();
 				}else{
-					soundAssets.killsound.play();
+					if(!this.vampireKO){
+						soundAssets.killsound.play();
+					}
+					this.vampireKO = false;
 				}
 				this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece = null;
 
