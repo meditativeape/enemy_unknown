@@ -125,15 +125,24 @@ Unit.prototype.guess = function(/*int*/ guess){
 Unit.prototype.minusHP = function(/*int*/hp){
 	this.lostHP = this.hp - hp;
 	this.hp = hp;
-	if(this.lostHP!=0 && hp!= 0){
-		if(this.team == gc.team){
-			soundAssets.attack_1sound.play();
-		}
-		else if(this.lostHP == 1){
-			soundAssets.attack1sound.play();
+	if(this.lostHP!=0){
+		if(this.team == gc.team && hp!= 0){
+			if(this.lostHP == 1){
+				soundAssets.attack_1sound.play();
+			}else{
+				soundAssets.attack_2sound.play();
+			}
 		}
 		else{
-			soundAssets.attack2sound.play();
+			if(this.lostHP == 1 && hp!= 0){
+				soundAssets.attack1sound.play();
+			}else if(this.type == 0){
+				soundAssets.kosound.play();
+				gc.vampireKO = true;
+			}
+			else if(hp!= 0){
+				soundAssets.attack2sound.play();
+			}
 		}
 	}
 	
