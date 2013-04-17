@@ -124,10 +124,19 @@ Unit.prototype.guess = function(/*int*/ guess){
 
 Unit.prototype.minusHP = function(/*int*/hp){
 	this.lostHP = this.hp - hp;
-	/**if(this.lostHP!=0){
-		gc.gothitsound.play();
-	}*/
 	this.hp = hp;
+	if(this.lostHP!=0 && hp!= 0){
+		if(this.team == gc.team){
+			soundAssets.attack_1sound.play();
+		}
+		else if(this.lostHP == 1){
+			soundAssets.attack1sound.play();
+		}
+		else{
+			soundAssets.attack2sound.play();
+		}
+	}
+	
 }
 
 Unit.prototype.gotHit = function(/*Unit*/enemy){

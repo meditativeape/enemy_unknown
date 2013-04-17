@@ -326,9 +326,29 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 			onfinish: function(){soundAssets.backgroundsound.play();},
 		});
 							
-		soundAssets.gothitsound = soundManager.createSound({
-			  id: 'gothitsound',
-			  url: '/sounds/gothit.mp3'
+		soundAssets.attack_1sound = soundManager.createSound({
+			  id: 'attack_1',
+			  url: '/sounds/attack_1.mp3'
+		});
+		
+		soundAssets.attack1sound = soundManager.createSound({
+			  id: 'attack1',
+			  url: '/sounds/attack1.mp3'
+		});
+		
+		soundAssets.attack2sound = soundManager.createSound({
+			  id: 'attack2',
+			  url: '/sounds/attack2.mp3'
+		});
+		
+		soundAssets.diesound = soundManager.createSound({
+			  id: 'die',
+			  url: '/sounds/die.mp3'
+		});
+		
+		soundAssets.killsound = soundManager.createSound({
+			  id: 'kill',
+			  url: '/sounds/kill.mp3'
 		});
 		
 		soundAssets.flagcapsound = soundManager.createSound({
@@ -578,7 +598,14 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 					this.hexgrid.matrix[gc.guess.X][gc.guess.Y].guessing = false;
 					this.guess = null;
 				}
+				if(this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece.team == gc.team){
+					soundAssets.diesound.play();
+				}else{
+					soundAssets.killsound.play();
+				}
 				this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece = null;
+
+				
 				// update minimap
 				var pointOnMap = this.hexgrid.toMap(new Coordinate(parseInt(keywords[2]), parseInt(keywords[3])));
 				this.minimap.removeUnit(pointOnMap);
