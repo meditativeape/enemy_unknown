@@ -22,7 +22,7 @@ var CONSTANTS = {
 	width: 800,
 	height: 600,
 	cd: 10,
-    countdown: 90,
+    countdown: 180,
 	init_resource: 100,
 	hexSideLength: 60,
 	hexRatio: 2.0,
