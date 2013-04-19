@@ -86,7 +86,6 @@ Unit.prototype.draw = function(/*Point*/p, /*int*/height) {
 			height: this.image.height
 		});
 		var offset = Math.floor(this.hitCounter/2);
-        console.log(offset);
 		unitToDraw.setCrop({x:120*offset, y:0, width:120, height:120});
         this.hitCounter++;
 	} else if (this.cooldown > 0.2 && this.cdImage) {
