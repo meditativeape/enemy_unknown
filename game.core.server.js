@@ -94,14 +94,19 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 		responses.push(["1", "attack", coord1.X, coord1.Y, unit1.hp, coord2.X, coord2.Y, unit2.hp].join(" "));
 		if (unit1.hp <= 0) {  // unit 1 dies
 			responses.push(["1", "die", coord1.X, coord1.Y, unit1.type].join(" "));
-			this.units[unit1.player]--;
+			this.units[unit1.team]--;
 		}
 		if (unit2.hp <= 0) {  // unit 2 dies
 			responses.push(["1", "die", coord2.X, coord2.Y, unit2.type].join(" "));
-			this.units[unit2.player]--;
+			this.units[unit2.team]--;
 		}
 		return responses;
 		
+	};
+    
+    game_core_server.prototype.updateUnitCounter = function(){
+        for (id = 0; id < this.players.length; id++)
+            this.sendMsg(this.players[id], "1 count " + this.units[0] + " " + this.units[1]);
 	};
 	
 	game_core_server.prototype.updateResource = function(id, offset){
@@ -242,6 +247,7 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
                 var type = parseInt(keywords[2]);
 				var coord = new helper.Coordinate(parseInt(keywords[3]), parseInt(keywords[4]));
 				this.buildUnit(type, coord, client);
+                this.updateUnitCounter();
 				break;
 			case "move":
 				var coord1 = new helper.Coordinate(parseInt(keywords[2]), parseInt(keywords[3]));
@@ -278,6 +284,7 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
                     this.updateVisible(); // in case some unit dies
                 }
 				this.checkObjectives();
+                this.updateUnitCounter();
 				break;
 			default:
 				// TODO: send response about invalid message
@@ -436,6 +443,8 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 		for (var i = 0; i < this.players.length; i++) {
 			this.sendMsg(this.players[i], "0 start {0} {1}".format([this.hexgrid.scenario.startcamera[i][0], this.hexgrid.scenario.startcamera[i][1]]));
 		}
+        
+        this.updateUnitCounter();
 	};
 	
 	game_core_server.prototype.leaveGame = function(client){

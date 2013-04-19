@@ -59,6 +59,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		this.build = false;
 		this.toBuild = null;
         this.soundOn = true;
+        this.unitCounter = [0, 0];
 		this.newSocket();
 		this.vampireKO = false;
 		var me = this;
@@ -331,6 +332,29 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
         this.markUnitImgs.unlit[4] = load_image("sprites\\mark\\wizard_unlit.png");
         this.markUnitImgs.lit[4] = load_image("sprites\\mark\\wizard_lit.png");
         
+        // get hit images
+        this.getHitImgs.small[0][0] = load_image("sprites\\gethit\\vampire_red_small_hit.png");
+        this.getHitImgs.small[0][1] = load_image("sprites\\gethit\\wolf_red_small_hit.png");
+        this.getHitImgs.small[0][2] = load_image("sprites\\gethit\\hunter_red_small_hit.png");
+        this.getHitImgs.small[0][3] = load_image("sprites\\gethit\\zombie_red_small_hit.png");
+        this.getHitImgs.small[0][4] = load_image("sprites\\gethit\\wizard_red_small_hit.png");
+        this.getHitImgs.small[1][0] = load_image("sprites\\gethit\\vampire_blue_small_hit.png");
+        this.getHitImgs.small[1][1] = load_image("sprites\\gethit\\wolf_blue_small_hit.png");
+        this.getHitImgs.small[1][2] = load_image("sprites\\gethit\\hunter_blue_small_hit.png");
+        this.getHitImgs.small[1][3] = load_image("sprites\\gethit\\zombie_blue_small_hit.png");
+        this.getHitImgs.small[1][4] = load_image("sprites\\gethit\\wizard_blue_small_hit.png");
+        
+        this.getHitImgs.big[0][0] = load_image("sprites\\gethit\\vampire_red_big_hit.png");
+        this.getHitImgs.big[0][1] = load_image("sprites\\gethit\\wolf_red_big_hit.png");
+        this.getHitImgs.big[0][2] = load_image("sprites\\gethit\\hunter_red_big_hit.png");
+        this.getHitImgs.big[0][3] = load_image("sprites\\gethit\\zombie_red_big_hit.png");
+        this.getHitImgs.big[0][4] = load_image("sprites\\gethit\\wizard_red_big_hit.png");
+        this.getHitImgs.big[1][0] = load_image("sprites\\gethit\\vampire_blue_big_hit.png");
+        this.getHitImgs.big[1][1] = load_image("sprites\\gethit\\wolf_blue_big_hit.png");
+        this.getHitImgs.big[1][2] = load_image("sprites\\gethit\\hunter_blue_big_hit.png");
+        this.getHitImgs.big[1][3] = load_image("sprites\\gethit\\zombie_blue_big_hit.png");
+        this.getHitImgs.big[1][4] = load_image("sprites\\gethit\\wizard_blue_big_hit.png");
+        
 		// add terrain images
 		CONSTANTS.thronTerrain.image = this.thronImg;
 		CONSTANTS.flagTerrain.image = this.flagImg;
@@ -457,9 +481,6 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 						}
 						before = new Date();
 					} ,100);
-
-
-				
 				break;
 			case "end":
 				if (this.countdownTimer){
@@ -476,6 +497,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				this.started = false;
 				this.countdownTimer = null;
 				this.resource = 0;
+                this.unitCounter = [0, 0];
 				// stop animations
 				this.camera.stop();
 				this.minimap.stop();
@@ -535,7 +557,6 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		case 1:  // game control messages
 			switch (keywords[1]) {
 			case "countdown":
-			
 				var capteam = parseInt(keywords[2]);
 				if(this.team != capteam && capteam != -1){
 					soundAssets.flagcapsound.play();
@@ -570,6 +591,10 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 					this.capping = 0;
 				}
 				break;
+            case "count":
+                this.unitCounter[0] = parseInt(keywords[2]);
+                this.unitCounter[1] = parseInt(keywords[3]);
+                break;
 			case "add":
 				var sprite = this.sprites[parseInt(keywords[2])][parseInt(keywords[4])];
 				var cd = this.cooldown[parseInt(keywords[2])][parseInt(keywords[4])];
@@ -781,7 +806,29 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
             listening: false
         });
         UILayer.add(this.topbar);
-		
+        
+        // unit counter
+        var counter1Text = new Kinetic.Text({
+            fontFamily: "Courier New",
+            fontSize: 15,
+            fill: "white",
+            text: this.unitCounter[1-this.team],
+            x: 248,
+            y: 8,
+            listening: false
+        });
+		UILayer.add(counter1Text);
+        var counter2Text = new Kinetic.Text({
+            fontFamily: "Courier New",
+            fontSize: 15,
+            fill: "white",
+            text: this.unitCounter[this.team],
+            x: 328,
+            y: 8,
+            listening: false
+        });
+		UILayer.add(counter2Text);
+        
         // resource text
         var resourceText = new Kinetic.Text({
             fontFamily: "Courier New",
@@ -959,6 +1006,8 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
         UILayer.add(buildUnitGroup);
         
         this.UILayerAnim = new Kinetic.Animation(function(frame) {
+            counter1Text.setText(me.unitCounter[1-me.team]);
+            counter2Text.setText(me.unitCounter[me.team]);
             resourceText.setText(me.resource);
             flagText.setText(CONSTANTS.countdown-me.countdown + "/" + CONSTANTS.countdown);
         }, UILayer);

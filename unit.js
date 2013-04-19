@@ -33,6 +33,8 @@ var Unit = function(/*int*/player, /*int*/ team, /*int*/hp, /*int*/type, /*Coord
 	this.attack = 50;
 	this.defense = 1;
     this.showNum = 0;
+    this.hitCounter = 20;
+    this.lastHitType = null;
     if (showNum)
         this.showNum = 1;
 }
@@ -70,7 +72,24 @@ Unit.prototype.draw = function(/*Point*/p, /*int*/height) {
     var groupToDraw = new Kinetic.Group();
     // draw unit
 	var unitToDraw;
-	if (this.cooldown > 0.2 && this.cdImage) {
+    if (this.hitCounter < 20) {
+        var hitImage;
+        if (this.lastHitType == "small")
+            hitImage = gc.getHitImgs.small[this.team][this.type];
+        else
+            hitImage = gc.getHitImgs.big[this.team][this.type];
+        unitToDraw = new Kinetic.Image({
+			image: hitImage,
+			x: Math.floor(p.X - this.image.width/2),
+			y: Math.floor(p.Y + height*2/5 - this.image.height + 5),
+			width: this.image.width,
+			height: this.image.height
+		});
+		var offset = Math.floor(this.hitCounter/2);
+        console.log(offset);
+		unitToDraw.setCrop({x:120*offset, y:0, width:120, height:120});
+        this.hitCounter++;
+	} else if (this.cooldown > 0.2 && this.cdImage) {
 		unitToDraw = new Kinetic.Image({
 			image: this.cdImage,
 			x: Math.floor(p.X - this.image.width/2),
@@ -126,6 +145,11 @@ Unit.prototype.minusHP = function(/*int*/hp){
 	this.lostHP = this.hp - hp;
 	this.hp = hp;
 	if(this.lostHP!=0){
+        this.hitCounter = 0; // show get hit animation
+        if (this.lostHP == 1)
+            this.lastHitType = "small";
+        else
+            this.lastHitType = "big";
 		if(this.team == gc.team && hp!= 0){
 			if(this.lostHP == 1){
 				soundAssets.attack_1sound.play();
