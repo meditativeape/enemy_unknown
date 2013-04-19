@@ -146,14 +146,14 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 			this.hexgrid.addUnit(u, coord);
             this.units[team]++;
             if (this.fogOn) {
-                this.sendMsg(this.players[id], "1 add {0} {1} {2} {3} {4} {5}".format([id, team, type, coord.X, coord.Y, CONSTANTS.cd]));
+                this.sendMsg(this.players[id], "1 add {0} {1} {2} {3} {4} {5} {6}".format([id, team, type, coord.X, coord.Y, CONSTANTS.cd, u.hp]));
                 this.updateVisible();
             } else {
                 for (var i in this.players) {
                     if (this.revealType || i==id) {
-                        this.sendMsg(this.players[i], "1 add {0} {1} {2} {3} {4} {5}".format([id, team, type, coord.X, coord.Y, CONSTANTS.cd]));
+                        this.sendMsg(this.players[i], "1 add {0} {1} {2} {3} {4} {5} {6}".format([id, team, type, coord.X, coord.Y, CONSTANTS.cd, u.hp]));
                     } else {
-                        this.sendMsg(this.players[i], "1 add {0} {1} {2} {3} {4} {5}".format([id, team, 5, coord.X, coord.Y, CONSTANTS.cd]));
+                        this.sendMsg(this.players[i], "1 add {0} {1} {2} {3} {4} {5} {6}".format([id, team, 5, coord.X, coord.Y, CONSTANTS.cd, u.hp]));
                     }
                 }
             }
@@ -344,9 +344,9 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
             for (var j in piecesToAdd[i]) {
                 var piece = this.hexgrid.getUnit(piecesToAdd[i][j]);
                 if (this.hexgrid.scenario.revealtype) {
-                    this.sendMsg(this.players[1-i], "1 add {0} {1} {2} {3} {4} {5}".format([piece.player, piece.team, piece.type, piece.x, piece.y, piece.cooldown]));
+                    this.sendMsg(this.players[1-i], "1 add {0} {1} {2} {3} {4} {5} {6}".format([piece.player, piece.team, piece.type, piece.x, piece.y, piece.cooldown, piece.hp]));
                 } else {
-                    this.sendMsg(this.players[1-i], "1 add {0} {1} {2} {3} {4} {5}".format([piece.player, piece.team, 5, piece.x, piece.y, piece.cooldown]));
+                    this.sendMsg(this.players[1-i], "1 add {0} {1} {2} {3} {4} {5} {6}".format([piece.player, piece.team, 5, piece.x, piece.y, piece.cooldown, piece.hp]));
                 }
             }
     }
@@ -424,12 +424,12 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 			this.players[i].team = k++;
 			for (var j in pieces) {
 				if (this.players[i].team == pieces[j].team) {
-					this.sendMsg(this.players[i], "1 add {0} {1} {2} {3} {4} {5}".format([pieces[j].player, pieces[j].team, pieces[j].type, pieces[j].x, pieces[j].y, 0]));
+					this.sendMsg(this.players[i], "1 add {0} {1} {2} {3} {4} {5} {6}".format([pieces[j].player, pieces[j].team, pieces[j].type, pieces[j].x, pieces[j].y, 0, pieces[j].hp]));
                 } else if (!this.fogOn) {
                     if (this.revealType) {
-                        this.sendMsg(this.players[i], "1 add {0} {1} {2} {3} {4} {5}".format([pieces[j].player, pieces[j].team, pieces[j].type, pieces[j].x, pieces[j].y, 0]));
+                        this.sendMsg(this.players[i], "1 add {0} {1} {2} {3} {4} {5} {6}".format([pieces[j].player, pieces[j].team, pieces[j].type, pieces[j].x, pieces[j].y, 0, pieces[j].hp]));
                     } else {
-                        this.sendMsg(this.players[i], "1 add {0} {1} {2} {3} {4} {5}".format([pieces[j].player, pieces[j].team, 5, pieces[j].x, pieces[j].y, 0]));
+                        this.sendMsg(this.players[i], "1 add {0} {1} {2} {3} {4} {5} {6}".format([pieces[j].player, pieces[j].team, 5, pieces[j].x, pieces[j].y, 0, pieces[j].hp]));
                     }
                 }
             }            
@@ -469,7 +469,7 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
         for(var x in this.hexgrid.matrix){ // brute force!
 			for(var y in this.hexgrid.matrix[x]){
 				if(this.hexgrid.matrix[x][y].interval){
-                    window.clearInterval(this.hexgrid.matrix[x][y].interval);
+                    window.clearTimeout(this.hexgrid.matrix[x][y].interval);
                 }
             }
         }

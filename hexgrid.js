@@ -537,15 +537,13 @@ Hexagon.prototype.update = function() {
     if (!this.fog) {
         this.fog = new Kinetic.Image({
             image: this.fogImg,
-            x: midPoint.X - this.fogImg.width/4,
-            y: midPoint.Y - this.fogImg.height/4,
             opacity: 0,
-            scale: {x:0.6, y:0.6}
+            scale: {x:0.95, y:0.95}
         });
         this.map.fogGroup.add(this.fog);
     }
-    this.fog.setX(midPoint.X - this.fogImg.width/3);
-    this.fog.setY(midPoint.Y - this.fogImg.height/3);
+    this.fog.setX(midPoint.X - this.fogImg.width/3 - 18);
+    this.fog.setY(midPoint.Y - this.fogImg.height/3 - 18);
     if (!this.clientViewable) {   
         if (this.opacity < 0.5) {
             this.fog.setOpacity(this.opacity);
