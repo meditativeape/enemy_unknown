@@ -599,7 +599,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				var sprite = this.sprites[parseInt(keywords[2])][parseInt(keywords[4])];
 				var cd = this.cooldown[parseInt(keywords[2])][parseInt(keywords[4])];
 				this.hexgrid.matrix[parseInt(keywords[5])][parseInt(keywords[6])].piece = new Unit(parseInt(keywords[2]), parseInt(keywords[3]),
-                        4, parseInt(keywords[4]), new Coordinate(parseInt(keywords[5]),parseInt(keywords[6])), sprite, cd, this.showNum);
+                       parseInt(keywords[8]), parseInt(keywords[4]), new Coordinate(parseInt(keywords[5]),parseInt(keywords[6])), sprite, cd, this.showNum);
 				this.hexgrid.matrix[parseInt(keywords[5])][parseInt(keywords[6])].piece.setcd(parseFloat(keywords[7]));
 				if (this.fogOn) {
                     this.hexgrid.clientClearViewable();
