@@ -24,6 +24,7 @@ var Unit = function(/*int*/player, /*int*/ team, /*int*/hp, /*int*/type, /*Coord
 	this.image = pic; // unit image
 	this.cdImage = cdImage; // cd image
     this.cooldown = 0;
+    this.lastCooldownTime = 0;
 	this.attacking = false;
 	this.damaged = false;
 	this.death = null;
@@ -45,23 +46,28 @@ if( 'undefined' != typeof global ) {
 }
 
 Unit.prototype.setcd = function(/*float*/ time){
-	this.cooldown = time;
-	var self = this;
-	var now, before = new Date();
-	var cding = window.setInterval(function(){
-			now = new Date();
-			if(self.cooldown>=0){
-				var elapsedTime = now.getTime() - before.getTime();
-				if (elapsedTime > 100)  // in case tab is not active in Chrome
-					self.cooldown = self.cooldown - Math.round(elapsedTime/100)/10;
-				else
-					self.cooldown = self.cooldown - 0.1;
-			}else{
-				self.cooldown = 0;
-				window.clearInterval(cding);
-			}
-			before = new Date();
-		} ,100);
+    if ('undefined' != typeof global) {
+        var now = new Date();
+        this.lastCooldownTime = now.getTime();
+    } else {
+        this.cooldown = time;
+        var self = this;
+        var now, before = new Date();
+        var cding = window.setInterval(function(){
+                now = new Date();
+                if(self.cooldown>=0){
+                    var elapsedTime = now.getTime() - before.getTime();
+                    if (elapsedTime > 100)  // in case tab is not active in Chrome
+                        self.cooldown = self.cooldown - Math.round(elapsedTime/100)/10;
+                    else
+                        self.cooldown = self.cooldown - 0.1;
+                }else{
+                    self.cooldown = 0;
+                    window.clearInterval(cding);
+                }
+                before = new Date();
+            } ,100);
+    }
 }
 
 /**

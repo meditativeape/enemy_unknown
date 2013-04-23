@@ -56,14 +56,17 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 		
 		var unit = this.hexgrid.getUnit(coord1);
 		if (unit && unit.player == player.player && !this.hexgrid.getUnit(coord2)){ // coord1 has player's unit and coord2 is empty
-			if (this.hexgrid.hexDist(this.hexgrid.matrix[coord1.X][coord1.Y], this.hexgrid.matrix[coord2.X][coord2.Y]) <= unit.range) {
-				if (!this.hexgrid.matrix[coord2.X][coord2.Y].terrain) {
-					return true;
-				} else {
-					if (this.hexgrid.matrix[coord2.X][coord2.Y].terrain.moveable)
-						return true;
-				}	
-			}
+            var now = new Date();
+            var time = now.getTime();
+            if ((time-unit.lastCooldownTime)/1000 >= CONSTANTS.cd)
+                if (this.hexgrid.hexDist(this.hexgrid.matrix[coord1.X][coord1.Y], this.hexgrid.matrix[coord2.X][coord2.Y]) <= unit.range) {
+                    if (!this.hexgrid.matrix[coord2.X][coord2.Y].terrain) {
+                        return true;
+                    } else {
+                        if (this.hexgrid.matrix[coord2.X][coord2.Y].terrain.moveable)
+                            return true;
+                    }	
+                }
 		}
 		
 		return false;
@@ -72,6 +75,8 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 	
 	game_core_server.prototype.makeMove = function(coord1, coord2){
 		this.hexgrid.move(coord1, coord2);
+        var unit = this.hexgrid.getUnit(coord2);
+        unit.setcd(CONSTANTS.cd);
 	};
 	
 	game_core_server.prototype.canAttack = function(coord1, coord2, player){
@@ -79,8 +84,12 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 		var myUnit = this.hexgrid.getUnit(coord1);
 		var theirUnit = this.hexgrid.getUnit(coord2);
 		if (myUnit.player == player.player && theirUnit && theirUnit.team != player.team)
-			if (this.hexgrid.hexDist(this.hexgrid.matrix[coord1.X][coord1.Y], this.hexgrid.matrix[coord2.X][coord2.Y]) <= myUnit.range)
-				return true;
+			if (this.hexgrid.hexDist(this.hexgrid.matrix[coord1.X][coord1.Y], this.hexgrid.matrix[coord2.X][coord2.Y]) <= myUnit.range) {
+				var now = new Date();
+                var time = now.getTime();
+                if ((time-myUnit.lastCooldownTime)/1000 >= CONSTANTS.cd)
+                    return true;
+            }
 		return false;
 	
 	};
@@ -95,7 +104,9 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 		if (unit1.hp <= 0) {  // unit 1 dies
 			responses.push(["1", "die", coord1.X, coord1.Y, unit1.type].join(" "));
 			this.units[unit1.team]--;
-		}
+		} else {
+            unit1.setcd(CONSTANTS.cd);
+        }
 		if (unit2.hp <= 0) {  // unit 2 dies
 			responses.push(["1", "die", coord2.X, coord2.Y, unit2.type].join(" "));
 			this.units[unit2.team]--;
@@ -255,7 +266,6 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 				if (this.canMove(coord1, coord2, client)) {
 					this.makeMove(coord1, coord2);  // move in our local game
                     var unit = this.hexgrid.getUnit(coord2);
-					unit.setcd(CONSTANTS.cd);
 					for (var i in this.players) {  // tell players the result of move
                         if (unit.player == i || !this.fogOn || unit.serverIsVisible)  // only works for 1v1
                             this.sendMsg(this.players[i], message + " " + CONSTANTS.cd);
@@ -271,9 +281,6 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 				var oppoCoord = new helper.Coordinate(parseInt(keywords[4]), parseInt(keywords[5]));
 				if (this.canAttack(myCoord, oppoCoord, client)) {
 					var responses = this.makeAttack(myCoord, oppoCoord);  // attack in our local game and get results
-					var unit = this.hexgrid.getUnit(myCoord);
-					if (unit)
-						unit.setcd(CONSTANTS.cd);
 					for (var i in this.players) {  // tell each player the result of attack
 						for (var j in responses)
 							this.sendMsg(this.players[i], responses[j]);
