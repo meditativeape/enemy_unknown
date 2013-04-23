@@ -442,7 +442,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				// starting msg
 				this.starting = true;
 				var self = this;
-				window.setTimeout(function(){
+				window.setInterval(function(){
 						self.starting = false;
 					}
 					,2000);
@@ -484,7 +484,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				break;
 			case "end":
 				if (this.countdownTimer){
-					window.clearInterval(this.countdownTimer);
+					window.clearTimeout(this.countdownTimer);
 				}
                 for (var i = 0; i < this.flags.length; i++) {
                     this.flags[i].setVisible(false);

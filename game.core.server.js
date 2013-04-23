@@ -468,8 +468,10 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
         // clear all intervals in terrains
         for(var x in this.hexgrid.matrix){ // brute force!
 			for(var y in this.hexgrid.matrix[x]){
-				if(this.hexgrid.matrix[x][y].interval){
-                    window.clearTimeout(this.hexgrid.matrix[x][y].interval);
+				if (this.hexgrid.matrix[x][y].interval) {
+                    window.clearInterval(this.hexgrid.matrix[x][y].interval);
+                } else if (this.hexgrid.matrix[x][y].countdown) {
+                    window.clearTimeout(this.hexgrid.matrix[x][y].countdown);
                 }
             }
         }
