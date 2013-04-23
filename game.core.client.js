@@ -248,7 +248,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		}
 		
 		// load sprites
-		this.background = load_image("sprites\\bg_grey.jpg");
+		this.background = load_image("sprites\\bg2.png");
         this.heartImg = load_image("sprites\\heart.png");
 		this.resourceImg = load_image("sprites\\resource.png");
 		this.flagImg = load_image("sprites\\tile-flag.png");
@@ -1084,8 +1084,8 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		// initialize game instance
 		var scenario = Scenarios[this.mapName];
         this.fogOn = scenario.fog;
-		this.camera = new BuildCamera([scenario.size.x + scenario.offset*2, scenario.size.y], 15, this.background, mapLayer);
-		this.minimap = new BuildMiniMap(this.camera, [scenario.size.x + scenario.offset*2, scenario.size.y], CONSTANTS.minimapWidth, this.background, UILayer, stage);
+		this.camera = new BuildCamera([scenario.size.x, scenario.size.y], 15, this.background, mapLayer);
+		this.minimap = new BuildMiniMap(this.camera, [scenario.size.x, scenario.size.y], CONSTANTS.minimapWidth, this.background, UILayer, stage);
 		this.hexgrid = new BuildMap(this.mapName, this.camera, mapLayer, clickCallback, this.fogOn, this.fogImg);
 		
 		// initialize terrain
