@@ -1,3 +1,4 @@
+
 // JavaScript Document
 var waiting = function(){
 	if(!started){
@@ -35,6 +36,7 @@ var gameEnded = function(/*boolean*/winner){
 	}else{
 		loseMenu.style.visibility = "visible";
 	}
+	mobileEndGame(winner);
 }
 
 var start = function(){
