@@ -34,30 +34,14 @@ String.prototype.format = function (args) {
 };
 String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 
-/**
- * Record on server side whether a unit is visible to the opponent.
- * WORK FOR 1 VS 1 ONLY!
- */
-Unit.prototype.serverIsVisible = false;
 
-/**
- * Setter for Unit.serverIsVisible.
- * Returns true if this unit becomes visible; returns false otherwise.
- */
-Unit.prototype.setServerIsVisible = function(/*boolean*/ isVisible) {
-	var old = this.serverIsVisible;
-	this.serverIsVisible = isVisible;
-	if (!old && isVisible)
-		return true;
-	else
-		return false;
-}
+
+
 
 /**
  * The main game server object.
  */
 var GameServer = function(/*int[]*/ playerList, /*int*/ gameid, /*int*/ type, /*String*/ scenario){
-
 	// Store the players
 	this.players = playerList;
 	// Store the number of units for each team;

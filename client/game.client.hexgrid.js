@@ -12,19 +12,7 @@ var GameClientHexgrid = function() {
 	this.viewables = [];
 }
 
-/**
- * Constructor for client hexgrid.
- */ 
-GameClientHexgrid.prototype.convertToClientHexagon = function(){
-	for(var i in this.matrix){
-		for(var j in this.matrix[i]){
-			var hexagon = this.matrix[i][j];
-			var clientHexagon = new GameClientHexgrid();
-			clientHexagon.prototype = hexagon;
-			this.matrix[i][j] = clientHexagon;
-		}
-	}
-}
+
 
 /**
  * Mark reachable locations from coord.
@@ -232,4 +220,18 @@ var ClientHexagon = function(){
 	this.viewable = false;
 	this.opacity = 1;
 	this.pastViewable = false;
+}
+
+/**
+ * Convert all regular hexagons in hexgrid to client hexagons.
+ */ 
+var convertToClientHexagon = function(/*hexgrid*/ hexgrid){
+	for(var i in hexgrid.matrix){
+		for(var j in hexgrid.matrix[i]){
+			var hexagon = hexgrid.matrix[i][j];
+			var clientHexagon = new GameClientHexgrid();
+			clientHexagon.prototype = hexagon;
+			hexgrid.matrix[i][j] = clientHexagon;
+		}
+	}
 }
