@@ -3,18 +3,10 @@
  */
  
 /**
- * Choose a scenario and start game.
+ * Call asyncMobileStartGame asynchronously.
  */
 var mobileStartGame = function(/*String*/ scenario){
-	if(!started){
-		var typSelection = "0";
-		gc.load_assets(senSelection,parseInt(typSelection));
-		started = true;
-		waitingScreen.style.visibility = "visible";	
-		startMenu.style.visibility = "hidden";
-		loseMenu.style.visibility = "hidden";
-		winMenu.style.visibility = "hidden";
-	}
+	setTimeout(asyncMobileStartGame(scenario), 0);
 }
 
 /**
@@ -22,4 +14,20 @@ var mobileStartGame = function(/*String*/ scenario){
  */
 var mobileEndGame = function(/*boolean*/ winner){
 	ObjectiveCCall("endGame", [winner]);
+}
+
+/**
+ * Choose a scenario and start game.
+ */
+var asyncMobileStartGame = function(/*String*/ scenario){
+	if(!started){
+		var typSelection = "0";
+		waitingScreen.style.visibility = "visible";	
+		startMenu.style.visibility = "hidden";
+		loseMenu.style.visibility = "hidden";
+		winMenu.style.visibility = "hidden";
+		gc.load_assets(scenario,parseInt(typSelection));
+		ObjectiveCCall("alert", []);
+		started = true;
+	}
 }
