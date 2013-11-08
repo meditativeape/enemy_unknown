@@ -1,0 +1,29 @@
+1.  Indentation size is 4 spaces, or a tab. The outmost functions and classes should align with the
+    leftmost column.
+    
+2.  Comments at the start of a function or class should be written like this:
+    /**
+     * This is a comment.
+     */
+    Comments inside a function or class should be written like this:
+    // This is a comment.
+    // It spans 2 lines.
+
+3.  The length of a line is unlimited, which means a very long statement does not need to split into multiple lines.
+    We can use "word wrap" functionality provided by text editors to read long statements more easily.
+
+4.  To improve the readability, spaces are used in the following way:
+    --- There are no spaces after function names.
+    --- Commas have a space after them.
+    --- There are no spaces after `(' or `[' or preceding `]' or `)' characters.
+        error = function(a1, a2);
+        if (error != 0)
+            exit(error);
+    --- Unary operators do not require spaces, but binary operators do.
+        a = b->c[0] + ~d == (e || f) || g && h ? i : j >> 1;
+    --- There is a space after keywords (if, while, for, return, switch).
+
+5.  Variables are named in Java style, i.e. nameMeLikeThis, not Python style, i.e. do_not_name_me_like_this.
+
+6.  Opening braces go on the same line as the keyword (if, else, while, for, switch, or function definition).
+    Do NOT put it on a line by itself.
