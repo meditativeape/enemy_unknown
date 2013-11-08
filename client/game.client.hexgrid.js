@@ -5,26 +5,13 @@
 /**
  * Constructor for client hexgrid.
  */ 
-var GameClientHexgrid = function() {
+var GameClientHexgrid = function(/*hexgrid*/ hexgrid) {
 	this.reachables = [];
 	this.attackables = [];
 	this.buildables = [];
 	this.viewables = [];
 }
-
-/**
- * Constructor for client hexgrid.
- */ 
-GameClientHexgrid.prototype.convertToClientHexagon = function(){
-	for(var i in this.matrix){
-		for(var j in this.matrix[i]){
-			var hexagon = this.matrix[i][j];
-			var clientHexagon = new GameClientHexgrid();
-			clientHexagon.prototype = hexagon;
-			this.matrix[i][j] = clientHexagon;
-		}
-	}
-}
+GameClientHexgrid.prototype = new Hexgrid;
 
 /**
  * Mark reachable locations from coord.
@@ -224,12 +211,3 @@ GameClientHexgrid.prototype.clearViewables = function(){
 	}
 	this.viewables = [];
 };
-
-var ClientHexagon = function(){
-	this.reachable = false;
-	this.attackable = false;
-	this.buildable = false;
-	this.viewable = false;
-	this.opacity = 1;
-	this.pastViewable = false;
-}

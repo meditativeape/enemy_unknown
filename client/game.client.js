@@ -1,11 +1,18 @@
-/* Client-side code. */
+/** 
+ * Client-side code. 
+ */
+ 
+/**
+ * Constants
+ */
+CONSTANTS.width = 800;
+CONSTANTS.height = 600;
 
-
-/* The gameClient class. */
-var gameClient = function() {
-	this.last_click_coord = null;	
-	this.camera = null;
-	this.minimap = null;
+/**
+ * The GameClient constructor. 
+ */
+var GameClient = function() {
+	this.lastClickCoord = null;	
 	this.hexgrid = null;
 	this.started = false;
 	this.player = 0;
@@ -26,24 +33,24 @@ var gameClient = function() {
 	this.vampireKO = false;
 	this.gcUI = null;
 	this.gcSound = null;
-	//TODO
-	var me = this;
+    this.scenario = null;
 }
 
 /**
  * Load UI and sound assets.
  */
-gameClient.prototype.load_assets = function(/*string*/ scenario,/*int*/type ) {
-	this.gcUI =  new gameClientUI();
+GameClient.prototype.loadAssets = function(/*string*/ scenario) {
+    this.scenario = scenario;
+	this.gcUI = new GameClientUI(this, scenario);
 	gcUI.loadImage();
-	this.gcSound = new gameClientSounds();
+	this.gcSound = new GameClientSounds();
 	gcSound.loadSound();
 };
 
 /**
  * Handle message from server.
  */
-gameClient.prototype.onnetmessage = function(data){
+GameClient.prototype.onnetmessage = function(data){
 	var keywords = data.split(" ");
 	var msgType = parseInt(keywords[0]);
 	switch (msgType) {	
@@ -114,7 +121,7 @@ gameClient.prototype.onnetmessage = function(data){
 				this.countdown = CONSTANTS.countdown;
 				this.winner = parseInt(keywords[2]);
 				this.alive = false;
-				this.last_click_coord = null;
+				this.lastClickCoord = null;
 				this.started = false;
 				this.countdownTimer = null;
 				this.resource = 0;
@@ -265,8 +272,8 @@ gameClient.prototype.onnetmessage = function(data){
 			case "die":
 				this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece.type = parseInt(keywords[4]);
 				// this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece.die();
-				if (this.last_click_coord && this.last_click_coord.X == parseInt(keywords[2]) && this.last_click_coord.Y == parseInt(keywords[3])){
-					this.last_click_coord = null;
+				if (this.lastClickCoord && this.lastClickCoord.X == parseInt(keywords[2]) && this.lastClickCoord.Y == parseInt(keywords[3])){
+					this.lastClickCoord = null;
 				}
 				if (this.guess && this.guess.X == parseInt(keywords[2]) && this.guess == parseInt(keywords[3])){
 					this.hexgrid.matrix[gc.guess.X][gc.guess.Y].guessing = false;
@@ -306,22 +313,19 @@ gameClient.prototype.onnetmessage = function(data){
 		}
 	};
 
-gameClient.prototype.connecting = function(data){
+GameClient.prototype.connecting = function(data){
 	//TODO
 };
 
-gameClient.prototype.ondisconnect = function(data){ 
+GameClient.prototype.ondisconnect = function(data){ 
 	//TODO
 };
 
-gameClient.prototype.onconnected = function(data){
+GameClient.prototype.onconnected = function(data){
 	//TODO
 };
 	
-
-	
-	
-gameClient.prototype.newSocket = function (){
+GameClient.prototype.newSocket = function (){
 	//Store a local reference to our connection to the server
 	this.mainSocket = io.connect();
 	//When we connect, we are not 'connected' until we have a server id
@@ -335,416 +339,35 @@ gameClient.prototype.newSocket = function (){
 	this.mainSocket.on('message', this.onnetmessage.bind(this));
 }
 	
-	gameClient.prototype.updateRA = function(){
-		this.hexgrid.clientClearReachable();
-		this.hexgrid.clientClearAttackable();
-		if(this.last_click_coord){
-			if(this.hexgrid.getUnit(this.last_click_coord)){
-				this.hexgrid.clientMarkReachable(this.last_click_coord);
-				this.hexgrid.clientMarkAttackable(this.last_click_coord);
-			}
-		}
-	}; 
+GameClient.prototype.updateRA = function(){
+    this.hexgrid.clientClearReachable();
+    this.hexgrid.clientClearAttackable();
+    if(this.lastClickCoord){
+        if(this.hexgrid.getUnit(this.lastClickCoord)){
+            this.hexgrid.clientMarkReachable(this.lastClickCoord);
+            this.hexgrid.clientMarkAttackable(this.lastClickCoord);
+        }
+    }
+}; 
 	
-gameClient.prototype.joinGame = function(/*string*/scenario ,/*int*/ type){  //Server connection functionality..
+GameClient.prototype.joinGame = function(/*string*/ scenario, /*int*/ type){  //Server connection functionality..
 	this.mainSocket.send('0 join '+ type + ' '+ scenario);
 };
 
-gameClient.prototype.initGame = function(){	
-	// animation to show text message at the center of canvas
-	var me = this;
-	var centerMsg = new Kinetic.Text({
-		text: "Waiting for other players...",
-		x: 80,
-		y: 260,
-		fill: 'rgba(127, 155, 0, 0.5)',
-		fontFamily: 'Calibri',
-		fontSize: 60,
-		fontStyle: 'italic'
-	});
-	msgLayer.add(centerMsg);
-	this.msgLayerAnim = new Kinetic.Animation(function(frame) {
-			if (me.started) {
-				if (me.starting){
-					centerMsg.setText("Game has started");
-					centerMsg.setFill('white');
-					centerMsg.setX(CONSTANTS.width/4);
-					centerMsg.setY(CONSTANTS.height/2);
-					centerMsg.setFontSize(60);
-					centerMsg.setFontStyle('normal');
-					centerMsg.setFontFamily('Calibri');
-					// ctx.font = '30px Calibri';	
-					// ctx.fillText("Objective: Kill all enemy units.", canvas.width/4 + 60, canvas.height/2 + 60);
-					if (!msgLayer.isAncestorOf(centerMsg)) {
-						msgLayer.add(centerMsg);
-					}
-				} else if ((me.capping == -1) && (me.countdown <= 30)){  // TODO: hardcoded!
-					// if (me.capping == 1){
-						// centerMsg.setText("Capturing flag: " + me.countdown + " seconds until win.");
-						// centerMsg.setFill('white');
-						// centerMsg.setX(200);
-						// centerMsg.setY(50);
-						// centerMsg.setFontSize(28);
-						// centerMsg.setFontStyle('normal');
-						// centerMsg.setFontFamily('Calibri');
-						// if (!msgLayer.isAncestorOf(centerMsg)) {
-							// msgLayer.add(centerMsg);
-						// }
-					// } else {
-						centerMsg.setText("Defend flag: " + me.countdown + " seconds until lose!");
-						centerMsg.setFill('red');
-						centerMsg.setX(210);
-						centerMsg.setY(50);
-						centerMsg.setFontSize(28);
-						centerMsg.setFontStyle('normal');
-						centerMsg.setFontFamily('Calibri');
-						if (!msgLayer.isAncestorOf(centerMsg)) {
-							msgLayer.add(centerMsg);
-						}
-					// }
-				} else if (!me.alive && me.winner === false){
-					centerMsg.setText("All your units are dead!");
-					centerMsg.setFill('white');
-					centerMsg.setX(CONSTANTS.width/4);
-					centerMsg.setY(CONSTANTS.height/2);
-					centerMsg.setFontSize(60);
-					centerMsg.setFontStyle('normal');
-					centerMsg.setFontFamily('Calibri');
-					if (!msgLayer.isAncestorOf(centerMsg)) {
-						msgLayer.add(centerMsg);
-					}
-				} else {
-					if (msgLayer.isAncestorOf(centerMsg)) {
-						centerMsg.remove();
-					}
-				}
-			}
-		}, msgLayer);
-		this.msgLayerAnim.start();
-        
-        // topbar
-        this.topbar = new Kinetic.Image({
-            x: CONSTANTS.minimapWidth,
-            y: 0,
-            image: this.topbarImgs[this.team],
-            listening: false
-        });
-        UILayer.add(this.topbar);
-        
-        // unit counter
-        var counter1Text = new Kinetic.Text({
-            fontFamily: "Courier New",
-            fontSize: 15,
-            fill: "white",
-            text: this.unitCounter[1-this.team],
-            x: 248,
-            y: 8,
-            listening: false
-        });
-		UILayer.add(counter1Text);
-        var counter2Text = new Kinetic.Text({
-            fontFamily: "Courier New",
-            fontSize: 15,
-            fill: "white",
-            text: this.unitCounter[this.team],
-            x: 328,
-            y: 8,
-            listening: false
-        });
-		UILayer.add(counter2Text);
-        
-        // resource text
-        var resourceText = new Kinetic.Text({
-            fontFamily: "Courier New",
-            fontSize: 15,
-            fill: "white",
-            text: this.resource,
-            x: 402,
-            y: 8,
-            listening: false
-        });
-        UILayer.add(resourceText);
-        
-        // flags
-        for (var i = 0; i < this.flagImgs.length; i++) {
-            this.flags.push(new Kinetic.Image({
-                image: this.flagImgs[i],
-                x: 448,
-                y: 5,
-                visible: false,
-                listening: false
-            }));
-            UILayer.add(this.flags[i]);
-            this.flags[i].moveToTop();
-        }
-        
-        var flagText = new Kinetic.Text({
-            fontFamily: "Courier New",
-            fontSize: 15,
-            fill: "white",
-            text: CONSTANTS.countdown-this.countdown + "/" + CONSTANTS.countdown,
-            x: 475,
-            y: 8,
-            listening: false
-        });
-        UILayer.add(flagText);
-        
-        // button bar
-        this.buttonbar = new Kinetic.Image({
-            x: CONSTANTS.minimapWidth + this.topbar.getWidth(),
-            y: 0,
-            image: this.buttonbarImg,
-            listening: false
-        });
-        UILayer.add(this.buttonbar);
-        
-        // buttons
-        this.buttons.build = new Kinetic.Image({
-            x: 572,
-            y: 4,
-            image: this.buttonImgs.unlit.build,
-            listening: true
-        });
-        this.buttons.build.on('mouseover', function(){
-            me.buttons.build.setImage(me.buttonImgs.lit.build);
-            document.body.style.cursor = "pointer";
-        });
-        this.buttons.build.on('mouseout', function(){
-            me.buttons.build.setImage(me.buttonImgs.unlit.build);
-            document.body.style.cursor = "auto";
-        });
-        this.buttons.build.on('click', function(){
-            if (!me.buildUnitGroup.getVisible()) {
-                me.build = true;
-				me.toBuild = null;
-				me.hexgrid.clientClearReachable();
-				me.hexgrid.clientClearAttackable();
-				me.hexgrid.clientClearBuildable();
-                me.buildUnitGroup.setVisible(true);
-            } else {
-                me.buildUnitGroup.setVisible(false);
-                me.build = false;
-            }
-        });
-        UILayer.add(this.buttons.build);
-        
-        this.buttons.menu = new Kinetic.Image({
-            x: 602,
-            y: 4,
-            image: this.buttonImgs.unlit.menu,
-            listening: true
-        });
-        this.buttons.menu.on('mouseover', function(){
-            me.buttons.menu.setImage(me.buttonImgs.lit.menu);
-            document.body.style.cursor = "pointer";
-        });
-        this.buttons.menu.on('mouseout', function(){
-            me.buttons.menu.setImage(me.buttonImgs.unlit.menu);
-            document.body.style.cursor = "auto";
-        });
-        this.buttons.menu.on('click', function(){
-            // click event listener goes here
-            alert("clicked!");
-        });
-        UILayer.add(this.buttons.menu);
-        
-        this.buttons.sound = new Kinetic.Image({
-            x: 630,
-            y: 4,
-            image: this.buttonImgs.unlit.sound,
-            listening: true
-        });
-        if (!this.soundOn) {
-            this.buttons.sound.setImage(this.buttonImgs.unlit.mute);
-        }
-        this.buttons.sound.on('mouseover', function(){
-            if (me.soundOn) {
-                me.buttons.sound.setImage(me.buttonImgs.lit.sound);
-            } else {
-                me.buttons.sound.setImage(me.buttonImgs.lit.mute);
-            }
-            document.body.style.cursor = "pointer";
-        });
-        this.buttons.sound.on('mouseout', function(){
-            if (me.soundOn) {
-                me.buttons.sound.setImage(me.buttonImgs.unlit.sound);
-            } else {
-                me.buttons.sound.setImage(me.buttonImgs.unlit.mute);
-            }
-            document.body.style.cursor = "auto";
-        });
-        this.buttons.sound.on('click', function(){
-            if (me.soundOn) {
-                me.soundOn = false;
-                me.buttons.sound.setImage(me.buttonImgs.lit.mute);
-            } else {
-                me.soundOn = true;
-                me.buttons.sound.setImage(me.buttonImgs.lit.sound);
-            }
-        });
-        UILayer.add(this.buttons.sound);
-        
-        // build unit image
-        var buildUnitGroup = new Kinetic.Group({
-            visible: false,
-        });
-        this.buildUnitGroup = buildUnitGroup;
-        buildUnitGroup.add(new Kinetic.Image({
-            image: this.buildUnitImgs.frame,
-            x: 572,
-            y: 40
-        }));
-        for (var i = 0; i < 5; i++) {
-            this.buildUnit[i] = new Kinetic.Image({
-                image: this.buildUnitImgs.unavailable[i],
-                x: 573,
-                y: 60+31*i
-            });
-            this.buildUnit[i].available = false;
-            this.buildUnit[i].on('mouseover', function(temp) {
-                return function(){
-                    if (me.buildUnit[temp].available) {
-                        me.buildUnit[temp].setImage(me.buildUnitImgs.lit[temp]);
-                        document.body.style.cursor = "pointer";
-                    }
-                }
-            }(i));
-            this.buildUnit[i].on('mouseout', function(temp) {
-                return function(){
-                    if (me.buildUnit[temp].available) {
-                        me.buildUnit[temp].setImage(me.buildUnitImgs.unlit[temp]);
-                        document.body.style.cursor = "auto";
-                    }
-                }
-            }(i));
-            this.buildUnit[i].on('click', function(temp) {
-                return function(){
-                    if (me.buildUnit[temp].available) {
-                        me.toBuild = temp;
-                        me.hexgrid.clientMarkBuildable(me.player);
-                    }
-                }
-            }(i));
-            buildUnitGroup.add(this.buildUnit[i]);
-        }
-        UILayer.add(buildUnitGroup);
-        
-        this.UILayerAnim = new Kinetic.Animation(function(frame) {
-            counter1Text.setText(me.unitCounter[1-me.team]);
-            counter2Text.setText(me.unitCounter[me.team]);
-            resourceText.setText(me.resource);
-            flagText.setText(CONSTANTS.countdown-me.countdown + "/" + CONSTANTS.countdown);
-        }, UILayer);
-        this.UILayerAnim.start();
-	
-		// callback function for click events on a hexagon
-		var clickCallback = function(coord, event){
-		
-			if (!gc.alive) {
-				return;
-			}
-            
-            if (event.which == 3) {  // trigger right click event
-                gc.contextmenu(event);
-            }
-			
-			var unitplayer = -1;
-			if (gc.hexgrid.getUnit(coord)==null) {
-				if(!(gc.toBuild===null)){
-					gc.mainSocket.send('1 build ' + gc.toBuild + ' ' + coord.X +' ' + coord.Y);
-				}
-				gc.build = false;
-				gc.toBuild = null;
-				gc.hexgrid.clientClearBuildable();
-                gc.buildUnitGroup.setVisible(false);
-			}else{
-				unitplayer = gc.hexgrid.getUnit(coord).player;
-			}
-			
-			var isReachable = gc.hexgrid.isReachable(coord);
-			var isAttackable = gc.hexgrid.isAttackable(coord);
-			if(gc.guess){
-				gc.hexgrid.matrix[gc.guess.X][gc.guess.Y].guessing = false;
-			}
-			gc.guess = null;
-			// some unit has been selected, and some hexagon without this player's unit has been clicked
-			if (gc.last_click_coord && (unitplayer != gc.player)) {
-				if (isReachable) {  // Move unit
-					gc.mainSocket.send('1 move ' + gc.last_click_coord.X +' ' + gc.last_click_coord.Y + ' ' + coord.X +' ' + coord.Y);
-				} else if (isAttackable) {  // Attack unit
-					gc.mainSocket.send('1 attack ' + gc.last_click_coord.X +' ' + gc.last_click_coord.Y + ' ' + coord.X + ' ' + coord.Y);
-				}
-				gc.hexgrid.clientClearReachable();
-				gc.hexgrid.clientClearAttackable();
-				gc.hexgrid.clientClearBuildable();
-				gc.last_click_coord = null;
-				gc.build = false;
-				gc.toBuild = null;
-			}
-	
-			// some hexagon with this player's unit has been clicked, select that unit
-			else if (unitplayer == gc.player) {
-				gc.hexgrid.clientClearReachable();
-				gc.hexgrid.clientClearAttackable();
-				if (gc.hexgrid.getUnit(coord).cooldown<=0) {
-					gc.last_click_coord = coord;
-					gc.hexgrid.clientMarkReachable(coord);
-					gc.hexgrid.clientMarkAttackable(coord,coord);
-				}
-				gc.build = false;
-				gc.toBuild = null;
-				gc.hexgrid.clientClearBuildable();
-			}else{
-				if(gc.hexgrid.getUnit(coord)){
-					gc.guess = coord;
-					gc.hexgrid.matrix[coord.X][coord.Y].guessing = true;
-				}
-				gc.build = false;
-				gc.toBuild = null;
-				gc.hexgrid.clientClearBuildable();
-			}
-		};
-		
-		// initialize game instance
-		var scenario = Scenarios[this.mapName];
-        this.fogOn = scenario.fog;
-		this.camera = new BuildCamera([scenario.size.x + scenario.offset*2, scenario.size.y], 15, this.background, mapLayer);
-		this.minimap = new BuildMiniMap(this.camera, [scenario.size.x + scenario.offset*2, scenario.size.y], CONSTANTS.minimapWidth, this.background, UILayer, stage);
-		this.hexgrid = new BuildMap(this.mapName, this.camera, mapLayer, clickCallback, this.fogOn, this.fogImg);
-		
-		// initialize terrain
-		var terrain = scenario.terrain;
-		for (var i = 0; i < terrain.length; i++)
-			for (var j = 0; j < terrain[i].length; j++) {
-				switch (terrain[i][j]) {
-				case "thron":
-					this.hexgrid.addTerrain(CONSTANTS.thronTerrain, new Coordinate(i, j));
-					break;
-				case "resource":
-					this.hexgrid.addTerrain(CONSTANTS.resourceTerrain, new Coordinate(i, j));
-					break;
-				case "flag":
-					this.hexgrid.addTerrain(CONSTANTS.flagTerrain, new Coordinate(i, j));
-					break;
-				}
-			}
-		
-		// draw the game
-		stage.add(mapLayer);
-		stage.add(UILayer);
-		stage.add(msgLayer);
-	};
+GameClient.prototype.initGame = function(){
+    this.fogOn = this.scenario.fog;
+    this.gcUI.initGameUI();  // init game UI
+    // TODO: initialize hexgrid
+};
     
-    gameClient.prototype.updateUnitAvailability = function() {
-        for (var i = 0; i < 5; i++) {
-            if (this.resource >= CONSTANTS.cost[i]) {
-                this.buildUnit[i].available = true;
-                this.buildUnit[i].setImage(this.buildUnitImgs.unlit[i]);
-            } else {
-                this.buildUnit[i].available = false;
-                this.buildUnit[i].setImage(this.buildUnitImgs.unavailable[i]);
-            }
+GameClient.prototype.updateUnitAvailability = function() {
+    for (var i = 0; i < 5; i++) {
+        if (this.resource >= CONSTANTS.cost[i]) {
+            this.buildUnit[i].available = true;
+            this.buildUnit[i].setImage(this.buildUnitImgs.unlit[i]);
+        } else {
+            this.buildUnit[i].available = false;
+            this.buildUnit[i].setImage(this.buildUnitImgs.unavailable[i]);
         }
     }
-
-var gc = new gameClient();
+}
