@@ -124,8 +124,8 @@ var BuildCamera = function(mapSize, movingSpeed, img, layer) {
     
     this.movePos = function(/*Point*/ p1, /*Point*/ p2){
         var pos = new Point(me.x, me.y);
-        pos.X += p2.X - p1.X;
-        pos.Y += p2.Y - p1.Y;
+        pos.X -= p2.X - p1.X;
+        pos.Y -= p2.Y - p1.Y;
         me.setPos(pos);
     };
     

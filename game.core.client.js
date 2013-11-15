@@ -62,8 +62,18 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
         this.unitCounter = [0, 0];
 		this.newSocket();
 		this.vampireKO = false;
+        this.touchmoveCounter = 0; // dirty hack!
 		var me = this;
 		var mousemove = function(event) {  // mouse move event listener
+            console.log("mousemove trigger! counter = " + me.touchmoveCounter);
+            if (me.touchmoveCounter > 0) {
+                me.camera.isMovingLeft = false;
+                me.camera.isMovingRight = false;
+                me.camera.isMovingUp = false;
+                me.camera.isMovingDown = false;
+                me.touchmoveCounter = 0;
+                return;
+            }
 			var x = event.pageX;
 			var y = event.pageY;
 			var offsetLeft = stage.getContainer().offsetLeft;
@@ -89,7 +99,11 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				me.camera.isMovingDown = false;
 			}
 		};
+        var touchmove = function(event){
+            me.touchmoveCounter++;
+        };
 		document.addEventListener("mousemove", mousemove);
+        document.addEventListener("touchmove", touchmove);
 		
 		var contextmenu = function(event) { // right click event listener
 			var x = event.pageX;
