@@ -916,6 +916,19 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
                 me.build = false;
             }
         });
+		this.buttons.build.on('touchend', function(){
+            if (!me.buildUnitGroup.getVisible()) {
+                me.build = true;
+				me.toBuild = null;
+				me.hexgrid.clientClearReachable();
+				me.hexgrid.clientClearAttackable();
+				me.hexgrid.clientClearBuildable();
+                me.buildUnitGroup.setVisible(true);
+            } else {
+                me.buildUnitGroup.setVisible(false);
+                me.build = false;
+            }
+        });
         UILayer.add(this.buttons.build);
         
         this.buttons.menu = new Kinetic.Image({
@@ -964,6 +977,15 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
             document.body.style.cursor = "auto";
         });
         this.buttons.sound.on('click', function(){
+            if (me.soundOn) {
+                me.soundOn = false;
+                me.buttons.sound.setImage(me.buttonImgs.lit.mute);
+            } else {
+                me.soundOn = true;
+                me.buttons.sound.setImage(me.buttonImgs.lit.sound);
+            }
+        });
+		this.buttons.sound.on('touchend', function(){
             if (me.soundOn) {
                 me.soundOn = false;
                 me.buttons.sound.setImage(me.buttonImgs.lit.mute);
