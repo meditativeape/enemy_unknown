@@ -23,6 +23,8 @@ var BuildCamera = function(mapSize, movingSpeed, img, layer) {
 	this.isMovingRight = false;
 	this.isMovingUp = false;
 	this.isMovingDown = false;
+    this.dragged = false;
+    this.lastTouchCoord = null;
 	
 	// add background image
 	var bg = new Kinetic.Image({
@@ -54,6 +56,27 @@ var BuildCamera = function(mapSize, movingSpeed, img, layer) {
 	}, layer);
 	this.anime.start();
 	
+    // add drag support for mobile devices
+    // should be moved to UI class
+    bg.on('touchstart', function(event){
+        // If this is a one-finger touch
+        if (event.targetTouches.length == 1) {
+            var touch = event.targetTouches[0];
+            me.lastTouchCoord = new Point(touch.pageX, touch.pageY);
+            me.dragged = false;
+        }
+    });
+    bg.on('touchmove', function(event){
+        // If this is a one-finger touch
+        if (event.targetTouches.length == 1) {
+            var touch = event.targetTouches[0];
+            var currTouchCoord = new Point(touch.pageX, touch.pageY);
+            me.movePos(me.lastTouchCoord, currTouchCoord);
+            me.lastTouchCoord = currTouchCoord;
+            me.dragged = true;
+        }
+    });
+    
 	// methods
 	this.stop = function(){
 		if (this.anime) {
@@ -72,6 +95,7 @@ var BuildCamera = function(mapSize, movingSpeed, img, layer) {
 			newY = this.mapSize[1] - CONSTANTS.height;
 		this.x = newX;
 		this.y = newY;
+        console.log("Set position to (" + this.x + ", " + this.y + ")");
 	};
 	
 	this.moveLeft = function(){
@@ -97,4 +121,21 @@ var BuildCamera = function(mapSize, movingSpeed, img, layer) {
 		if (i + CONSTANTS.height <= me.mapSize[1])
 			me.y = i;
 	};
+    
+    this.movePos = function(/*Point*/ p1, /*Point*/ p2){
+        var pos = new Point(me.x, me.y);
+        pos.X += p2.X - p1.X;
+        pos.Y += p2.Y - p1.Y;
+        me.setPos(pos);
+    };
+    
+    this.touchstart = function(event){
+        console.log("Fire touchstart");
+        bg.fire('touchstart', event);
+    };
+    
+    this.touchmove = function(event){
+        console.log("Fire touchmove");
+        bg.fire('touchmove', event);
+    };
 };

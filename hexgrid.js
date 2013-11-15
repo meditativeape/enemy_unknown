@@ -442,7 +442,14 @@ function Hexagon(id, mx, my, x, y, spec, camera, map, callback, fogOn, fogImg) {
         // register event listener
         var me = this;
 		if (this.callback) {
-			this.hexagonToDraw.on('click tap', function(event){
+            this.hexagonToDraw.on('touchstart', function(event){
+               	camera.dragged = false;
+			});
+            this.hexagonToDraw.on('touchend', function(event){
+                if (camera.dragged) return;
+               	me.callback(new Coordinate(me.matrixx, me.matrixy), event);
+			});
+			this.hexagonToDraw.on('click', function(event){
                	me.callback(new Coordinate(me.matrixx, me.matrixy), event);
 			});
 		}

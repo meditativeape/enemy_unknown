@@ -12,8 +12,8 @@
  **/
  
  var BuildMiniMap = function(camera, mapSize, width, img, layer, stage){
-	
-	var me = this;
+    
+    var me = this;
 	
 	// fields
 	this.camera = camera;
@@ -64,8 +64,7 @@
 		cameraBox.setY(Math.floor(camera.y*me.height/me.mapSize[1]));
 	}, layer);
 	this.anime.start();
-
-	
+    
 	this.stop = function(){
 		if (this.anime) {
 			this.anime.stop();
@@ -122,10 +121,22 @@
 			}
 	};
 	
-	bg.on('click', function(event){
+    bg.on('touchstart', function(event){
+        camera.dragged = false;
+    });
+    
+	bg.on('click touchend', function(event){
 		var bgxy = bg.getAbsolutePosition();
-		var x = event.pageX - stage.getContainer().offsetLeft - bgxy.x;
-		var y = event.pageY - stage.getContainer().offsetTop - bgxy.y;
+        var x, y;
+        if (event.pageX) {  // click event
+            x = event.pageX - stage.getContainer().offsetLeft - bgxy.x;
+            y = event.pageY - stage.getContainer().offsetTop - bgxy.y;
+        } else {  // touch event
+            if (camera.dragged) return;
+            var touch = event.changedTouches[0];
+            x = touch.pageX - stage.getContainer().offsetLeft - bgxy.x;
+            y = touch.pageY - stage.getContainer().offsetTop - bgxy.y;
+        }
 		var mapX = x/me.width*me.mapSize[0] - CONSTANTS.width/2;
 		var mapY = y/me.height*me.mapSize[1] - CONSTANTS.height/2;
 		me.camera.setPos(new Point(mapX, mapY));

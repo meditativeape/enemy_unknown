@@ -1105,6 +1105,20 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				}
 			}
 		
+        // MapLayer and UILayer delegate touchstart and touchmove to camera
+        mapLayer.on('touchstart', function(event){
+            me.camera.touchstart(event);
+        });
+        mapLayer.on('touchmove', function(event){
+            me.camera.touchmove(event);
+        });
+        UILayer.on('touchstart', function(event){
+            me.camera.touchstart(event);
+        });
+        UILayer.on('touchmove', function(event){
+            me.camera.touchmove(event);
+        });
+        
 		// draw the game
 		stage.add(mapLayer);
 		stage.add(UILayer);
