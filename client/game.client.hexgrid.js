@@ -5,17 +5,17 @@
 /**
  * Constructor for client hexgrid.
  */ 
-var GameClientHexgrid = function(/*hexgrid*/ hexgrid) {
+var ClientHexgrid = function(/*hexgrid*/ hexgrid) {
 	this.reachables = [];
 	this.attackables = [];
 	this.buildables = [];
 	this.viewables = [];
-}
+};
 
 /**
  * Mark reachable locations from coord.
  */
-GameClientHexgrid.prototype.markReachable = function(/*Coordinate*/coord){
+ClientHexgrid.prototype.markReachable = function(/*Coordinate*/coord){
 	var selectedHex = this.matrix[coord.X][coord.Y];
 	xs = [coord.X-1, coord.X, coord.X+1, coord.X-2, coord.X+2];
 	ys = [coord.Y, coord.Y+1, coord.Y-1, coord.Y-2,coord.Y+2];
@@ -43,7 +43,7 @@ GameClientHexgrid.prototype.markReachable = function(/*Coordinate*/coord){
 /**
  * Mark attachable locations from coord.
  */
-GameClientHexgrid.prototype.markAttackable = function(/*Coordinate*/coord){
+ClientHexgrid.prototype.markAttackable = function(/*Coordinate*/coord){
 	var selectedHex = this.matrix[coord.X][coord.Y];
 	xs = [coord.X-1, coord.X, coord.X+1, coord.X-2, coord.X+2];
 	ys = [coord.Y, coord.Y+1, coord.Y-1, coord.Y-2,coord.Y+2];
@@ -66,7 +66,7 @@ GameClientHexgrid.prototype.markAttackable = function(/*Coordinate*/coord){
 /**
  * Mark buildable locations for player.
  */
-GameClientHexgrid.prototype.markBuildable = function(/*int*/ player){
+ClientHexgrid.prototype.markBuildable = function(/*int*/ player){
 	for(var x in this.matrix){ // brute force!
 		for(var y in this.matrix[x]){
 			if(this.matrix[x][y].piece && this.matrix[x][y].piece.player == player){
@@ -93,7 +93,7 @@ GameClientHexgrid.prototype.markBuildable = function(/*int*/ player){
 /**
  * Mark hexagons that should be displayed for team.
  */
-GameClientHexgrid.prototype.markViewable = function(/*int*/team){
+ClientHexgrid.prototype.markViewable = function(/*int*/team){
 	for(var x in this.matrix){ // brute force!
 		for(var y in this.matrix[x]){
 			if(this.matrix[x][y].piece){
@@ -129,7 +129,7 @@ GameClientHexgrid.prototype.markViewable = function(/*int*/team){
  * Check if coord is reachable accroding to current reachables.
  * Should only be used after markReachable.
  */
-GameClientHexgrid.prototype.isReachable = function(/*Coordinate*/coord){
+ClientHexgrid.prototype.isReachable = function(/*Coordinate*/coord){
 	return this.matrix[coord.X][coord.Y].reachable;
 };
 
@@ -137,7 +137,7 @@ GameClientHexgrid.prototype.isReachable = function(/*Coordinate*/coord){
  * Check if coord is attackable accroding to current attackables.
  * Should only be used after markReachable.
  */
-GameClientHexgrid.prototype.isAttackable = function(/*Coordinate*/coord){
+ClientHexgrid.prototype.isAttackable = function(/*Coordinate*/coord){
 	return this.matrix[coord.X][coord.Y].attackable;
 };
 
@@ -146,7 +146,7 @@ GameClientHexgrid.prototype.isAttackable = function(/*Coordinate*/coord){
  * Remove units that can't be seen.
  * Should only be used after markViewable.
  */
-GameClientHexgrid.prototype.removeUnviewable = function(/*minimap (optional) */minimap){
+ClientHexgrid.prototype.removeUnviewable = function(/*minimap (optional) */minimap){
 	for(var x in this.matrix){ // brute force!
 		for(var y in this.matrix[x]){
 			if(this.matrix[x][y].viewable == false){
@@ -164,12 +164,12 @@ GameClientHexgrid.prototype.removeUnviewable = function(/*minimap (optional) */m
 			}
 		}
 	}
-}
+};
 
 /**
  * Clear reachables.
  */
-GameClientHexgrid.prototype.clearReachables = function(){
+ClientHexgrid.prototype.clearReachables = function(){
 	for (var i in this.reachables){  // clear clientReachables
 		var check = this.reachables[i];
 		check.reachable = false;
@@ -180,7 +180,7 @@ GameClientHexgrid.prototype.clearReachables = function(){
 /**
  * Clear attackables.
  */
-GameClientHexgrid.prototype.clearAttackables = function(){
+ClientHexgrid.prototype.clearAttackables = function(){
 	for (var i in this.attackables){  // clear clientReachables
 		var check = this.attackables[i];
 		check.attackable = false;
@@ -191,7 +191,7 @@ GameClientHexgrid.prototype.clearAttackables = function(){
 /**
  * Clear buildables.
  */
-GameClientHexgrid.prototype.clearBuildables = function(){
+ClientHexgrid.prototype.clearBuildables = function(){
 	for (var i in this.buildables){  // clear clientReachables
 		var check = this.buildables[i];
 		check.buildable = false;
@@ -202,14 +202,14 @@ GameClientHexgrid.prototype.clearBuildables = function(){
 /**
  * Clear viewables.
  */
-GameClientHexgrid.prototype.clearViewables = function(){
+ClientHexgrid.prototype.clearViewables = function(){
 	for (var i in this.viewables){  // clear clientReachables
 		var check = this.viewables[i];
 		check.viewable = false;
 		check.pastViewable = true;
 	}
 	this.viewables = [];
-<<<<<<< HEAD
+
 };
 
 var ClientHexagon = function(){
@@ -219,8 +219,13 @@ var ClientHexagon = function(){
 	this.viewable = false;
 	this.opacity = 1;
 	this.pastViewable = false;
-}
+};
 
+var ClientHexagonFromHexagon = function(/*Hexagon*/ oldHexagon){
+	var clientHexagon = new ClientHexagon();
+	clientHexagon.prototype = oldHexagon;
+	return clientHexagon;
+}
 /**
  * Convert all regular hexagons in hexgrid to client hexagons.
  */ 
@@ -228,12 +233,10 @@ var convertToClientHexagon = function(/*hexgrid*/ hexgrid){
 	for(var i in hexgrid.matrix){
 		for(var j in hexgrid.matrix[i]){
 			var hexagon = hexgrid.matrix[i][j];
-			var clientHexagon = new GameClientHexgrid();
-			clientHexagon.prototype = hexagon;
-			hexgrid.matrix[i][j] = clientHexagon;
+			hexgrid.matrix[i][j] = ClientHexagonFromHexagon(hexagon);
 		}
 	}
-}
-=======
 };
->>>>>>> 0aa1ee901eb4658f4483685145309a2fadfed8aa
+
+
+

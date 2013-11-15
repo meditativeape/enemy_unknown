@@ -13,6 +13,11 @@ var ServerUnit = function(){
 	this.serverIsVisible = false;
 }
 
+var ServerUnitFromUnit = function(/*Unit*/ oldUnit){
+	var serverUnit = new ServerUnit();
+	serverUnit.prototype = oldUnit;
+	return serverUnit;
+}
 
 /**
  * Setter for Unit.serverIsVisible.

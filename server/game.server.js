@@ -35,9 +35,6 @@ String.prototype.format = function (args) {
 String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 
 
-
-
-
 /**
  * The main game server object.
  */
