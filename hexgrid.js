@@ -447,10 +447,7 @@ function Hexagon(id, mx, my, x, y, spec, camera, map, callback, fogOn, fogImg) {
 			});
             this.hexagonToDraw.on('touchend', function(event){
                 if (camera.dragged) return;
-				else{
-					e.preventDefault();
-					this.click();
-				}
+               	me.callback(new Coordinate(me.matrixx, me.matrixy), event);
 			});
 			this.hexagonToDraw.on('click', function(event){
                	me.callback(new Coordinate(me.matrixx, me.matrixy), event);
