@@ -904,12 +904,17 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
             document.body.style.cursor = "auto";
         });
         this.buttons.build.on('click', function(){
-            if (!me.buildUnitGroup.getVisible()) {
+        	me.toBuild = null;
+			me.hexgrid.clientClearReachable();
+			me.hexgrid.clientClearAttackable();
+			me.hexgrid.clientClearBuildable();
+			for(var j = 0; j < 5; j++){
+						if (me.buildUnit[j].available) {
+							me.buildUnit[j].setImage(me.buildUnitImgs.unlit[j]);
+						}
+					}
+			if (!me.buildUnitGroup.getVisible()) {
                 me.build = true;
-				me.toBuild = null;
-				me.hexgrid.clientClearReachable();
-				me.hexgrid.clientClearAttackable();
-				me.hexgrid.clientClearBuildable();
                 me.buildUnitGroup.setVisible(true);
             } else {
                 me.buildUnitGroup.setVisible(false);
@@ -917,12 +922,17 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
             }
         });
 		this.buttons.build.on('touchend', function(){
-            if (!me.buildUnitGroup.getVisible()) {
+        	me.toBuild = null;
+			me.hexgrid.clientClearReachable();
+			me.hexgrid.clientClearAttackable();
+			me.hexgrid.clientClearBuildable();
+			for(var j = 0; j < 5; j++){
+						if (me.buildUnit[j].available) {
+							me.buildUnit[j].setImage(me.buildUnitImgs.unlit[j]);
+						}
+					}
+			if (!me.buildUnitGroup.getVisible()) {
                 me.build = true;
-				me.toBuild = null;
-				me.hexgrid.clientClearReachable();
-				me.hexgrid.clientClearAttackable();
-				me.hexgrid.clientClearBuildable();
                 me.buildUnitGroup.setVisible(true);
             } else {
                 me.buildUnitGroup.setVisible(false);
@@ -946,7 +956,6 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
             document.body.style.cursor = "auto";
         });
         this.buttons.menu.on('click', function(){
-            // click event listener goes here
             alert("clicked!");
         });
         UILayer.add(this.buttons.menu);
@@ -1024,14 +1033,22 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
             this.buildUnit[i].on('mouseout', function(temp) {
                 return function(){
                     if (me.buildUnit[temp].available) {
-                        me.buildUnit[temp].setImage(me.buildUnitImgs.unlit[temp]);
-                        document.body.style.cursor = "auto";
+						if(me.toBuild != temp){
+							me.buildUnit[temp].setImage(me.buildUnitImgs.unlit[temp]);
+							document.body.style.cursor = "auto";
+						}
                     }
                 }
             }(i));
             this.buildUnit[i].on('click', function(temp) {
                 return function(){
+                    for(var j = 0; j < 5; j++){
+						if (me.buildUnit[j].available) {
+							me.buildUnit[j].setImage(me.buildUnitImgs.unlit[j]);
+						}
+					}
                     if (me.buildUnit[temp].available) {
+						me.buildUnit[temp].setImage(me.buildUnitImgs.lit[temp]);
                         me.toBuild = temp;
                         me.hexgrid.clientMarkBuildable(me.player);
                     }
@@ -1039,6 +1056,11 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
             }(i));
 			this.buildUnit[i].on('touchend', function(temp) {
                 return function(){
+					for(var j = 0; j < 5; j++){
+						if (me.buildUnit[j].available) {
+							me.buildUnit[j].setImage(me.buildUnitImgs.unlit[j]);
+						}
+					}
                     if (me.buildUnit[temp].available) {
 						me.buildUnit[temp].setImage(me.buildUnitImgs.lit[temp]);
                         me.toBuild = temp;
@@ -1174,7 +1196,12 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
         for (var i = 0; i < 5; i++) {
             if (this.resource >= CONSTANTS.cost[i]) {
                 this.buildUnit[i].available = true;
-                this.buildUnit[i].setImage(this.buildUnitImgs.unlit[i]);
+				if(this.toBuild == i){
+					this.buildUnit[i].setImage(this.buildUnitImgs.lit[i]);
+				}
+				else{
+					this.buildUnit[i].setImage(this.buildUnitImgs.unlit[i]);
+				}
             } else {
                 this.buildUnit[i].available = false;
                 this.buildUnit[i].setImage(this.buildUnitImgs.unavailable[i]);
