@@ -988,10 +988,10 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		this.buttons.sound.on('touchend', function(){
             if (me.soundOn) {
                 me.soundOn = false;
-                me.buttons.sound.setImage(me.buttonImgs.lit.mute);
+                me.buttons.sound.setImage(me.buttonImgs.unlit.mute);
             } else {
                 me.soundOn = true;
-                me.buttons.sound.setImage(me.buttonImgs.lit.sound);
+                me.buttons.sound.setImage(me.buttonImgs.unlit.sound);
             }
         });
         UILayer.add(this.buttons.sound);
@@ -1032,6 +1032,15 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
             this.buildUnit[i].on('click', function(temp) {
                 return function(){
                     if (me.buildUnit[temp].available) {
+                        me.toBuild = temp;
+                        me.hexgrid.clientMarkBuildable(me.player);
+                    }
+                }
+            }(i));
+			this.buildUnit[i].on('touchend', function(temp) {
+                return function(){
+                    if (me.buildUnit[temp].available) {
+						me.buildUnit[temp].setImage(me.buildUnitImgs.lit[temp]);
                         me.toBuild = temp;
                         me.hexgrid.clientMarkBuildable(me.player);
                     }
