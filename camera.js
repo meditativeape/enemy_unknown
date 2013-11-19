@@ -27,7 +27,7 @@ var BuildCamera = function(mapSize, movingSpeed, img, layer) {
     this.lastTouchCoord = null;
 	
 	// add background image
-	var bg = new Kinetic.Image({
+	bg = new Kinetic.Image({
 		x: 0,
 		y: 0,
 		image: img,
@@ -36,7 +36,7 @@ var BuildCamera = function(mapSize, movingSpeed, img, layer) {
 	});
 	layer.add(bg);
 	
-	// add animation to move camera and background image
+	// add animation to move camera
 	var me = this;
 	this.anime = new Kinetic.Animation(function(frame){
 		if (me.isMovingLeft)
@@ -47,14 +47,8 @@ var BuildCamera = function(mapSize, movingSpeed, img, layer) {
 			me.moveUp();
 		if (me.isMovingDown)
 			me.moveDown();
-		bg.setCrop({
-			x: me.x,
-			y: me.y,
-			width: CONSTANTS.width,
-			height: CONSTANTS.height
-		});
+		me.redrawCamera();
 	}, layer);
-	this.anime.start();
 	
     // add drag support for mobile devices
     // should be moved to UI class
@@ -77,12 +71,58 @@ var BuildCamera = function(mapSize, movingSpeed, img, layer) {
         }
     });
     
+    // setters
+    this.setIsMovingLeft = function(/*boolean*/ isMovingLeft){
+        me.isMovingLeft = isMovingLeft;
+        if (isMovingLeft)
+            me.startAnimation();
+        else if (!me.isMovingRight && !me.isMovingUp && !me.isMovingDown)
+            me.stopAnimation();
+    }
+    
+    this.setIsMovingRight = function(/*boolean*/ isMovingRight){
+        me.isMovingRight = isMovingRight;
+        if (isMovingRight)
+            me.startAnimation();
+        else if (!me.isMovingLeft && !me.isMovingUp && !me.isMovingDown)
+            me.stopAnimation();
+    }
+    
+    this.setIsMovingUp = function(/*boolean*/ isMovingUp){
+        me.isMovingUp = isMovingUp;
+        if (isMovingUp)
+            me.startAnimation();
+        else if (!me.isMovingLeft && !me.isMovingRight && !me.isMovingDown)
+            me.stopAnimation();
+    }
+    
+    this.setIsMovingDown = function(/*boolean*/ isMovingDown){
+        me.isMovingDown = isMovingDown;
+        if (isMovingDown)
+            me.startAnimation();
+        else if (!me.isMovingLeft && !me.isMovingRight && !me.isMovingUp)
+            me.stopAnimation();
+    }
+    
 	// methods
-	this.stop = function(){
-		if (this.anime) {
+    this.startAnimation = function(){
+        if (this.anime && !this.anime.isRunning())
+            this.anime.start();
+    }
+    
+	this.stopAnimation = function(){
+		if (this.anime && this.anime.isRunning())
 			this.anime.stop();
-		}
 	}
+    
+    this.redrawCamera = function(){
+        bg.setCrop({
+			x: this.x,
+			y: this.y,
+			width: CONSTANTS.width,
+			height: CONSTANTS.height
+		});
+    }
 	
 	this.setPos = function(p){
 		var newX = p.X;
@@ -95,7 +135,7 @@ var BuildCamera = function(mapSize, movingSpeed, img, layer) {
 			newY = this.mapSize[1] - CONSTANTS.height;
 		this.x = newX;
 		this.y = newY;
-        console.log("Set position to (" + this.x + ", " + this.y + ")");
+        this.redrawCamera();
 	};
 	
 	this.moveLeft = function(){
@@ -129,13 +169,12 @@ var BuildCamera = function(mapSize, movingSpeed, img, layer) {
         me.setPos(pos);
     };
     
+    // methods to fire touch events
     this.touchstart = function(event){
-        console.log("Fire touchstart");
         bg.fire('touchstart', event);
     };
     
     this.touchmove = function(event){
-        console.log("Fire touchmove");
         bg.fire('touchmove', event);
     };
 };

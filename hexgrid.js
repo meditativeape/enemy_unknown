@@ -523,6 +523,7 @@ Hexagon.prototype.update = function() {
     // else if(!this.clientViewable){
 		// this.hexagonToDraw.setFill('rgba(120,0,0,0.3)');
 	// }
+    
 	// add/update terrain
 	var midPoint = new Point(this.MidPoint.X - this.camera.x, this.MidPoint.Y - this.camera.y);
 	if (this.terrain) {
@@ -533,13 +534,16 @@ Hexagon.prototype.update = function() {
 			this.map.terrainGroup.add(this.terrainToDraw);
 		}
 	}
-	// add/update unit and hp
+    
+	// add/update unit and hp 
+    // TODO: reuse object
 	if (this.unitToDraw)
 		this.unitToDraw.destroy();
 	if (this.piece != null) {
 		this.unitToDraw = this.piece.draw(midPoint, this.spec.height);
 		this.map.unitGroup.add(this.unitToDraw);
 	}
+    
     // add fog of war
     if (!this.fog) {
         this.fog = new Kinetic.Image({

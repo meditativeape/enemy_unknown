@@ -67,10 +67,10 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		var mousemove = function(event) {  // mouse move event listener
             console.log("mousemove trigger! counter = " + me.touchmoveCounter);
             if (me.touchmoveCounter > 0) {
-                me.camera.isMovingLeft = false;
-                me.camera.isMovingRight = false;
-                me.camera.isMovingUp = false;
-                me.camera.isMovingDown = false;
+                me.camera.setIsMovingLeft(false);
+                me.camera.setIsMovingRight(false);
+                me.camera.setIsMovingUp(false);
+                me.camera.setIsMovingDown(false);
                 me.touchmoveCounter = 0;
                 return;
             }
@@ -79,24 +79,24 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 			var offsetLeft = stage.getContainer().offsetLeft;
 			var offsetTop = stage.getContainer().offsetTop;
 			if (x < offsetLeft) {
-				me.camera.isMovingLeft = true;
+				me.camera.setIsMovingLeft(true);
 			} else {
-				me.camera.isMovingLeft = false;
+				me.camera.setIsMovingLeft(false);
 			}
 			if (x > offsetLeft+CONSTANTS.width) {
-				me.camera.isMovingRight = true;
+				me.camera.setIsMovingRight(true);
 			} else {
-				me.camera.isMovingRight = false;
+				me.camera.setIsMovingRight(false);
 			}
 			if (y < offsetTop) {
-				me.camera.isMovingUp = true;
+				me.camera.setIsMovingUp(true);
 			} else {
-				me.camera.isMovingUp = false;
+				me.camera.setIsMovingUp(false);
 			}
 			if (y > offsetTop+CONSTANTS.height) {
-				me.camera.isMovingDown = true;
+				me.camera.setIsMovingDown(true);
 			} else {
-				me.camera.isMovingDown = false;
+				me.camera.setIsMovingDown(false);
 			}
 		};
         var touchmove = function(event){
@@ -129,13 +129,13 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 
 		var keydown = function(event) { // keydown event listener
 			if (event.keyCode == 37 || event.keyCode == 65) { // left
-				me.camera.isMovingLeft = true;
+				me.camera.setIsMovingLeft(true);
 			} else if (event.keyCode == 39 || event.keyCode == 68) { // right
-				me.camera.isMovingRight = true;
+				me.camera.setIsMovingRight(true);
 			} else if (event.keyCode == 38 || event.keyCode == 87) { // up
-				me.camera.isMovingUp = true;
+				me.camera.setIsMovingUp(true);
 			} else if (event.keyCode == 40 || event.keyCode == 83) { // down
-				me.camera.isMovingDown = true;
+				me.camera.setIsMovingDown(true);
 			}
 			if (event.keyCode == 49){
 				if(me.guess){
@@ -230,13 +230,13 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		
 		var keyup = function(event) { // keyup event listener
 			if (event.keyCode == 37 || event.keyCode == 65) { // left
-				me.camera.isMovingLeft = false;
+				me.camera.setIsMovingLeft(false);
 			} else if (event.keyCode == 39 || event.keyCode == 68) { // right
-				me.camera.isMovingRight = false;
+				me.camera.setIsMovingRight(false);
 			} else if (event.keyCode == 38 || event.keyCode == 87) { // up
-				me.camera.isMovingUp = false;
+				me.camera.setIsMovingUp(false);
 			} else if (event.keyCode == 40 || event.keyCode == 83) { // down
-				me.camera.isMovingDown = false;
+				me.camera.setIsMovingDown(false);
 			}
 		};
 		document.addEventListener('keyup', keyup);
@@ -514,7 +514,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				this.resource = 0;
                 this.unitCounter = [0, 0];
 				// stop animations
-				this.camera.stop();
+				this.camera.stopAnimation();
 				this.minimap.stop();
 				this.hexgrid.stop();
 				this.UILayerAnim.stop();
