@@ -25,6 +25,7 @@ var BuildCamera = function(mapSize, movingSpeed, img, layer) {
 	this.isMovingDown = false;
     this.dragged = false;
     this.lastTouchCoord = null;
+    this.delayedStop = null;
 	
 	// add background image
 	bg = new Kinetic.Image({
@@ -49,6 +50,7 @@ var BuildCamera = function(mapSize, movingSpeed, img, layer) {
 			me.moveDown();
 		me.redrawCamera();
 	}, layer);
+    this.anime.start();
 	
     // add drag support for mobile devices
     // should be moved to UI class
@@ -111,8 +113,9 @@ var BuildCamera = function(mapSize, movingSpeed, img, layer) {
     }
     
 	this.stopAnimation = function(){
-		if (this.anime && this.anime.isRunning())
-			this.anime.stop();
+		//alert("stopped");
+        //if (this.anime && this.anime.isRunning())
+        //    this.anime.stop();
 	}
     
     this.redrawCamera = function(){
