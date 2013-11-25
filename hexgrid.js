@@ -73,15 +73,15 @@ var BuildMap = function(/*string*/mapName, /*camera*/camera, /*layer*/layer, /*f
 		layer.add(this.hexGroup);
 		layer.add(this.unitGroup);
         layer.add(this.fogGroup);
-		var me = this;
-		this.anim = new Kinetic.Animation(function(frame) {
-			for(var x in me.matrix){
-				for(var y in me.matrix[x]){
-					me.matrix[x][y].update();
-				}
-			}
-		}, layer);
-		this.anim.start();
+		// var me = this;
+		// this.anim = new Kinetic.Animation(function(frame) {
+			// for(var x in me.matrix){
+				// for(var y in me.matrix[x]){
+					// me.matrix[x][y].update();
+				// }
+			// }
+		// }, layer);
+		// this.anim.start();
 	}
 	
 	this.stop = function stop(){
@@ -182,8 +182,6 @@ var BuildMap = function(/*string*/mapName, /*camera*/camera, /*layer*/layer, /*f
                 }
 			}
 		}
-		
-
 	};
 	
 	this.clientMarkAttackable = function(/*Coordinate*/coord){
@@ -274,11 +272,11 @@ var BuildMap = function(/*string*/mapName, /*camera*/camera, /*layer*/layer, /*f
 					if(this.matrix[x][y].clientPastViewable == true){
 						// reset opacity to 0
 						this.matrix[x][y].opacity = 0;
-						this.matrix[x][y].piece = null;
+                        this.matrix[x][y].piece.disappear();
+                        this.matrix[x][y].piece = null;
                         this.matrix[x][y].clientPastViewable = false;
 					}
-					this.matrix[x][y].piece = null;			
-					
+					this.matrix[x][y].piece = null;
 				}
 			}
 		}
@@ -506,20 +504,24 @@ Hexagon.prototype.contains = function(/*Point*/ p) {
  */
 Hexagon.prototype.update = function() {
 	
+    //if (!this.isVisible())  // if this hexagon is not visible to user, do not update it
+    //    return;
+    
 	// update hexagon
-	var points = [];
-	for (var i = 0; i < this.Points.length; i++) {
-		points.push([this.Points[i].X-this.camera.x, this.Points[i].Y-this.camera.y]);
-	}
-	this.hexagonToDraw.setPoints(points);
-	this.hexagonToDraw.setFill('transparent');
+    var points = [];
+    for (var i = 0; i < this.Points.length; i++) {
+        points.push([this.Points[i].X-this.camera.x, this.Points[i].Y-this.camera.y]);
+    }
+    this.hexagonToDraw.setPoints(points);
 	if (this.reachable || this.clientBuildable) {
 		this.hexagonToDraw.setFill('rgba(120, 255,120, 0.3)');
 	} else if (this.clientAttackable) {
 		this.hexagonToDraw.setFill('rgba(255, 0, 0, 0.3)');
-	}else if (this.guessing){
+	} else if (this.guessing){
 		this.hexagonToDraw.setFill('rgba(0,0,255,0.3)');
-	}
+	} else {
+        this.hexagonToDraw.setFill('transparent');
+    }
     // else if(!this.clientViewable){
 		// this.hexagonToDraw.setFill('rgba(120,0,0,0.3)');
 	// }
@@ -536,13 +538,9 @@ Hexagon.prototype.update = function() {
 	}
     
 	// add/update unit and hp 
-    // TODO: reuse object
-	if (this.unitToDraw)
-		this.unitToDraw.destroy();
-	if (this.piece != null) {
-		this.unitToDraw = this.piece.draw(midPoint, this.spec.height);
-		this.map.unitGroup.add(this.unitToDraw);
-	}
+    if (this.piece != null) {
+        this.piece.redraw(midPoint, this.spec.height, this.map.unitGroup);
+    }
     
     // add fog of war
     if (!this.fog) {
@@ -553,8 +551,10 @@ Hexagon.prototype.update = function() {
         });
         this.map.fogGroup.add(this.fog);
     }
-    this.fog.setX(midPoint.X - this.fogImg.width/3 - 18);
-    this.fog.setY(midPoint.Y - this.fogImg.height/3 - 18);
+    //this.fog.setX(midPoint.X - this.fogImg.width/3 - 18);
+    //this.fog.setY(midPoint.Y - this.fogImg.height/3 - 18);
+    this.fog.move(midPoint.X - this.fogImg.width/3 - 18 - this.fog.getX(),
+                  midPoint.Y - this.fogImg.height/3 - 18 - this.fog.getY());
     if (!this.clientViewable) {   
         if (this.opacity < 0.5) {
             this.fog.setOpacity(this.opacity);
@@ -566,3 +566,14 @@ Hexagon.prototype.update = function() {
         this.fog.setOpacity(0);
     }
 };
+
+/**
+ * Checks if this hexagon is visible in the camera now.
+ */
+Hexagon.prototype.isVisible = function(){
+    for (var i = 0; i < this.Points.length; i++) {
+        if (this.camera.contains(this.Points[i]))
+            return true;
+    }
+    return false;
+}

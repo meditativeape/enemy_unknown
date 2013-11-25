@@ -34,8 +34,10 @@ var Terrain = function(/*boolean*/ moveable, /*boolean*/ buildable, /*string*/ o
 Terrain.prototype.draw = function(/*Point*/p, /*int*/height, /*Kinetic.Image*/oldTerrain) {
 	if (this.image) {
 		if (oldTerrain) {
-			oldTerrain.setX(Math.floor(p.X - this.image.width/2));
-			oldTerrain.setY(Math.floor(p.Y + height/2 - this.image.height));
+			//oldTerrain.setX(Math.floor(p.X - this.image.width/2));
+			//oldTerrain.setY(Math.floor(p.Y + height/2 - this.image.height));
+            oldTerrain.move(Math.floor(p.X - this.image.width/2) - oldTerrain.getX(),
+                            Math.floor(p.Y + height/2 - this.image.height) - oldTerrain.getY());
 			return oldTerrain;
 		} else {
 			var terrainToDraw = new Kinetic.Image({

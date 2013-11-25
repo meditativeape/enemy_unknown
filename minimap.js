@@ -53,17 +53,18 @@
 		height: Math.floor(this.height*CONSTANTS.height/mapSize[1]),
 		listening: false
 	});
+    this.cameraBox = cameraBox;
 	this.toDraw.add(cameraBox);
 	
 	// add group to layer
 	layer.add(this.toDraw);
 	
 	// add animation to cameraBox
-	this.anime = new Kinetic.Animation(function(frame){
-		cameraBox.setX(Math.floor(camera.x*me.width/me.mapSize[0]));
-		cameraBox.setY(Math.floor(camera.y*me.height/me.mapSize[1]));
-	}, layer);
-	this.anime.start();
+	// this.anime = new Kinetic.Animation(function(frame){
+		// cameraBox.setX(Math.floor(camera.x*me.width/me.mapSize[0]));
+		// cameraBox.setY(Math.floor(camera.y*me.height/me.mapSize[1]));
+	// }, layer);
+	// this.anime.start();
     
 	this.stop = function(){
 		if (this.anime) {

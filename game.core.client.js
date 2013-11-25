@@ -65,7 +65,6 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
         this.touchmoveCounter = 0; // dirty hack!
 		var me = this;
 		var mousemove = function(event) {  // mouse move event listener
-            console.log("mousemove trigger! counter = " + me.touchmoveCounter);
             if (me.touchmoveCounter > 0) {
                 me.camera.setIsMovingLeft(false);
                 me.camera.setIsMovingRight(false);
@@ -487,10 +486,8 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 							});
 							soundAssets.backgroundsound.play();
 							if(!blurred){
-								console.log("unmuting backgroundsound");
 								soundAssets.backgroundsound.unmute();
 							}else{
-								console.log("muting backgroundsound");
 								soundAssets.backgroundsound.mute();
 							}
 						}
@@ -514,11 +511,12 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				this.resource = 0;
                 this.unitCounter = [0, 0];
 				// stop animations
-				this.camera.stopAnimation();
-				this.minimap.stop();
-				this.hexgrid.stop();
+				// this.camera.stopAnimation();
+				// this.minimap.stop();
+				// this.hexgrid.stop();
 				this.UILayerAnim.stop();
                 this.msgLayerAnim.stop();
+                this.mapLayerAnimation.stop();
 				// clear all layers
 				mapLayer.destroy();
 				mapLayer = new Kinetic.Layer();
@@ -549,10 +547,8 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 							});
 							soundAssets.menusound.play();
 							if(!blurred){
-								console.log("unmuting menusound");
 								soundAssets.menusound.unmute();
 							}else{
-								console.log("muting menusound");
 								soundAssets.menusound.mute();
 							}
 						}
@@ -674,8 +670,8 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 					}
 					this.vampireKO = false;
 				}
+                this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece.disappear();
 				this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece = null;
-
 				
 				// update minimap
 				var pointOnMap = this.hexgrid.toMap(new Coordinate(parseInt(keywords[2]), parseInt(keywords[3])));
@@ -1124,6 +1120,8 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		this.camera = new BuildCamera([scenario.size.x, scenario.size.y], 15, this.background, mapLayer);
 		this.minimap = new BuildMiniMap(this.camera, [scenario.size.x, scenario.size.y], CONSTANTS.minimapWidth, this.background, UILayer, stage);
 		this.hexgrid = new BuildMap(this.mapName, this.camera, mapLayer, clickCallback, this.fogOn, this.fogImg);
+        this.mapLayerAnimation = CreateMapLayerAnimation(this.camera, this.hexgrid, this.minimap, mapLayer);
+        this.mapLayerAnimation.start();
 		
 		// initialize terrain
 		var terrain = scenario.terrain;

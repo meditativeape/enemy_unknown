@@ -38,6 +38,7 @@ var Unit = function(/*int*/player, /*int*/ team, /*int*/hp, /*int*/type, /*Coord
     this.lastHitType = null;
     if (showNum)
         this.showNum = 1;
+    this.groupToDraw = null;
 }
 
 // server side we export Unit.
@@ -71,11 +72,12 @@ Unit.prototype.setcd = function(/*float*/ time){
 }
 
 /**
- * Unit Method: return a Kinetic.Image to be put into the unit group.
+ * Unit Method: return a group of images to be put into the unit group.
  * @this {Unit}
  */
 Unit.prototype.draw = function(/*Point*/p, /*int*/height) {
     var groupToDraw = new Kinetic.Group();
+    
     // draw unit
 	var unitToDraw;
     if (this.hitCounter < 20) {
@@ -89,7 +91,8 @@ Unit.prototype.draw = function(/*Point*/p, /*int*/height) {
 			x: Math.floor(p.X - this.image.width/2),
 			y: Math.floor(p.Y + height*2/5 - this.image.height + 5),
 			width: this.image.width,
-			height: this.image.height
+			height: this.image.height,
+            name: "unit"
 		});
 		var offset = Math.floor(this.hitCounter/2);
 		unitToDraw.setCrop({x:120*offset, y:0, width:120, height:120});
@@ -100,7 +103,8 @@ Unit.prototype.draw = function(/*Point*/p, /*int*/height) {
 			x: Math.floor(p.X - this.image.width/2),
 			y: Math.floor(p.Y + height*2/5 - this.image.height + 5),
 			width: this.image.width,
-			height: this.image.height
+			height: this.image.height,
+            name: "unit"
 		});
 		var offset = Math.round((5 - this.cooldown/2)*10);
 		unitToDraw.setCrop({x:120*offset, y:0, width:120, height:120});
@@ -110,19 +114,23 @@ Unit.prototype.draw = function(/*Point*/p, /*int*/height) {
 			x: Math.floor(p.X - this.image.width/2),
 			y: Math.floor(p.Y + height*2/5 - this.image.height + 5),
 			width: this.image.width,
-			height: this.image.height
+			height: this.image.height,
+            name: "unit"
 		});
 	}
     groupToDraw.add(unitToDraw);
+    
     // draw hp
     for (var i = 0; i < this.hp; i++) {
         var hpHeart = new Kinetic.Image({
             image: this.heartImage,
             x: Math.floor(p.X + 22),
-            y: Math.floor(p.Y + 15 * i - 30)
+            y: Math.floor(p.Y + 15 * i - 30),
+            name: "heart"
         });
         groupToDraw.add(hpHeart);
     }
+    
     // draw number
     if (this.showNum && this.type != 5) {
         var num = this.type + 1;
@@ -132,7 +140,8 @@ Unit.prototype.draw = function(/*Point*/p, /*int*/height) {
             stroke: "white",
             text: num,
             x: p.X,
-            y: p.Y
+            y: p.Y,
+            name: "number"
         });
         groupToDraw.add(numText);
     }
@@ -140,11 +149,64 @@ Unit.prototype.draw = function(/*Point*/p, /*int*/height) {
 	return groupToDraw;
 };
 
+Unit.prototype.redraw = function(/*Point*/p, /*int*/height, /*Kinetic.Layer*/layerToDraw){
+    if (!this.groupToDraw) {
+        this.groupToDraw = this.draw(p, height);
+        layerToDraw.add(this.groupToDraw);
+    } else {
+        // redraw unit
+        var unit = this.groupToDraw.get(".unit")[0]
+        if (this.hitCounter < 20) {
+            var hitImage;
+            if (this.lastHitType == "small")
+                hitImage = gc.getHitImgs.small[this.team][this.type];
+            else
+                hitImage = gc.getHitImgs.big[this.team][this.type];
+            unit.setImage(hitImage);
+            var offset = Math.floor(this.hitCounter/2);
+            unit.setCrop({x:120*offset, y:0, width:120, height:120});
+            this.hitCounter++;
+        } else if (this.cooldown > 0.2 && this.cdImage) {
+            unit.setImage(this.cdImage);
+            var offset = Math.round((5 - this.cooldown/2)*10);
+            unit.setCrop({x:120*offset, y:0, width:120, height:120});
+        } else {
+            unit.setImage(this.image);
+            unit.setCrop({x:0, y:0, width:120, width:120});
+        }
+        //unit.setX(Math.floor(p.X - this.image.width/2));
+        //unit.setY(Math.floor(p.Y + height*2/5 - this.image.height + 5));
+        unit.move(Math.floor(p.X - this.image.width/2) - unit.getX(),
+                  Math.floor(p.Y + height*2/5 - this.image.height + 5) - unit.getY());
+        
+        // adjust hp
+        var hearts = this.groupToDraw.get(".heart");
+        for (var i = 0; i < hearts.length; i++) {
+            if (i < this.hp) {
+                //hearts[i].setX(Math.floor(p.X + 22));
+                //hearts[i].setY(Math.floor(p.Y + 15 * i - 30));
+                hearts[i].move(Math.floor(p.X + 22) - hearts[i].getX(),
+                               Math.floor(p.Y + 15 * i - 30) - hearts[i].getY());
+            } else {
+                hearts[i].destroy();
+            }
+        }
+        
+        // adjust number
+        var number = this.groupToDraw.get(".number")[0];
+        if (number) {
+            //number.setX(p.X);
+            //number.setY(p.Y);
+            number.move(p.X - number.getX(), p.Y - number.getY());
+        }
+    }
+};
+
 Unit.prototype.guess = function(/*int*/ guess){
     this.type = guess;
 	this.image = gc.sprites[this.player][guess];
 	this.cdImage = gc.cooldown[this.player][guess];
-}
+};
 
 Unit.prototype.minusHP = function(/*int*/hp){
 	this.lostHP = this.hp - hp;
@@ -207,6 +269,11 @@ Unit.prototype.gotHit = function(/*Unit*/enemy){
 		enemy.hp = 0;
 	}
 };
+
+Unit.prototype.disappear = function() {
+    if (this.groupToDraw)
+        this.groupToDraw.destroy();
+}
 
 Unit.prototype.serverSetVisible = function(/*boolean*/ isVisible) {
     var old = this.serverIsVisible;

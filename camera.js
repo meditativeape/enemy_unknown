@@ -38,19 +38,19 @@ var BuildCamera = function(mapSize, movingSpeed, img, layer) {
 	layer.add(bg);
 	
 	// add animation to move camera
-	var me = this;
-	this.anime = new Kinetic.Animation(function(frame){
-		if (me.isMovingLeft)
-			me.moveLeft();
-		if (me.isMovingRight)
-			me.moveRight();
-		if (me.isMovingUp)
-			me.moveUp();
-		if (me.isMovingDown)
-			me.moveDown();
-		me.redrawCamera();
-	}, layer);
-    this.anime.start();
+	// var me = this;
+	// this.anime = new Kinetic.Animation(function(frame){
+		// if (me.isMovingLeft)
+			// me.moveLeft();
+		// if (me.isMovingRight)
+			// me.moveRight();
+		// if (me.isMovingUp)
+			// me.moveUp();
+		// if (me.isMovingDown)
+			// me.moveDown();
+		// me.redrawCamera();
+	// }, layer);
+    // this.anime.start();
 	
     // add drag support for mobile devices
     // should be moved to UI class
@@ -108,8 +108,8 @@ var BuildCamera = function(mapSize, movingSpeed, img, layer) {
     
 	// methods
     this.startAnimation = function(){
-        if (this.anime && !this.anime.isRunning())
-            this.anime.start();
+        //if (this.anime && !this.anime.isRunning())
+        //    this.anime.start();
     }
     
 	this.stopAnimation = function(){
@@ -117,6 +117,13 @@ var BuildCamera = function(mapSize, movingSpeed, img, layer) {
         //if (this.anime && this.anime.isRunning())
         //    this.anime.stop();
 	}
+    
+    this.contains = function(/*Point*/p){
+        if (p.X >= this.x && p.X <= this.x+CONSTANTS.width &&
+            p.Y >= this.y && p.Y <= this.y+CONSTANTS.height)
+            return true;
+        return false;
+    }
     
     this.redrawCamera = function(){
         bg.setCrop({
