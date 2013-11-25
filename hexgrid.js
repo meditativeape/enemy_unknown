@@ -419,6 +419,8 @@ function Hexagon(id, mx, my, x, y, spec, camera, map, callback, fogOn, fogImg) {
 	
 	this.selected = false;
 	
+	
+		
 	if (callback) {
 		this.callback = callback;
 	}
@@ -426,6 +428,11 @@ function Hexagon(id, mx, my, x, y, spec, camera, map, callback, fogOn, fogImg) {
 	if (camera) {
 		this.camera = camera;
         this.fogImg = fogImg;
+		this.fogImage = new Kinetic.Image({
+            image: this.fogImg,
+            opacity: 0,
+            scale: {x:0.95, y:0.95}
+        });
 		
 		// add hexagon
 		var hexagonConfig = {
@@ -544,11 +551,7 @@ Hexagon.prototype.update = function() {
     
     // add fog of war
     if (!this.fog) {
-        this.fog = new Kinetic.Image({
-            image: this.fogImg,
-            opacity: 0,
-            scale: {x:0.95, y:0.95}
-        });
+        this.fog = this.fogImage;
         this.map.fogGroup.add(this.fog);
     }
     //this.fog.setX(midPoint.X - this.fogImg.width/3 - 18);
