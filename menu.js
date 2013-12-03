@@ -55,6 +55,7 @@ var menuBack = function(){
 	startMenu.style.visibility = "visible";
 }
 
+
 //Load sounds
 soundManager.setup({
   url: '/lib/',
@@ -74,7 +75,7 @@ soundManager.setup({
 		soundAssets.menusound.play();
   },
   ontimeout: function() {
-		alert("soundManager failed to load");	
+		alert("SoundManager failed to load, menu alert.");	
 	}
 });
 
