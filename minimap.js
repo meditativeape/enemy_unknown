@@ -76,10 +76,10 @@
 		var color;
 		switch (player) {	
 		case 2:
-			color = "lightskyblue";
+			color = "yellow";
 			break;
 		case 1:
-			color = "yellow";
+			color = "blue";
 			break;
 		case 0:
 			color = "red";

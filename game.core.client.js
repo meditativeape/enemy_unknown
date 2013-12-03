@@ -256,7 +256,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 		
 		var isAppLoaded = function() {
 			files_loaded++;
-			if (files_loaded >= 60) {
+			if (files_loaded >= 90) {
 				gc.initiate(scenario,type);
 			}
 		}
