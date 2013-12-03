@@ -27,7 +27,6 @@ var asyncMobileStartGame = function(/*String*/ scenario){
 		loseMenu.style.visibility = "hidden";
 		winMenu.style.visibility = "hidden";
 		gc.load_assets(scenario,parseInt(typSelection));
-		ObjectiveCCall("alert", []);
 		started = true;
 	}
 }
