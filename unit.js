@@ -158,19 +158,24 @@ Unit.prototype.minusHP = function(/*int*/hp){
 		if(this.team == gc.team && hp!= 0){
 			if(this.lostHP == 1){
 				soundAssets.attack_1sound.play();
+				ObjectiveCCall("playSound", ["attack_1"]);
 			}else{
 				soundAssets.attack_2sound.play();
+				ObjectiveCCall("playSound", ["attack_2"]);
 			}
 		}
 		else{
 			if(this.lostHP == 1 && hp!= 0){
 				soundAssets.attack1sound.play();
+				ObjectiveCCall("playSound", ["attack1"]);
 			}else if(this.type == 0){
 				soundAssets.kosound.play();
+				ObjectiveCCall("playSound", ["ko"]);
 				gc.vampireKO = true;
 			}
 			else if(hp!= 0){
 				soundAssets.attack2sound.play();
+				ObjectiveCCall("playSound", ["attack2"]);
 			}
 		}
 	}

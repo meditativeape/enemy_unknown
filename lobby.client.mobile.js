@@ -13,6 +13,7 @@ var mobileStartGame = function(/*String*/ scenario){
  * Game has ended.
  */
 var mobileEndGame = function(/*boolean*/ winner){
+	ObjectiveCCall("stopSound", ["background"]);
 	ObjectiveCCall("endGame", [winner]);
 }
 

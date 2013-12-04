@@ -486,6 +486,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 								  onfinish: function(){soundAssets.backgroundsound.play();},
 							});
 							soundAssets.backgroundsound.play();
+							ObjectiveCCall("playSound", ["background"]);
 							if(!blurred){
 								console.log("unmuting backgroundsound");
 								soundAssets.backgroundsound.unmute();
@@ -527,6 +528,7 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				msgLayer.destroy();
 				msgLayer = new Kinetic.Layer({listening: false});
 				soundAssets.flagcapsound.stop();
+				ObjectiveCCall("stopSound", ["flagcap"]);
 				soundAssets.backgroundsound.setVolume(soundAssets.backgroundsound.volume-1);
 				var now, before = new Date();
 				var fadeOut = window.setInterval(function(){
@@ -575,9 +577,11 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				var capteam = parseInt(keywords[2]);
 				if(this.team != capteam && capteam != -1){
 					soundAssets.flagcapsound.play();
+					ObjectiveCCall("playSound", ["flagcap"]);
 					soundAssets.flagcapsound.setVolume(3);
 				}else{
 					soundAssets.flagcapsound.stop();
+					ObjectiveCCall("stopSound", ["flagcap"]);
 				}
                 // draw flag
                 for (var i = 0; i < this.flags.length; i++) {
@@ -668,9 +672,11 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 				}
 				if(this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece.team == gc.team){
 					soundAssets.diesound.play();
+					ObjectiveCCall("playSound", ["die"]);
 				}else{
 					if(!this.vampireKO){
 						soundAssets.killsound.play();
+						ObjectiveCCall("playSound", ["kill"]);
 					}
 					this.vampireKO = false;
 				}

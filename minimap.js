@@ -79,7 +79,7 @@
 			color = "yellow";
 			break;
 		case 1:
-			color = "blue";
+			color = "lightskyblue";
 			break;
 		case 0:
 			color = "red";
