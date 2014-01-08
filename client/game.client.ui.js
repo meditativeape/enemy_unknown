@@ -85,10 +85,12 @@ GameClientUI.prototype.loadImage = function() {
     
     var incrementCounter = function() {
         filesLoaded++;
-        if (filesLoaded >= 60) {
+        if (filesLoaded >= 90) {
             this.hasLoaded = true;
+            // Call function to start the game?
+        } else {
+            this.hasLoaded = false;
         }
-        this.hasLoaded = false;
     }
     
     // load sprites
