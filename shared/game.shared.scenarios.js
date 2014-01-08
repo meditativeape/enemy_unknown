@@ -1,4 +1,15 @@
 /**
+ * Game scenarios.
+ */
+ 
+/**
+ * Server side we export Scenarios.
+ */
+if( 'undefined' != typeof global ) {
+    exports.Scenarios = Scenarios;
+}
+
+/**
  * A big JavaScript object that contains all scenarios.
  */
 var Scenarios = {
@@ -296,7 +307,3 @@ var Scenarios = {
 };
 
 
-// server side we export Point and Coordinate.
-if( 'undefined' != typeof global ) {
-    exports.Scenarios = Scenarios;
-}

@@ -15,10 +15,10 @@ if( 'undefined' != typeof global ) {
 }
 
 /**
- * Constructor for a Map. Automatically builds map of hexagons.
+ * Constructor for a shared hexgird. Automatically builds matrix of hexagons.
  * @constructor
  */
-var BuildMap = function(/*string*/ mapName, /*boolean*/ fogOn){
+var SharedHexgrid = function(/*string*/ mapName, /*boolean*/ fogOn){
 	
 	//Move to server
 	// /*camera*/camera, /*layer*/layer, /*function*/callback, 
