@@ -2,7 +2,7 @@
   "name": "enemy-unknown",
   "author": "Beck Chen, Frank Zhang, Yi Hua",
   "description": "Beck, Frank, and Yi's Comp460 game.",
-  "version": "1.0.0-78",
+  "version": "1.0.0-79",
   "dependencies": {
     "express": "2.5.x",
     "socket.io": "0.9.x",
