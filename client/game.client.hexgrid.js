@@ -212,6 +212,9 @@ ClientHexgrid.prototype.clearViewables = function(){
 
 };
 
+/**
+ * Constructor for client hexagon.
+ */
 var ClientHexagon = function(){
 	this.reachable = false;
 	this.attackable = false;
@@ -221,11 +224,15 @@ var ClientHexagon = function(){
 	this.pastViewable = false;
 };
 
+/**
+ * Convert regulat hexagon to client hexagon.
+ */
 var ClientHexagonFromHexagon = function(/*Hexagon*/ oldHexagon){
 	var clientHexagon = new ClientHexagon();
 	clientHexagon.prototype = oldHexagon;
 	return clientHexagon;
 }
+
 /**
  * Convert all regular hexagons in hexgrid to client hexagons.
  */ 

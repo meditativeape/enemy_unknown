@@ -38,9 +38,9 @@ var CONSTANTS = {
 	//hexSideLength: 60, //Move to UI
 	//hexRatio: 2.0, //Move to UI
 	//minimapWidth: 200 //Move to UI
+	//initialResource: 100, //TODO move to maps
 	unitCD: 10, //Unit countdown
     captureCD: 180, //Capture countdown
-	initialResource: 100, //TODO move to maps
     unitCosts: [50, 40, 20, 30, 40], //Costs to build unit by type
 	unitMoveRange: 2.0 , //Movement range of all units.
 	unitViewRange: 4.0, //View range of all units.
