@@ -5,7 +5,7 @@
     
     MIT Licensed.
 
-    Usage : node app.js
+    Usage : node main.js
 */
 
     var
@@ -33,6 +33,13 @@
 
         //By default, we forward the / path to index.html automatically.
     app.get( '/', function( req, res ){
+		 //This is the current file they have requested
+        var file = req.params[0];
+
+            //For debugging, we can track what files are requested.
+        if(verbose) console.log(':: Express :: file requested : ' + file);
+		
+		//Send the requesting client the homepage.
         res.sendfile( __dirname + '/index.html' );
     });
 
@@ -48,8 +55,9 @@
             //For debugging, we can track what files are requested.
         if(verbose) console.log(':: Express :: file requested : ' + file);
 
-            //Send the requesting client the file.
-        res.sendfile( __dirname + '/' + file );
+            //Send the requesting client the homepage.
+			//All requests are redirected to the homepage.
+        res.sendfile( __dirname + '/index.html' );
 
     }); //app.get *
 
@@ -77,7 +85,7 @@
         //Enter the game server code. The game server handles
         //client connections looking for a game, creating games,
         //leaving games, joining games and ending games when they leave.
-    game_server = require('./game.server.js');
+    gameServer = require('./server/game.server.js');
 
         //Socket.io will call this function when a client connects,
         //So we can send that client looking for a game to play,
@@ -98,9 +106,9 @@
         console.log(':: socket.io :: player ' + client.userid.substring(0,8) + ' connected');
 
             //Now we want to handle some of the messages that clients will send.
-            //They send messages here, and we send them to the game_server to handle.
+            //They send messages here, and we send them to the gameServer to handle.
         client.on('message', function(m) {
-            game_server.onMessage(client, m);
+            gameServer.onMessage(client, m);
 
         }); //client.on message
 
@@ -116,8 +124,8 @@
 			else
 				console.log(':: socket.io :: client ' + client.userid.substring(0,8) + ' disconnected');
 			
-                //player leaving a game should tell the game_server
-            game_server.onDisconnect(client);
+                //player leaving a game should tell the gameServer
+            gameServer.onDisconnect(client);
 
         }); //client.on disconnect
      
