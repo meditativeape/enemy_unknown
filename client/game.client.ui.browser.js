@@ -243,6 +243,35 @@ this.gcUIBrowser.prototype.registerEventListeners = function() {
       }
     });
     
+    // Event listeners for build unit buttons.
+    for (var i = 0; i < 5; i++) {
+        gcUI.buildUnitButtons[i].on('mouseover', function(temp){
+            return function(){
+                if (gc.buildUnit[temp]) {
+                    gcUI.buildUnitButtons[temp].setImage(gcUI.buildUnitImgs.lit[temp]);
+                    document.body.style.cursor = "pointer";
+                }
+            }
+        }(i));
+        gcUI.buildUnit[i].on('mouseout', function(temp) {
+            return function(){
+                if (gc.buildUnit[temp]) {
+                    gcUI.buildUnitButtons[temp].setImage(gcUI.buildUnitImgs.unlit[temp]);
+                    document.body.style.cursor = "auto";
+                }
+            }
+        }(i));
+        // TODO: where is whichUnitToBuild and clientMarkBuildable???
+        this.buildUnit[i].on('click', function(temp) {
+            return function(){
+                if (gc.buildUnit[temp]) {
+                    me.whichUnitToBuild = temp;
+                    me.hexgrid.clientMarkBuildable(me.player);
+                }
+            }
+        }(i));
+    }
+    
     // Register a callback function for click events on a hexagon.
     var clickCallback = function(coord, event){
         if (!gc.alive) {

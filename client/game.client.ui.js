@@ -68,11 +68,10 @@ var GameClientUI = function(/*gameClient*/ gc, /*string*/ scenario) {
     this.topbar = null;
     // Build unit images
     this.buildUnitImgs = {frame: null, unavailable: [], lit: [], unlit: []};
+    this.buildUnitButtons = [];
     
-    this.buildUnit = [];  // NOT HERE!
     this.markUnitGroup = null;
     this.hasLoaded = false;
-    // camera???
     this.buildUnitMenu = false;
     this.whichUnitToBuild = null;
 }
@@ -81,6 +80,7 @@ var GameClientUI = function(/*gameClient*/ gc, /*string*/ scenario) {
  * Function to load all sprite images.
  */
 GameClientUI.prototype.loadImage = function() {
+    this.hasLoaded = false;
     var filesLoaded = 0;
     
     var loadImage = function(url) {
@@ -94,10 +94,6 @@ GameClientUI.prototype.loadImage = function() {
         filesLoaded++;
         if (filesLoaded >= 90) {
             this.hasLoaded = true;
-            // Call function to start the game?
-        } 
-        else {  // Is this neccessary?
-            this.hasLoaded = false;
         }
     }
     
@@ -439,37 +435,12 @@ GameClientUI.prototype.initGameUI = function(){
         y: 40
     }));
     for (var i = 0; i < 5; i++) {
-        this.buildUnit[i] = new Kinetic.Image({
+        this.buildUnitButtons[i] = new Kinetic.Image({
             image: this.buildUnitImgs.unavailable[i],
             x: 573,
             y: 60+31*i
         });
-        this.buildUnit[i].available = false;
-        this.buildUnit[i].on('mouseover', function(temp) {
-            return function(){
-                if (me.buildUnit[temp].available) {
-                    me.buildUnit[temp].setImage(me.buildUnitImgs.lit[temp]);
-                    document.body.style.cursor = "pointer";
-                }
-            }
-        }(i));
-        this.buildUnit[i].on('mouseout', function(temp) {
-            return function(){
-                if (me.buildUnit[temp].available) {
-                    me.buildUnit[temp].setImage(me.buildUnitImgs.unlit[temp]);
-                    document.body.style.cursor = "auto";
-                }
-            }
-        }(i));
-        this.buildUnit[i].on('click', function(temp) {
-            return function(){
-                if (me.buildUnit[temp].available) {
-                    me.whichUnitToBuild = temp;
-                    me.hexgrid.clientMarkBuildable(me.player);
-                }
-            }
-        }(i));
-        buildUnitGroup.add(this.buildUnit[i]);
+        buildUnitGroup.add(this.buildUnitButtons[i]);
     }
     UILayer.add(buildUnitGroup);
     
@@ -548,35 +519,28 @@ GameClientUI.prototype.findHexSpecs = function()(/*double*/side, /*double*/ratio
 }
 
 /**
-* Hexagon Method:  Checks if point is in hexagon.
-* @this {Hexagon}
-*/
+ * Hexagon Method:  Checks if point is in hexagon.
+ * @this {Hexagon}
+ */
 Hexagon.prototype.contains = function(/*Point*/ p) {
-   var isIn = false;
-   if(this.TopLeftPoint.X < p.X && this.TopLeftPoint.Y < p.Y &&
-      p.X < this.BottomRightPoint.X && p.Y < this.BottomRightPoint.Y)
-   {
-       //turn our absolute point into a relative point for comparing with the polygon's points
-       //var pRel = new HT.Point(p.X - this.x, p.Y - this.y);
-       var i, j = 0;
-       for (i = 0, j = this.Points.length - 1; i < this.Points.length; j = i++)
-       {
-           var iP = this.Points[i];
-           var jP = this.Points[j];
-           if (
-               (
-                ((iP.Y <= p.Y) && (p.Y < jP.Y)) ||
-                ((jP.Y <= p.Y) && (p.Y < iP.Y))
-               //((iP.Y > p.Y) != (jP.Y > p.Y))
-               ) &&
-               (p.X < (jP.X - iP.X) * (p.Y - iP.Y) / (jP.Y - iP.Y) + iP.X)
-              )
-           {
+    var isIn = false;
+    if (this.TopLeftPoint.X < p.X && this.TopLeftPoint.Y < p.Y &&
+       p.X < this.BottomRightPoint.X && p.Y < this.BottomRightPoint.Y)
+    {
+        //turn our absolute point into a relative point for comparing with the polygon's points
+        //var pRel = new HT.Point(p.X - this.x, p.Y - this.y);
+        var i, j = 0;
+        for (i = 0, j = this.Points.length - 1; i < this.Points.length; j = i++)
+        {
+            var iP = this.Points[i];
+            var jP = this.Points[j];
+            if (((iP.Y <= p.Y && p.Y < jP.Y) || (jP.Y <= p.Y && p.Y < iP.Y)) &&
+                (p.X < (jP.X - iP.X) * (p.Y - iP.Y) / (jP.Y - iP.Y) + iP.X)) {
                isIn = !isIn;
-           }
-       }
-   }
-   return isIn;
+            }
+        }
+    }
+    return isIn;
 };
 
 /**
@@ -584,61 +548,61 @@ Hexagon.prototype.contains = function(/*Point*/ p) {
  */
 GameClientUI.prototype.updateHexagon = function(/*Hexagon*/hexagon) {
    
-   // update hexagon
-   var points = [];
-   for (var i = 0; i < this.Points.length; i++) {
-       points.push([this.Points[i].X-this.camera.x, this.Points[i].Y-this.camera.y]);
-   }
-   this.hexagonToDraw.setPoints(points);
-   this.hexagonToDraw.setFill('transparent');
-   if (this.reachable || this.clientBuildable) {
-       this.hexagonToDraw.setFill('rgba(120, 255,120, 0.3)');
-   } else if (this.clientAttackable) {
-       this.hexagonToDraw.setFill('rgba(255, 0, 0, 0.3)');
-   }else if (this.guessing){
-       this.hexagonToDraw.setFill('rgba(0,0,255,0.3)');
-   }
-   // else if(!this.clientViewable){
-       // this.hexagonToDraw.setFill('rgba(120,0,0,0.3)');
-   // }
-   // add/update terrain
-   var midPoint = new Point(this.MidPoint.X - this.camera.x, this.MidPoint.Y - this.camera.y);
-   if (this.terrain) {
-       if (this.terrainToDraw) {
-           this.terrain.draw(midPoint, this.spec.height, this.terrainToDraw);
-       } else {
-           this.terrainToDraw = this.terrain.draw(midPoint, this.spec.height);
-           this.map.terrainGroup.add(this.terrainToDraw);
-       }
-   }
-   // add/update unit and hp
-   if (this.unitToDraw)
-       this.unitToDraw.destroy();
-   if (this.piece != null) {
-       this.unitToDraw = this.piece.draw(midPoint, this.spec.height);
-       this.map.unitGroup.add(this.unitToDraw);
-   }
-   // add fog of war
-   if (!this.fog) {
-       this.fog = new Kinetic.Image({
-           image: this.fogImg,
-           opacity: 0,
-           scale: {x:0.95, y:0.95}
-       });
-       this.map.fogGroup.add(this.fog);
-   }
-   this.fog.setX(midPoint.X - this.fogImg.width/3 - 18);
-   this.fog.setY(midPoint.Y - this.fogImg.height/3 - 18);
-   if (!this.clientViewable) {   
-       if (this.opacity < 0.5) {
-           this.fog.setOpacity(this.opacity);
-           this.opacity += 0.01;
-       } else {
-           this.fog.setOpacity(0.5);
-       }
-   } else {
-       this.fog.setOpacity(0);
-   }
+    // update hexagon
+    var points = [];
+    for (var i = 0; i < this.Points.length; i++) {
+        points.push([this.Points[i].X-this.camera.x, this.Points[i].Y-this.camera.y]);
+    }
+    this.hexagonToDraw.setPoints(points);
+    this.hexagonToDraw.setFill('transparent');
+    if (this.reachable || this.clientBuildable) {
+        this.hexagonToDraw.setFill('rgba(120, 255,120, 0.3)');
+    } else if (this.clientAttackable) {
+        this.hexagonToDraw.setFill('rgba(255, 0, 0, 0.3)');
+    }else if (this.guessing){
+        this.hexagonToDraw.setFill('rgba(0,0,255,0.3)');
+    }
+    // else if(!this.clientViewable){
+        // this.hexagonToDraw.setFill('rgba(120,0,0,0.3)');
+    // }
+    // add/update terrain
+    var midPoint = new Point(this.MidPoint.X - this.camera.x, this.MidPoint.Y - this.camera.y);
+    if (this.terrain) {
+        if (this.terrainToDraw) {
+            this.terrain.draw(midPoint, this.spec.height, this.terrainToDraw);
+        } else {
+            this.terrainToDraw = this.terrain.draw(midPoint, this.spec.height);
+            this.map.terrainGroup.add(this.terrainToDraw);
+        }
+    }
+    // add/update unit and hp
+    if (this.unitToDraw)
+        this.unitToDraw.destroy();
+    if (this.piece != null) {
+        this.unitToDraw = this.piece.draw(midPoint, this.spec.height);
+        this.map.unitGroup.add(this.unitToDraw);
+    }
+    // add fog of war
+    if (!this.fog) {
+        this.fog = new Kinetic.Image({
+            image: this.fogImg,
+            opacity: 0,
+            scale: {x:0.95, y:0.95}
+        });
+        this.map.fogGroup.add(this.fog);
+    }
+    this.fog.setX(midPoint.X - this.fogImg.width/3 - 18);
+    this.fog.setY(midPoint.Y - this.fogImg.height/3 - 18);
+    if (!this.clientViewable) {   
+        if (this.opacity < 0.5) {
+            this.fog.setOpacity(this.opacity);
+            this.opacity += 0.01;
+        } else {
+            this.fog.setOpacity(0.5);
+        }
+    } else {
+        this.fog.setOpacity(0);
+    }
 };
 
 /**

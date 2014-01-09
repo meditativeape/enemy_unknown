@@ -34,6 +34,21 @@ var GameClient = function() {
 	this.gcUI = null;
 	this.gcSound = null;
     this.scenario = null;
+    this.canBuildUnit = [false, false, false, false, false];
+}
+
+GameClient.prototype.newSocket = function (){
+	//Store a local reference to our connection to the server
+	this.mainSocket = io.connect();
+	//When we connect, we are not 'connected' until we have a server id
+	//and are placed in a game by the server. The server sends us a message for that.
+	this.mainSocket.on('connect', this.connecting.bind(this));
+	//Sent when we are disconnected (network, server down, etc)
+	this.mainSocket.on('disconnect', this.ondisconnect.bind(this));
+	//Handle when we connect to the server, showing state and storing id's.
+	this.mainSocket.on('onconnected', this.onconnected.bind(this));
+	//On message from the server, we parse the commands and send it to the handlers
+	this.mainSocket.on('message', this.onnetmessage.bind(this));
 }
 
 /**
@@ -45,6 +60,16 @@ GameClient.prototype.loadAssets = function(/*string*/ scenario) {
 	gcUI.loadImage();
 	this.gcSound = new GameClientSounds();
 	gcSound.loadSound();
+};
+
+GameClient.prototype.joinGame = function(/*string*/ scenario, /*int*/ type){  //Server connection functionality..
+	this.mainSocket.send('0 join '+ type + ' '+ scenario);
+};
+
+GameClient.prototype.initGame = function(){
+    this.fogOn = this.scenario.fog;
+    this.hexgrid = new ClientHexgrid(new Hexgrid(this.scenario));
+    this.gcUI.initGameUI();  // init game UI
 };
 
 /**
@@ -325,20 +350,6 @@ GameClient.prototype.onconnected = function(data){
 	//TODO
 };
 	
-GameClient.prototype.newSocket = function (){
-	//Store a local reference to our connection to the server
-	this.mainSocket = io.connect();
-	//When we connect, we are not 'connected' until we have a server id
-	//and are placed in a game by the server. The server sends us a message for that.
-	this.mainSocket.on('connect', this.connecting.bind(this));
-	//Sent when we are disconnected (network, server down, etc)
-	this.mainSocket.on('disconnect', this.ondisconnect.bind(this));
-	//Handle when we connect to the server, showing state and storing id's.
-	this.mainSocket.on('onconnected', this.onconnected.bind(this));
-	//On message from the server, we parse the commands and send it to the handlers
-	this.mainSocket.on('message', this.onnetmessage.bind(this));
-}
-	
 GameClient.prototype.updateRA = function(){
     this.hexgrid.clientClearReachable();
     this.hexgrid.clientClearAttackable();
@@ -349,25 +360,13 @@ GameClient.prototype.updateRA = function(){
         }
     }
 }; 
-	
-GameClient.prototype.joinGame = function(/*string*/ scenario, /*int*/ type){  //Server connection functionality..
-	this.mainSocket.send('0 join '+ type + ' '+ scenario);
-};
-
-GameClient.prototype.initGame = function(){
-    this.fogOn = this.scenario.fog;
-    this.gcUI.initGameUI();  // init game UI
-    // TODO: initialize hexgrid
-};
     
 GameClient.prototype.updateUnitAvailability = function() {
     for (var i = 0; i < 5; i++) {
         if (this.resource >= CONSTANTS.cost[i]) {
-            this.buildUnit[i].available = true;
-            this.buildUnit[i].setImage(this.buildUnitImgs.unlit[i]);
+            this.buildUnit[i] = true;
         } else {
-            this.buildUnit[i].available = false;
-            this.buildUnit[i].setImage(this.buildUnitImgs.unavailable[i]);
+            this.buildUnit[i] = false;
         }
     }
 }
