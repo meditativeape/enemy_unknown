@@ -18,5 +18,5 @@ Artist: Yi Hua
 ## Usage
 * Get node.js
 * run `npm install` inside the cloned folder
-* run `node app.js` inside the cloned folder
+* run `node main.js` inside the cloned folder
 * Visit http://127.0.0.1:4004/

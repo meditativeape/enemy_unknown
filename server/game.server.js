@@ -8,6 +8,7 @@
 require('../shared/game.shared.terrain.js');
 var Helper = require('../shared/game.shared.helper.js');
 var Hexgrid = require('../shared/game.shared.hexgrid.js');
+var ServerHexgrid = require('../server/game.server.hexgrid.js');
 var Unit = require('../shared/game.shared.unit.js');
 var CONSTANTS = Helper.CONSTANTS;
 module.exports = GameServer;
