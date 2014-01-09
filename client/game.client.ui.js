@@ -70,6 +70,7 @@ var GameClientUI = function(/*gameClient*/ gc, /*string*/ scenario) {
     this.buildUnitImgs = {frame: null, unavailable: [], lit: [], unlit: []};
     this.buildUnitButtons = [];
     
+    // TODO: What's the meaning of these variables?
     this.markUnitGroup = null;
     this.hasLoaded = false;
     this.buildUnitMenu = false;
@@ -555,14 +556,14 @@ GameClientUI.prototype.updateHexagon = function(/*Hexagon*/hexagon) {
     }
     this.hexagonToDraw.setPoints(points);
     this.hexagonToDraw.setFill('transparent');
-    if (this.reachable || this.clientBuildable) {
+    if (this.reachable || this.buildable) {
         this.hexagonToDraw.setFill('rgba(120, 255,120, 0.3)');
-    } else if (this.clientAttackable) {
+    } else if (this.attackable) {
         this.hexagonToDraw.setFill('rgba(255, 0, 0, 0.3)');
     }else if (this.guessing){
         this.hexagonToDraw.setFill('rgba(0,0,255,0.3)');
     }
-    // else if(!this.clientViewable){
+    // else if(!this.viewable){
         // this.hexagonToDraw.setFill('rgba(120,0,0,0.3)');
     // }
     // add/update terrain
@@ -593,7 +594,7 @@ GameClientUI.prototype.updateHexagon = function(/*Hexagon*/hexagon) {
     }
     this.fog.setX(midPoint.X - this.fogImg.width/3 - 18);
     this.fog.setY(midPoint.Y - this.fogImg.height/3 - 18);
-    if (!this.clientViewable) {   
+    if (!this.viewable) {   
         if (this.opacity < 0.5) {
             this.fog.setOpacity(this.opacity);
             this.opacity += 0.01;

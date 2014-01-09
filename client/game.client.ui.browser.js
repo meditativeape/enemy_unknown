@@ -261,12 +261,12 @@ this.gcUIBrowser.prototype.registerEventListeners = function() {
                 }
             }
         }(i));
-        // TODO: where is whichUnitToBuild and clientMarkBuildable???
+        // TODO: where is whichUnitToBuild???
         this.buildUnit[i].on('click', function(temp) {
             return function(){
                 if (gc.buildUnit[temp]) {
-                    me.whichUnitToBuild = temp;
-                    me.hexgrid.clientMarkBuildable(me.player);
+                    gcUI.whichUnitToBuild = temp;
+                    gc.hexgrid.markBuildable(gc.player);
                 }
             }
         }(i));
