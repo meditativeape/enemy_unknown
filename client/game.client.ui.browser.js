@@ -2,265 +2,307 @@
  * Client UI controls in browser platform.
  */ 
 
+/**
+ * The game client UI for browser.
+ */
 var gcUIBrowser = function(/*GameClient*/ gc, /*GameClientUI*/ gcUI) {
     this.gc = gc;
 	this.gcUI = gcUI;
 }
 
+/**
+ * Register event listeners for mouse and keyboard actions performed in
+ * a desktop-version browser.
+ */
 this.gcUIBrowser.prototype.registerEventListeners = function() {
-
-	var me = this;
+    var gc = this.gc;
+    var gcUI = this.gcUI;
 	
-	var mousemove = function(event) {  // mouse move event listener
+    // Event listener for mouse move to move the camera
+	var mousemove = function(event) {
 		var x = event.pageX;
 		var y = event.pageY;
 		var offsetLeft = stage.getContainer().offsetLeft;
 		var offsetTop = stage.getContainer().offsetTop;
 		if (x < offsetLeft) {
-			me.gcUI.camera.isMovingLeft = true;
+			gcUI.camera.isMovingLeft = true;
 		} else {
-			me.gcUI.camera.isMovingLeft = false;
+			gcUI.camera.isMovingLeft = false;
 		}
 		if (x > offsetLeft+CONSTANTS.width) {
-			me.gcUI.camera.isMovingRight = true;
+			gcUI.camera.isMovingRight = true;
 		} else {
-			me.gcUI.camera.isMovingRight = false;
+			gcUI.camera.isMovingRight = false;
 		}
 		if (y < offsetTop) {
-			me.gcUI.camera.isMovingUp = true;
+			gcUI.camera.isMovingUp = true;
 		} else {
-			me.gcUI.camera.isMovingUp = false;
+			gcUI.camera.isMovingUp = false;
 		}
 		if (y > offsetTop+CONSTANTS.height) {
-			me.gcUI.camera.isMovingDown = true;
+			gcUI.camera.isMovingDown = true;
 		} else {
-			me.gcUI.camera.isMovingDown = false;
+			gcUI.camera.isMovingDown = false;
 		}
 	};
 	document.addEventListener("mousemove", mousemove);
 	
-	var contextmenu = function(event) { // right click event listener
+    // Event listener for right click to cancel the current operation
+	var contextmenu = function(event) {
 		var x = event.pageX;
 		var y = event.pageY;
 		var offsetLeft = stage.getContainer().offsetLeft;
 		var offsetTop = stage.getContainer().offsetTop;
 		if (x >= offsetLeft && x <= offsetLeft+CONSTANTS.width && y >= offsetTop && y <= offsetTop+CONSTANTS.height) {
 			event.preventDefault();
-			me.gc.lastClickCoord = null;
-			me.gc.hexgrid.clientClearReachable();
-			me.gc.hexgrid.clientClearAttackable();
-			if(me.gc.guess){
-				me.gc.hexgrid.matrix[me.gcUI.guess.X][me.gcUI.guess.Y].guessing = false;
-				me.gc.guess = null;
+            gc.lastClickCoord = null;
+			gc.hexgrid.clientClearReachable();
+			gc.hexgrid.clientClearAttackable();
+			if(gc.guess){
+				gc.hexgrid.matrix[gcUI.guess.X][gcUI.guess.Y].guessing = false;
+				gc.guess = null;
 			}
-			me.gc.build = false;
-			me.gc.toBuild = null;
+			gc.build = false;
+			gc.toBuild = null;
 
-			me.gc.hexgrid.clientClearBuildable();
+			gc.hexgrid.clientClearBuildable();
 		}
 	};
 	document.addEventListener('contextmenu', contextmenu);
-	// this.contextmenu = contextmenu;
 	
-	var keydown = function(event) { // keydown event listener
+    // Event listener for pressing down a key to move the camera, make a
+    // guess, or build a new unit.
+	var keydown = function(event) {
 		if (event.keyCode == 37 || event.keyCode == 65) { // left
-			me.gcUI.camera.isMovingLeft = true;
+			gcUI.camera.isMovingLeft = true;
 		} else if (event.keyCode == 39 || event.keyCode == 68) { // right
-			me.gcUI.camera.isMovingRight = true;
+			gcUI.camera.isMovingRight = true;
 		} else if (event.keyCode == 38 || event.keyCode == 87) { // up
-			me.gcUI.camera.isMovingUp = true;
+			gcUI.camera.isMovingUp = true;
 		} else if (event.keyCode == 40 || event.keyCode == 83) { // down
-			me.gcUI.camera.isMovingDown = true;
+			gcUI.camera.isMovingDown = true;
 		}
 		if (event.keyCode == 49){
-			if(me.gc.guess){
-				me.gc.hexgrid.getUnit(me.gc.guess).guess(0);
-				me.gc.hexgrid.matrix[me.gc.guess.X][me.gc.guess.Y].guessing = false;
-				me.gc.guess = null;
+			if(gc.guess){
+				gc.hexgrid.getUnit(gc.guess).guess(0);
+				gc.hexgrid.matrix[gc.guess.X][gc.guess.Y].guessing = false;
+				gc.guess = null;
 			}
-			if(me.gc.build){
-				if(me.gc.resource >= CONSTANTS.cost[0]){
-					me.gc.toBuild = 0;
-					me.gc.hexgrid.clientMarkBuildable(me.gc.player);
+			if(gc.build){
+				if(gc.resource >= CONSTANTS.cost[0]){
+					gc.toBuild = 0;
+					gc.hexgrid.clientMarkBuildable(gc.player);
 				}
-				me.gc.build = false;
+				gc.build = false;
 			}
 		}
 		if (event.keyCode == 50){
-			if(me.gc.guess){
-				me.gc.hexgrid.getUnit(me.gc.guess).guess(1);
-				me.gc.hexgrid.matrix[me.gc.guess.X][me.gc.guess.Y].guessing = false;
-				me.gc.guess = null;
+			if(gc.guess){
+				gc.hexgrid.getUnit(gc.guess).guess(1);
+				gc.hexgrid.matrix[gc.guess.X][gc.guess.Y].guessing = false;
+				gc.guess = null;
 			}
-			if(me.gc.build){
-				if(me.gc.resource >= CONSTANTS.cost[1]){
-					me.gc.toBuild = 1;
-					me.gc.hexgrid.clientMarkBuildable(me.gc.player);
+			if(gc.build){
+				if(gc.resource >= CONSTANTS.cost[1]){
+					gc.toBuild = 1;
+					gc.hexgrid.clientMarkBuildable(gc.player);
 				}
-				me.gc.build = false;
+				gc.build = false;
 			}
 		}
 		if (event.keyCode == 51){
-			if(me.gc.guess){
-				me.gc.hexgrid.getUnit(me.gc.guess).guess(2);
-				me.gc.hexgrid.matrix[me.gc.guess.X][me.gc.guess.Y].guessing = false;
-				me.gc.guess = null;
+			if(gc.guess){
+				gc.hexgrid.getUnit(gc.guess).guess(2);
+				gc.hexgrid.matrix[gc.guess.X][gc.guess.Y].guessing = false;
+				gc.guess = null;
 			}
-			if(me.gc.build){
-				if(me.gc.resource >= CONSTANTS.cost[2]){
-					me.gc.toBuild = 2;
-					me.gc.hexgrid.clientMarkBuildable(me.gc.player);
+			if(gc.build){
+				if(gc.resource >= CONSTANTS.cost[2]){
+					gc.toBuild = 2;
+					gc.hexgrid.clientMarkBuildable(gc.player);
 				}
-				me.gc.build = false;
+				gc.build = false;
 			}
 		}
 		if (event.keyCode == 52){
-			if(me.gc.guess){
-				me.gc.hexgrid.getUnit(me.gc.guess).guess(3);
-				me.gc.hexgrid.matrix[me.gc.guess.X][me.gc.guess.Y].guessing = false;
-				me.gc.guess = null;
+			if(gc.guess){
+				gc.hexgrid.getUnit(gc.guess).guess(3);
+				gc.hexgrid.matrix[gc.guess.X][gc.guess.Y].guessing = false;
+				gc.guess = null;
 			}
-			if(me.gc.build){
-				if(me.gc.resource >= CONSTANTS.cost[3]){
-					me.gc.toBuild = 3;
-					me.gc.hexgrid.clientMarkBuildable(me.gc.player);
+			if(gc.build){
+				if(gc.resource >= CONSTANTS.cost[3]){
+					gc.toBuild = 3;
+					gc.hexgrid.clientMarkBuildable(gc.player);
 				}
-				me.gc.build = false;
+				gc.build = false;
 			}
 		}
 		if (event.keyCode == 53){
-			if(me.gc.guess){
-				me.gc.hexgrid.getUnit(me.gc.guess).guess(4);
-				me.gc.hexgrid.matrix[me.gc.guess.X][me.gc.guess.Y].guessing = false;
-				me.gc.guess = null;
+			if(gc.guess){
+				gc.hexgrid.getUnit(gc.guess).guess(4);
+				gc.hexgrid.matrix[gc.guess.X][gc.guess.Y].guessing = false;
+				gc.guess = null;
 			}
-			if(me.gc.build){
-				if(me.gc.resource >= CONSTANTS.cost[4]){
-					me.gc.toBuild = 4;
-					me.gc.hexgrid.clientMarkBuildable(me.gc.player);
+			if(gc.build){
+				if(gc.resource >= CONSTANTS.cost[4]){
+					gc.toBuild = 4;
+					gc.hexgrid.clientMarkBuildable(gc.player);
 				}
-				me.gc.build = false;
+				gc.build = false;
 			}
 		}
 		if (event.keyCode == 54){
-			if(me.gc.guess){
-				me.gc.hexgrid.getUnit(me.gc.guess).guess(5);
-				me.gc.hexgrid.matrix[me.gc.guess.X][me.gc.guess.Y].guessing = false;
-				me.gc.guess = null;
+			if(gc.guess){
+				gc.hexgrid.getUnit(gc.guess).guess(5);
+				gc.hexgrid.matrix[gc.guess.X][gc.guess.Y].guessing = false;
+				gc.guess = null;
 			}
-			me.gc.build = false;
-			me.gc.toBuild = null;
-			me.gc.hexgrid.clientClearBuildable();
+			gc.build = false;
+			gc.toBuild = null;
+			gc.hexgrid.clientClearBuildable();
 		}	
 		if (event.keyCode == 81){
-			me.gc.build = true;
-			me.gc.toBuild = null;
-			me.gc.hexgrid.clientClearReachable();
-			me.gc.hexgrid.clientClearAttackable();
-			me.gc.hexgrid.clientClearBuildable();
-			me.gc.buildUnitGroup.setVisible(true);
+			gc.build = true;
+			gc.toBuild = null;
+			gc.hexgrid.clientClearReachable();
+			gc.hexgrid.clientClearAttackable();
+			gc.hexgrid.clientClearBuildable();
+			gc.buildUnitGroup.setVisible(true);
 		}
 	};
 	document.addEventListener('keydown', keydown);
 	
-	var keyup = function(event) { // keyup event listener
+    // Event listener for releasing a key to stop moving the camera.
+	var keyup = function(event) {
 		if (event.keyCode == 37 || event.keyCode == 65) { // left
-			me.gcUI.camera.isMovingLeft = false;
+			gcUI.camera.isMovingLeft = false;
 		} else if (event.keyCode == 39 || event.keyCode == 68) { // right
-			me.gcUI.camera.isMovingRight = false;
+			gcUI.camera.isMovingRight = false;
 		} else if (event.keyCode == 38 || event.keyCode == 87) { // up
-			me.gcUI.camera.isMovingUp = false;
+			gcUI.camera.isMovingUp = false;
 		} else if (event.keyCode == 40 || event.keyCode == 83) { // down
-			me.gcUI.camera.isMovingDown = false;
+			gcUI.camera.isMovingDown = false;
 		}
 	};
 	document.addEventListener('keyup', keyup);
 	
-	// Build button
-	me.gcUI.buttons.build.on('mouseover', function(){
-        me.gcUI.buttons.build.setImage(me.buttonImgs.lit.build);
+	// Event listeners for mouseover and mouseout on buttons.
+	gcUI.buttons.build.on('mouseover', function(){
+        gcUI.buttons.build.setImage(buttonImgs.lit.build);
         document.body.style.cursor = "pointer";
 	});
-	me.gcUI.buttons.build.on('mouseout', function(){
-        me.gcUI.buttons.build.setImage(me.buttonImgs.unlit.build);
+	gcUI.buttons.build.on('mouseout', function(){
+        gcUI.buttons.build.setImage(buttonImgs.unlit.build);
         document.body.style.cursor = "auto";
 	});
-    
-	// TODO!!!!!!!!!!
-	me.gcUI.buttons.build.on('click', function(){
-        if (!me.gc.buildUnitFlagUnitGroup.getVisible()) {
-            me.gc.buildUnitFlag = true;
-            me.gc.toBuild = null;
-            me.gc.hexgrid.clientClearReachable();
-            me.gc.hexgrid.clientClearAttackable();
-            me.gc.hexgrid.clientClearBuildable();
-            me.gc.buildUnitFlagUnitGroup.setVisible(true);
+    gcUI.buttons.build.on('click', function(){
+        if (!gc.buildUnitFlagUnitGroup.getVisible()) {
+            gc.buildUnitFlag = true;
+            gc.toBuild = null;
+            gc.hexgrid.clientClearReachable();
+            gc.hexgrid.clientClearAttackable();
+            gc.hexgrid.clientClearBuildable();
+            gc.buildUnitFlagUnitGroup.setVisible(true);
         } else {
-            me.gc.buildUnitFlagUnitGroup.setVisible(false);
-            me.gc.buildUnitFlag = false;
+            gc.buildUnitFlagUnitGroup.setVisible(false);
+            gc.buildUnitFlag = false;
         }
 	});
+    gcUI.buttons.menu.on('mouseover', function(){
+        gcUI.buttons.menu.setImage(buttonImgs.lit.menu);
+        document.body.style.cursor = "pointer";
+    });
+    gcUI.buttons.menu.on('mouseout', function(){
+        gcUI.buttons.menu.setImage(buttonImgs.unlit.menu);
+        document.body.style.cursor = "auto";
+    });
+    gcUI.buttons.sound.on('mouseover', function(){
+        if (gcUI.soundOn) {
+            gcUI.buttons.sound.setImage(gcUI.buttonImgs.lit.sound);
+        } else {
+            gcUI.buttons.sound.setImage(gcUI.buttonImgs.lit.mute);
+        }
+        document.body.style.cursor = "pointer";
+    });
+    gcUI.buttons.sound.on('mouseout', function(){
+        if (gcUI.soundOn) {
+            gcUI.buttons.sound.setImage(gcUI.buttonImgs.unlit.sound);
+        } else {
+            gcUI.buttons.sound.setImage(gcUI.buttonImgs.unlit.mute);
+        }
+        document.body.style.cursor = "auto";
+    });
+    gcUI.buttons.sound.on('click', function(){
+        if (gcUI.soundOn) {
+            gcUI.soundOn = false;
+            gcUI.buttons.sound.setImage(gcUI.buttonImgs.lit.mute);
+        } else {
+            gcUI.soundOn = true;
+            gcUI.buttons.sound.setImage(gcUI.buttonImgs.lit.sound);
+      }
+    });
     
-    // callback function for click events on a hexagon
+    // Register a callback function for click events on a hexagon.
     var clickCallback = function(coord, event){
-        if (!me.gc.alive) {
+        if (!gc.alive) {
             return;
         }
         if (event.which == 3) {  // trigger right click event
-            me.gc.contextmenu(event);
+            gc.contextmenu(event);
         }
         var unitplayer = -1;
-        if (me.gc.hexgrid.getUnit(coord)==null) {
-            if(!(me.gc.toBuild===null)){
-                me.gc.mainSocket.send('1 build ' + me.gc.toBuild + ' ' + coord.X +' ' + coord.Y);
+        if (gc.hexgrid.getUnit(coord)==null) {
+            if(!(gc.toBuild===null)){
+                gc.mainSocket.send('1 build ' + gc.toBuild + ' ' + coord.X +' ' + coord.Y);
             }
-            me.gc.build = false;
-            me.gc.toBuild = null;
-            me.gc.hexgrid.clientClearBuildable();
-            me.gc.buildUnitGroup.setVisible(false);  // TODO: does not exist
+            gc.build = false;
+            gc.toBuild = null;
+            gc.hexgrid.clientClearBuildable();
+            gc.buildUnitGroup.setVisible(false);  // TODO: does not exist
         }else{
-            unitplayer = me.gc.hexgrid.getUnit(coord).player;
+            unitplayer = gc.hexgrid.getUnit(coord).player;
         }
-        var isReachable = me.gc.hexgrid.isReachable(coord);
-        var isAttackable = me.gc.hexgrid.isAttackable(coord);
-        if(me.gc.guess){
-            me.gc.hexgrid.matrix[me.gc.guess.X][me.gc.guess.Y].guessing = false;
+        var isReachable = gc.hexgrid.isReachable(coord);
+        var isAttackable = gc.hexgrid.isAttackable(coord);
+        if(gc.guess){
+            gc.hexgrid.matrix[gc.guess.X][gc.guess.Y].guessing = false;
         }
-        me.gc.guess = null;
+        gc.guess = null;
         // some unit has been selected, and some hexagon without this player's unit has been clicked
-        if (me.gc.lastClickCoord && (unitplayer != me.gc.player)) {
+        if (gc.lastClickCoord && (unitplayer != gc.player)) {
             if (isReachable) {  // Move unit
-                me.gc.mainSocket.send('1 move ' + me.gc.lastClickCoord.X +' ' + me.gc.lastClickCoord.Y + ' ' + coord.X +' ' + coord.Y);
+                gc.mainSocket.send('1 move ' + gc.lastClickCoord.X +' ' + gc.lastClickCoord.Y + ' ' + coord.X +' ' + coord.Y);
             } else if (isAttackable) {  // Attack unit
-                me.gc.mainSocket.send('1 attack ' + me.gc.lastClickCoord.X +' ' + me.gc.lastClickCoord.Y + ' ' + coord.X + ' ' + coord.Y);
+                gc.mainSocket.send('1 attack ' + gc.lastClickCoord.X +' ' + gc.lastClickCoord.Y + ' ' + coord.X + ' ' + coord.Y);
             }
-            me.gc.hexgrid.clientClearReachable();
-            me.gc.hexgrid.clientClearAttackable();
-            me.gc.hexgrid.clientClearBuildable();
-            me.gc.lastClickCoord = null;
-            me.gc.build = false;
-            me.gc.toBuild = null;
+            gc.hexgrid.clientClearReachable();
+            gc.hexgrid.clientClearAttackable();
+            gc.hexgrid.clientClearBuildable();
+            gc.lastClickCoord = null;
+            gc.build = false;
+            gc.toBuild = null;
         }
         // some hexagon with this player's unit has been clicked, select that unit
-        else if (unitplayer == me.gc.player) {
-            me.gc.hexgrid.clientClearReachable();
-            me.gc.hexgrid.clientClearAttackable();
-            if (me.gc.hexgrid.getUnit(coord).cooldown<=0) {
-                me.gc.lastClickCoord = coord;
-                me.gc.hexgrid.clientMarkReachable(coord);
-                me.gc.hexgrid.clientMarkAttackable(coord,coord);
+        else if (unitplayer == gc.player) {
+            gc.hexgrid.clientClearReachable();
+            gc.hexgrid.clientClearAttackable();
+            if (gc.hexgrid.getUnit(coord).cooldown<=0) {
+                gc.lastClickCoord = coord;
+                gc.hexgrid.clientMarkReachable(coord);
+                gc.hexgrid.clientMarkAttackable(coord,coord);
             }
-            me.gc.build = false;
-            me.gc.toBuild = null;
-            me.gc.hexgrid.clientClearBuildable();
+            gc.build = false;
+            gc.toBuild = null;
+            gc.hexgrid.clientClearBuildable();
         }else{
-            if(me.gc.hexgrid.getUnit(coord)){
-                me.gc.guess = coord;
-                me.gc.hexgrid.matrix[coord.X][coord.Y].guessing = true;
+            if(gc.hexgrid.getUnit(coord)){
+                gc.guess = coord;
+                gc.hexgrid.matrix[coord.X][coord.Y].guessing = true;
             }
-            me.gc.build = false;
-            me.gc.toBuild = null;
-            me.gc.hexgrid.clientClearBuildable();
+            gc.build = false;
+            gc.toBuild = null;
+            gc.hexgrid.clientClearBuildable();
         }
     };
     // TODO: register this callback

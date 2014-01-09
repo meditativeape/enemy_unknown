@@ -3,14 +3,16 @@
  */
  
 /**
- * Constants
+ * Constants.
  */
 CONSTANTS.hexSideLength = 60;
 CONSTANTS.hexRatio = 2.0;
 CONSTANTS.mapScrollSpeed = 15;
 CONSTANTS.minimapWidth = 200;
  
-/* Setup stage and layers. */
+/**
+ * Setup stage and layers.
+ */
 var stage = new Kinetic.Stage({
     container: 'container',
     id: 'gameCanvas',
@@ -21,7 +23,9 @@ var mapLayer = new Kinetic.Layer(); // layer for background image, hexgrid, and 
 var UILayer = new Kinetic.Layer(); // layer for UI elements, such as minimap, buttons, and unit info
 var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, such as start and end message
 
-/* The GameClientUI class. */
+/**
+ * The GameClientUI class.
+ */
 var GameClientUI = function(/*gameClient*/ gc, /*string*/ scenario) {
     this.gc = gc;
     this.scenario = scenario;
@@ -224,9 +228,6 @@ GameClientUI.prototype.initGameUI = function(){
     
     // Build minimap.
     this.minimap = new BuildMiniMap(this.camera, [this.scenario.size.x + this.scenario.offset*2, this.scenario.size.y], CONSTANTS.minimapWidth, this.background, UILayer, stage);
-   
-    // TODO: Build hexgrid.
-    this.gc.hexgrid;
     
     // Initialize terrains in the hexgrid.
     var terrain = this.scenario.terrain;
@@ -245,7 +246,7 @@ GameClientUI.prototype.initGameUI = function(){
             }
         }
     
-    // A Kinetic animation to show text message at the center of canvas.
+    // A Kinetic text to show text message at the center of canvas.
     var centerMsg = new Kinetic.Text({
         text: "Waiting for other players...",
         x: 80,
@@ -257,8 +258,7 @@ GameClientUI.prototype.initGameUI = function(){
     });
     msgLayer.add(centerMsg);
     
-    // A Kinetic animation to show text message at the center of canvas.
-    // TODO: combined with last one?
+    // A Kinetic animation to change the text message at the center of canvas.
     this.msgLayerAnim = new Kinetic.Animation(function(frame) {
         if (me.started) {
             if (me.starting){
@@ -410,14 +410,7 @@ GameClientUI.prototype.initGameUI = function(){
         image: this.buttonImgs.unlit.menu,
         listening: true
     });
-    this.buttons.menu.on('mouseover', function(){
-        me.buttons.menu.setImage(me.buttonImgs.lit.menu);
-        document.body.style.cursor = "pointer";
-    });
-    this.buttons.menu.on('mouseout', function(){
-        me.buttons.menu.setImage(me.buttonImgs.unlit.menu);
-        document.body.style.cursor = "auto";
-    });
+    
     this.buttons.menu.on('click', function(){
         // click event listener goes here
         alert("clicked!");
@@ -433,31 +426,6 @@ GameClientUI.prototype.initGameUI = function(){
     if (!this.soundOn) {
         this.buttons.sound.setImage(this.buttonImgs.unlit.mute);
     }
-    this.buttons.sound.on('mouseover', function(){
-        if (me.soundOn) {
-            me.buttons.sound.setImage(me.buttonImgs.lit.sound);
-        } else {
-            me.buttons.sound.setImage(me.buttonImgs.lit.mute);
-        }
-        document.body.style.cursor = "pointer";
-    });
-    this.buttons.sound.on('mouseout', function(){
-        if (me.soundOn) {
-            me.buttons.sound.setImage(me.buttonImgs.unlit.sound);
-        } else {
-            me.buttons.sound.setImage(me.buttonImgs.unlit.mute);
-        }
-        document.body.style.cursor = "auto";
-    });
-    this.buttons.sound.on('click', function(){
-        if (me.soundOn) {
-            me.soundOn = false;
-            me.buttons.sound.setImage(me.buttonImgs.lit.mute);
-        } else {
-            me.soundOn = true;
-            me.buttons.sound.setImage(me.buttonImgs.lit.sound);
-      }
-    });
     UILayer.add(this.buttons.sound);
     
     // A Kinetic group of Kinetic image objects for buildable units.
