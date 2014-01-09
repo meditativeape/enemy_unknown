@@ -23,18 +23,17 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 
 /* The GameClientUI class. */
 var GameClientUI = function(/*gameClient*/ gc, /*string*/ scenario) {
-
     this.gc = gc;
     this.scenario = scenario;
     
-    // Initialize platform-dependent UI builder
+    // Initialize platform-dependent UI
     this.platformUI;
     if (/(iPhone|iPod|iPad).*AppleWebKit(?!.*Safari)/i.test(navigator.userAgent))
         this.platformUI = new gcUIIOS(gc, this);
     else
         this.platformUI = new gcUIBrowser(gc, this);
         
-    // Stores Camera and Minimap
+    // Stores camera and minimap
     this.camera = null;
     this.minimap = null;
     
@@ -65,6 +64,7 @@ var GameClientUI = function(/*gameClient*/ gc, /*string*/ scenario) {
     this.topbar = null;
     // Build unit images
     this.buildUnitImgs = {frame: null, unavailable: [], lit: [], unlit: []};
+    
     this.buildUnit = [];  // NOT HERE!
     this.markUnitGroup = null;
     this.hasLoaded = false;
@@ -73,6 +73,9 @@ var GameClientUI = function(/*gameClient*/ gc, /*string*/ scenario) {
     this.whichUnitToBuild = null;
 }
 
+/**
+ * Function to load all sprite images.
+ */
 GameClientUI.prototype.loadImage = function() {
     var filesLoaded = 0;
     
@@ -88,12 +91,13 @@ GameClientUI.prototype.loadImage = function() {
         if (filesLoaded >= 90) {
             this.hasLoaded = true;
             // Call function to start the game?
-        } else {
+        } 
+        else {  // Is this neccessary?
             this.hasLoaded = false;
         }
     }
     
-    // load sprites
+    // Load standalone images.
     this.background = loadImage("sprites\\bg_grey.jpg");
     this.heartImg = loadImage("sprites\\heart.png");
     this.resourceImg = loadImage("sprites\\resource.png");
@@ -103,6 +107,7 @@ GameClientUI.prototype.loadImage = function() {
     this.fogImg = loadImage("sprites\\fog.png");
     this.buttonbarImg = loadImage("sprites\\buttonbar.png");
 
+    // Load character sprites.
     this.sprites[0][0] = loadImage("sprites\\vampire6_red.png");
     this.sprites[0][1] = loadImage("sprites\\wolf6_red.png");
     this.sprites[0][2] = loadImage("sprites\\hunter6_red.png");
@@ -117,7 +122,7 @@ GameClientUI.prototype.loadImage = function() {
     this.sprites[1][4] = loadImage("sprites\\wizard6_blue.png");
     this.sprites[1][5] = loadImage("sprites\\unknown6_blue.png");
 
-    // load cooldown spritesheets
+    // Load cooldown spritesheets.
     this.cooldown[0][0] = loadImage("sprites\\vampire9_red_cd.png");
     this.cooldown[0][1] = loadImage("sprites\\wolf9_red_cd.png");
     this.cooldown[0][2] = loadImage("sprites\\hunter9_red_cd.png");
@@ -132,13 +137,13 @@ GameClientUI.prototype.loadImage = function() {
     this.cooldown[1][4] = loadImage("sprites\\wizard9_blue_cd.png");
     this.cooldown[1][5] = loadImage("sprites\\unknown9_blue_cd.png");
 
-    // load team specific UI images
+    // Load team specific UI images.
     this.flagImgs[0] = loadImage("sprites\\redflag.png");
     this.flagImgs[1] = loadImage("sprites\\blueflag.png");
     this.topbarImgs[0] = loadImage("sprites\\topbar1.png");
     this.topbarImgs[1] = loadImage("sprites\\topbar2.png");
     
-    // load buttons
+    // Load button images.
     this.buttonImgs.unlit.build = loadImage("sprites\\hammerunlit.png");
     this.buttonImgs.lit.build = loadImage("sprites\\hammerlit.png");
     this.buttonImgs.unlit.menu = loadImage("sprites\\menuunlit.png");
@@ -148,7 +153,7 @@ GameClientUI.prototype.loadImage = function() {
     this.buttonImgs.unlit.sound = loadImage("sprites\\soundunlit.png");
     this.buttonImgs.lit.sound = loadImage("sprites\\soundlit.png");
     
-    // build unit buttons
+    // Load build unit button images.
     this.buildUnitImgs.frame = loadImage("sprites\\build\\buildframe.png");
     this.buildUnitImgs.unavailable[0] = loadImage("sprites\\build\\vampire_grey.png");
     this.buildUnitImgs.unlit[0] = loadImage("sprites\\build\\vampire_black.png");
@@ -166,7 +171,7 @@ GameClientUI.prototype.loadImage = function() {
     this.buildUnitImgs.unlit[4] = loadImage("sprites\\build\\wizard_black.png");
     this.buildUnitImgs.lit[4] = loadImage("sprites\\build\\wizard_green.png");
     
-    // guess unit buttons
+    // Load guess unit button images.
     this.markUnitImgs.unlit[0] = loadImage("sprites\\mark\\vampire_unlit.png");
     this.markUnitImgs.lit[0] = loadImage("sprites\\mark\\vampire_lit.png");
     this.markUnitImgs.unlit[1] = loadImage("sprites\\mark\\wolf_unlit.png");
@@ -178,7 +183,7 @@ GameClientUI.prototype.loadImage = function() {
     this.markUnitImgs.unlit[4] = loadImage("sprites\\mark\\wizard_unlit.png");
     this.markUnitImgs.lit[4] = loadImage("sprites\\mark\\wizard_lit.png");
     
-    // get hit images
+    // Load got hit images.
     this.getHitImgs.small[0][0] = loadImage("sprites\\gethit\\vampire_red_small_hit.png");
     this.getHitImgs.small[0][1] = loadImage("sprites\\gethit\\wolf_red_small_hit.png");
     this.getHitImgs.small[0][2] = loadImage("sprites\\gethit\\hunter_red_small_hit.png");
@@ -201,22 +206,29 @@ GameClientUI.prototype.loadImage = function() {
     this.getHitImgs.big[1][3] = loadImage("sprites\\gethit\\zombie_blue_big_hit.png");
     this.getHitImgs.big[1][4] = loadImage("sprites\\gethit\\wizard_blue_big_hit.png");
     
-    // add terrain images
+    // Attach terrain images to terrain singletons.
     CONSTANTS.thronTerrain.image = this.thronImg;
     CONSTANTS.flagTerrain.image = this.flagImg;
     CONSTANTS.resourceTerrain.image = this.resourceImg;
     CONSTANTS.heart = this.heartImg;
 }
 
+/**
+ * Function to initialize game UI.
+ */
 GameClientUI.prototype.initGameUI = function(){
     var me = this;
     
-    // Build camera, minimap, and hexgrid
+    // Build camera.
     this.camera = new BuildCamera([this.scenario.size.x + this.scenario.offset*2, this.scenario.size.y], CONSTANTS.mapScrollSpeed, this.background, mapLayer);
-    this.minimap = new BuildMiniMap(this.camera, [this.scenario.size.x + this.scenario.offset*2, this.scenario.size.y], CONSTANTS.minimapWidth, this.background, UILayer, stage);
-    // TODO: hexgrid
     
-    // initialize terrain
+    // Build minimap.
+    this.minimap = new BuildMiniMap(this.camera, [this.scenario.size.x + this.scenario.offset*2, this.scenario.size.y], CONSTANTS.minimapWidth, this.background, UILayer, stage);
+   
+    // TODO: Build hexgrid.
+    this.gc.hexgrid;
+    
+    // Initialize terrains in the hexgrid.
     var terrain = this.scenario.terrain;
     for (var i = 0; i < terrain.length; i++)
         for (var j = 0; j < terrain[i].length; j++) {
@@ -233,7 +245,7 @@ GameClientUI.prototype.initGameUI = function(){
             }
         }
     
-    // animation to show text message at the center of canvas
+    // A Kinetic animation to show text message at the center of canvas.
     var centerMsg = new Kinetic.Text({
         text: "Waiting for other players...",
         x: 80,
@@ -245,6 +257,8 @@ GameClientUI.prototype.initGameUI = function(){
     });
     msgLayer.add(centerMsg);
     
+    // A Kinetic animation to show text message at the center of canvas.
+    // TODO: combined with last one?
     this.msgLayerAnim = new Kinetic.Animation(function(frame) {
         if (me.started) {
             if (me.starting){
@@ -304,7 +318,7 @@ GameClientUI.prototype.initGameUI = function(){
     }, msgLayer);
     this.msgLayerAnim.start();
     
-    // topbar
+    // A Kinetic image for the topbar.
     this.topbar = new Kinetic.Image({
         x: CONSTANTS.minimapWidth,
         y: 0,
@@ -313,7 +327,7 @@ GameClientUI.prototype.initGameUI = function(){
     });
     UILayer.add(this.topbar);
     
-    // unit counter
+    // Kinetic text objects for the unit counters.
     var counter1Text = new Kinetic.Text({
         fontFamily: "Courier New",
         fontSize: 15,
@@ -335,7 +349,7 @@ GameClientUI.prototype.initGameUI = function(){
     });
     UILayer.add(counter2Text);
     
-    // resource text
+    // A Kinetic text for the resource counter.
     var resourceText = new Kinetic.Text({
         fontFamily: "Courier New",
         fontSize: 15,
@@ -347,7 +361,7 @@ GameClientUI.prototype.initGameUI = function(){
     });
     UILayer.add(resourceText);
     
-    // flags
+    // Kinetic image objects for the flags.
     for (var i = 0; i < this.flagImgs.length; i++) {
         this.flags.push(new Kinetic.Image({
             image: this.flagImgs[i],
@@ -360,6 +374,7 @@ GameClientUI.prototype.initGameUI = function(){
         this.flags[i].moveToTop();
     }
     
+    // A Kinetic text for the flag label.
     var flagText = new Kinetic.Text({
         fontFamily: "Courier New",
         fontSize: 15,
@@ -371,7 +386,7 @@ GameClientUI.prototype.initGameUI = function(){
     });
     UILayer.add(flagText);
     
-    // button bar
+    // A Kinetic image for the button bar.
     this.buttonbar = new Kinetic.Image({
         x: CONSTANTS.minimapWidth + this.topbar.getWidth(),
         y: 0,
@@ -380,7 +395,7 @@ GameClientUI.prototype.initGameUI = function(){
     });
     UILayer.add(this.buttonbar);
     
-    // buttons
+    // Kinetic image objects for the buttons.
     this.buttons.build = new Kinetic.Image({
         x: 572,
         y: 4,
@@ -445,7 +460,7 @@ GameClientUI.prototype.initGameUI = function(){
     });
     UILayer.add(this.buttons.sound);
     
-    // build unit image
+    // A Kinetic group of Kinetic image objects for buildable units.
     var buildUnitGroup = new Kinetic.Group({
         visible: false,
     });
@@ -490,6 +505,8 @@ GameClientUI.prototype.initGameUI = function(){
     }
     UILayer.add(buildUnitGroup);
     
+    // A Kinetic animation to update the unit counters, the resource counter,
+    // and the flag label.
     this.UILayerAnim = new Kinetic.Animation(function(frame) {
         counter1Text.setText(me.unitCounter[1-me.team]);
         counter2Text.setText(me.unitCounter[me.team]);
@@ -507,6 +524,9 @@ GameClientUI.prototype.initGameUI = function(){
     stage.add(msgLayer);
 }
 
+/**
+ * Function to draw and periodically update the hexgrid.
+ */
 GameClientUI.prototype.drawHexgrid = function(/*Hexgrid*/hexgrid){
     var x = this.scenario.size.x;
 	var y = this.scenario.size.y;
@@ -592,7 +612,7 @@ Hexagon.prototype.contains = function(/*Point*/ p) {
 };
 
 /**
- * Update hexagon and its unit.
+ * Update the appearances of the hexagon, its terrain, its unit, and its fog.
  */
 GameClientUI.prototype.updateHexagon = function(/*Hexagon*/hexagon) {
    
@@ -653,6 +673,9 @@ GameClientUI.prototype.updateHexagon = function(/*Hexagon*/hexagon) {
    }
 };
 
+/**
+ * Function to control the showing time of starting message.
+ */
 GameClientUI.prototype.startingMessageControl = function(){
     this.starting = true;
     var self = this;
