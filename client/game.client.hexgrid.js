@@ -5,16 +5,16 @@
 /**
  * Constructor for client hexgrid.
  */ 
-var ClientHexgrid = function(/*SharedHexgrid*/ sharedHexgrid) {
+var ClientHexgrid = function(/*Hexgrid*/ hexgrid) {
 	//Inherit properties
-	this.prototype = sharedHexgrid;
+	this.prototype = hexgrid;
 	//Add new properties
 	this.reachables = [];
 	this.attackables = [];
 	this.buildables = [];
 	this.viewables = [];
 	//Convert all hexagons in client hexgrid to client hexagons
-	convertAllSharedHexagonsToClientHexagon(this);
+	convertAllHexagonsToClientHexagon(this);
 	
 	
 };
@@ -234,7 +234,7 @@ var ClientHexagon = function(){
 /**
  * Convert regulat hexagon to client hexagon.
  */
-var clientHexagonFromSharedHexagon = function(/*Hexagon*/ oldHexagon){
+var clientHexagonFromHexagon = function(/*Hexagon*/ oldHexagon){
 	//Add new properties
 	var clientHexagon = new ClientHexagon();
 	//Inherit old properties
@@ -245,11 +245,11 @@ var clientHexagonFromSharedHexagon = function(/*Hexagon*/ oldHexagon){
 /**
  * Convert all regular hexagons in hexgrid to client hexagons.
  */ 
-var convertAllSharedHexagonsToClientHexagon = function(/*hexgrid*/ hexgrid){
+var convertAllHexagonsToClientHexagon = function(/*hexgrid*/ hexgrid){
 	for(var i in hexgrid.matrix){
 		for(var j in hexgrid.matrix[i]){
 			var hexagon = hexgrid.matrix[i][j];
-			hexgrid.matrix[i][j] = clientHexagonFromSharedHexagon(hexagon);
+			hexgrid.matrix[i][j] = clientHexagonFromHexagon(hexagon);
 		}
 	}
 };

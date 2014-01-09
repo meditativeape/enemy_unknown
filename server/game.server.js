@@ -6,10 +6,10 @@
  * Server side we import shared classes and export game server.
  */
 require('../shared/game.shared.terrain.js');
-var helper = require('../shared/game.shared.helper.js');
+var Helper = require('../shared/game.shared.helper.js');
 var Hexgrid = require('../shared/game.shared.hexgrid.js');
 var Unit = require('../shared/game.shared.unit.js');
-var CONSTANTS = helper.CONSTANTS;
+var CONSTANTS = Helper.CONSTANTS;
 module.exports = GameServer;
 
 /**
@@ -61,63 +61,8 @@ var GameServer = function(/*int[]*/ playerList, /*int*/ gameid, /*int*/ type, /*
 
 };
   
-/**
- * Check it the unit can move from coord1 to coord2.
- */
-GameServer.prototype.canMove = function(/*Coord*/ coord1, /*Coord*/ coord2, /*int*/ player){	
-	var unit = this.hexgrid.getUnit(coord1);
-	if (unit && unit.player == player.player && !this.hexgrid.getUnit(coord2)){ // coord1 has player's unit and coord2 is empty
-		if (this.hexgrid.hexDist(this.hexgrid.matrix[coord1.X][coord1.Y], this.hexgrid.matrix[coord2.X][coord2.Y]) <= unit.range) {
-			if (!this.hexgrid.matrix[coord2.X][coord2.Y].terrain) {
-				return true;
-			} else {
-				if (this.hexgrid.matrix[coord2.X][coord2.Y].terrain.moveable)
-					return true;
-			}	
-		}
-	}
-	
-	return false;
-};
-	
-/**
- * Move the unit from coord1 to coord2.
- */
-GameServer.prototype.makeMove = function(/*Coord*/ coord1, /*Coord*/ coord2){
-	this.hexgrid.move(coord1, coord2);
-};
-	
-/**
- * Check it the unit at coord1 can attack a unit at to coord2.
- */
-GameServer.prototype.canAttack = function(/*Coord*/ coord1, /*Coord*/ coord2, /*int*/ player){
-	var myUnit = this.hexgrid.getUnit(coord1);
-	var theirUnit = this.hexgrid.getUnit(coord2);
-	if (myUnit.player == player.player && theirUnit && theirUnit.team != player.team)
-		if (this.hexgrid.hexDist(this.hexgrid.matrix[coord1.X][coord1.Y], this.hexgrid.matrix[coord2.X][coord2.Y]) <= myUnit.range)
-			return true;
-	return false;
-};
 
-/**
- * Make the unit at coord1 attack the unit at coord2.
- */	
-GameServer.prototype.makeAttack = function(/*Coord*/ coord1, /*Coord*/ coord2){
-	var responses = [];
-	var unit1 = this.hexgrid.getUnit(coord1);
-	var unit2 = this.hexgrid.getUnit(coord2);
-	this.hexgrid.attack(coord1, coord2);
-	responses.push(["1", "attack", coord1.X, coord1.Y, unit1.hp, coord2.X, coord2.Y, unit2.hp].join(" "));
-	if (unit1.hp <= 0) {  // unit 1 dies
-		responses.push(["1", "die", coord1.X, coord1.Y, unit1.type].join(" "));
-		this.units[unit1.team]--;
-	}
-	if (unit2.hp <= 0) {  // unit 2 dies
-		responses.push(["1", "die", coord2.X, coord2.Y, unit2.type].join(" "));
-		this.units[unit2.team]--;
-	}
-	return responses;	
-};
+	
 
 /**
  * Tell each player the numbers of units for all players.
@@ -200,7 +145,7 @@ GameServer.prototype.checkObjectives = function(){
 		this.objectiveList = this.scanObjectives();
 	}
 	for(var hexagon in this.objectiveList){	
-		if(t.objectiveType == 'flag'){  // is a flag
+		if(hexagon.terrain.objectiveType == 'flag'){  // is a flag
 			var self = this;
 			if (hexagon.piece && !hexagon.captured) {
 				this.winner = hexagon.piece.team;
@@ -210,7 +155,7 @@ GameServer.prototype.checkObjectives = function(){
 				// Window on Server???
 				hexagon.countdown = window.setTimeout(function(){
 					self.endGame(self.winner);
-					}, t.objectiveTime*1000);
+					}, hexagon.terrain.objectiveTime*1000);
 				hexagon.captured = true;
 			} else if (!hexagon.piece && hexagon.captured) {
 				this.winner = null;
@@ -222,15 +167,15 @@ GameServer.prototype.checkObjectives = function(){
 				hexagon.captured = false;
 			}
 		}
-		if (t.resource) {  // provide resource
-			var r = t.resource;
+		if (hexagon.terrain.resource) {  // provide resource
+			var resource = hexagon.terrain.resource;
 			var self = this;
 			if (hexagon.piece && !hexagon.captured) {
 				var id = hexagon.piece.player;
 				// Window on Server???
 				hexagon.interval = window.setInterval(function(){
-					self.updateResource(id, r);
-					}, t.gatheringSpeed*1000);
+					self.updateResource(id, resource);
+					}, hexagon.terrain.gatheringSpeed*1000);
 				hexagon.captured = true;
 			} else if (!hexagon.piece && hexagon.captured) {
 				// Window on Server???
@@ -251,11 +196,10 @@ GameServer.prototype.scanObjectives = function(){
 		for(var y in this.hexgrid.matrix[x]){
 			if(this.hexgrid.matrix[x][y].terrain){
 				var hexagon = this.hexgrid.matrix[x][y];
-				var terrain = hexagon.terrain;
-				if(terrain.objectiveType == 'flag'){  // is a flag
+				if(hexagon.terrain.objectiveType == 'flag'){  // is a flag
 					objectiveList.push("hexagon");
 				}
-				if (t.resource){ //contains resource
+				if (hexagon.terrain.resource){ //contains resource
 					objectiveList.push("hexagon");
 				}
 			}
@@ -296,8 +240,8 @@ GameServer.prototype.handleClientInput = function(client, message){
 		case "move":
 			var coord1 = new helper.Coordinate(parseInt(keywords[2]), parseInt(keywords[3]));
 			var coord2 = new helper.Coordinate(parseInt(keywords[4]), parseInt(keywords[5]));
-			if (this.canMove(coord1, coord2, client)) {
-				this.makeMove(coord1, coord2);  // move in our local game
+			if (this.hexgrid.canMove(coord1, coord2, client)) {
+				this.hexgrid.makeMove(coord1, coord2);  // move in our local game
 				var unit = this.hexgrid.getUnit(coord2);
 				unit.setcd(CONSTANTS.cd);
 				for (var i in this.players) {  // tell players the result of move
@@ -306,15 +250,15 @@ GameServer.prototype.handleClientInput = function(client, message){
 				}
 			}
 			if (this.fogOn) {
-				this.updateVisible();
+				this.hexgrid.updateVisible();
 			}
 			this.checkObjectives();
 			break;
 		case "attack":
 			var myCoord = new helper.Coordinate(parseInt(keywords[2]), parseInt(keywords[3]));
 			var oppoCoord = new helper.Coordinate(parseInt(keywords[4]), parseInt(keywords[5]));
-			if (this.canAttack(myCoord, oppoCoord, client)) {
-				var responses = this.makeAttack(myCoord, oppoCoord);  // attack in our local game and get results
+			if (this.hexgrid.canAttack(myCoord, oppoCoord, client)) {
+				var responses = this.hexgrid.makeAttack(myCoord, oppoCoord);  // attack in our local game and get results
 				var unit = this.hexgrid.getUnit(myCoord);
 				if (unit)
 					unit.setcd(CONSTANTS.cd);
@@ -325,7 +269,7 @@ GameServer.prototype.handleClientInput = function(client, message){
 				this.checkGameStatus();
 			}
 			if (this.fogOn) {
-				this.updateVisible(); // in case some unit dies
+				this.hexgrid.updateVisible(); // in case some unit dies
 			}
 			this.checkObjectives();
 			this.updateUnitCounter();
@@ -387,49 +331,6 @@ GameServer.prototype.sendMsg = function(/*Player*/ recipient, /*String*/ message
 	recipient.send(message);
 };
    
-/**
- * Update visible peices based on piece coord [x][y]
- */
-GameServer.prototype.updatePieceVisible = function(/*int*/ x, /*int*/ y) {
-	var myTeam = this.hexgrid.matrix[x][y].piece.team;
-	var vision = CONSTANTS.unitVision;
-	for (var i = -vision; i <= vision; i++)
-		for (var j = -vision; j <= vision; j++) {
-			if (this.hexgrid.matrix[x+i] && this.hexgrid.matrix[x+i][y+j] && 
-				(this.hexgrid.hexDist(this.hexgrid.matrix[x][y], this.hexgrid.matrix[x+i][y+j]) <= 3) && 
-				this.hexgrid.matrix[x+i][y+j].piece && 
-				(this.hexgrid.matrix[x+i][y+j].piece.team != myTeam))  { // there is an enemy piece within distance of 3
-				return this.hexgrid.matrix[x][y].piece.setVisible(true);
-			}
-		}
-	return this.hexgrid.matrix[x][y].piece.setVisible(false);
-}
-
-/**
- * Update visible peices. 
- */ 
-GameServer.prototype.updateVisible = function(){  // only works for 1v1
-	var piecesToAdd = [[], []];
-	for (var x in this.hexgrid.matrix){
-		for (var y in this.hexgrid.matrix[x]){
-			if (this.hexgrid.matrix[x][y].piece) {  // for each piece, check surrounding hexs
-				if (this.updatePieceVisible(parseInt(x), parseInt(y))) {  // if a piece becomes visible, add to the list
-					piecesToAdd[this.hexgrid.matrix[x][y].piece.team].push(new Coordinate(x, y));
-				}
-			}
-		}
-	}
-	for (var i in piecesToAdd){
-		for (var j in piecesToAdd[i]) {
-			var piece = this.hexgrid.getUnit(piecesToAdd[i][j]);
-		    if (this.hexgrid.scenario.revealtype) {
-				this.sendMsg(this.players[1-i], "1 add {0} {1} {2} {3} {4} {5} {6}".format([piece.player, piece.team, piece.type, piece.x, piece.y, piece.cooldown, piece.hp]));
-		  	} else {
-		    	this.sendMsg(this.players[1-i], "1 add {0} {1} {2} {3} {4} {5} {6}".format([piece.player, piece.team, 5, piece.x, piece.y, piece.cooldown, piece.hp]));
-		  	}
-	  	}
-	}
-}
 
 /**
  * Processing done when the game starts.
@@ -455,7 +356,7 @@ GameServer.prototype.startGame = function(){
 	
 	// TODO!!! hardcoded game instance for demo!
 	var pieces = [];
-	this.hexgrid = new BuildMap(this.scenario);
+	this.hexgrid = new ServerHexgrid(new Hexgrid(this.scenario));
 	this.fogOn = this.hexgrid.scenario.fog;
 	this.revealType = this.hexgrid.scenario.revealtype;
 	
@@ -517,7 +418,7 @@ GameServer.prototype.startGame = function(){
 	}
 	
 	if (this.fogOn) {
-		this.updateVisible();
+		this.hexgrid.updateVisible();
 	}
 	
 	console.log(":: " + this.id.substring(0,8) + " :: Game started!");

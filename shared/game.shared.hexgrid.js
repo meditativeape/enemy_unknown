@@ -18,7 +18,7 @@ if( 'undefined' != typeof global ) {
  * Constructor for a shared hexgird. Automatically builds matrix of hexagons.
  * @constructor
  */
-var SharedHexgrid = function(/*string*/ mapName, /*boolean*/ fogOn){
+var Hexgrid = function(/*string*/ mapName /*boolean*/ /*fogOn*/){
 	
 	//Move to server
 	// /*camera*/camera, /*layer*/layer, /*function*/callback, 
