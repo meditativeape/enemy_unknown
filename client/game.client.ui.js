@@ -274,7 +274,7 @@ GameClientUI.prototype.initGameUI = function(){
                 if (!msgLayer.isAncestorOf(centerMsg)) {
                     msgLayer.add(centerMsg);
                 }
-            } else if ((me.capping == -1) && (me.countdown <= 30)){  // TODO: hardcoded!
+            } else if ((me.capping === -1) && (me.countdown <= 30)){  // TODO: hardcoded!
                 // if (me.capping == 1){
                     // centerMsg.setText("Capturing flag: " + me.countdown + " seconds until win.");
                     // centerMsg.setFill('white');
