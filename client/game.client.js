@@ -1,12 +1,6 @@
 /** 
  * Client-side code. 
  */
- 
-/**
- * Constants
- */
-CONSTANTS.width = 800;
-CONSTANTS.height = 600;
 
 /**
  * The GameClient constructor. 

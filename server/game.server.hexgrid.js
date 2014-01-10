@@ -8,6 +8,8 @@
 var ServerHexgrid = function(/*Hexgrid*/ hexgrid) {
 	//Inherit old properties
 	this.prototype = hexgrid;
+	//Convert all units in server hexgrid to server units.
+	convertAllUnitsToServerUnits(this);
 };
 
  
@@ -81,10 +83,10 @@ ServerHexgrid.prototype.updatePieceVisible = function(/*int*/ x, /*int*/ y) {
 				(this.hexgrid.hexDist(this.hexgrid.matrix[x][y], this.hexgrid.matrix[x+i][y+j]) <= vision) && 
 				this.hexgrid.matrix[x+i][y+j].piece && 
 				(this.hexgrid.matrix[x+i][y+j].piece.team != myTeam))  { // there is an enemy piece within distance of 3
-				return this.hexgrid.matrix[x][y].piece.setVisible(true);
+				return this.hexgrid.matrix[x][y].piece.setIsVisibleToEnemy(true);
 			}
 		}
-	return this.hexgrid.matrix[x][y].piece.setVisible(false);
+	return this.hexgrid.matrix[x][y].piece.setIsVisibleToEnemy(false);
 }
 
 /**
@@ -113,3 +115,14 @@ ServerHexgrid.prototype.updateVisible = function(){  // only works for 1v1
 	}
 }
 
+/**
+ * Convert all units in server hexgrid to server units.
+ */ 
+var convertAllUnitsToServerUnits = function(/*hexgrid*/ hexgrid){
+	for(var i in hexgrid.matrix){
+		for(var j in hexgrid.matrix[i]){
+			var oldUnit = hexgrid.matrix[i][j].unit;
+			hexgrid.matrix[i][j].unit = ServerUnit(oldUnit);
+		}
+	}
+};
