@@ -6,12 +6,12 @@
  * Server side we import Point and Coordinate and export Map.
  */
 if( 'undefined' != typeof global ) {
-    var helper = require("./helper.js");
+    var helper = require("./game.shared.helper.js");
 	var Point = helper.Point;
 	var Coordinate = helper.Coordinate;
 	var CONSTANTS = helper.CONSTANTS;
-	var Scenarios = require("./scenarios.js").Scenarios;
-    module.exports = BuildMap;
+	var Scenarios = require("./game.shared.scenarios.js").Scenarios;
+    module.exports = Hexgrid;
 }
 
 /**
@@ -164,28 +164,6 @@ var Hexgrid = function(/*string*/ mapName /*boolean*/ /*fogOn*/){
 
 
 
-/**
- * Helper function to calculate the specs of a hexagon.
- * @return The specs for all hexagons
- */
-//function findHexSpecs(/*double*/side, /*double*/ratio){
-//	var z = side;
-//	var r = ratio;
-//	
-//	//solve quadratic
-//	var r2 = Math.pow(r, 2);
-//	var a = (1 + r2)/r2;
-//	var b = z/r2;
-//	var c = ((1-4.0*r2)/(4.0*r2)) * (Math.pow(z, 2));
-//	var x = (-b + Math.sqrt(Math.pow(b,2)-(4.0*a*c)))/(2.0*a);
-//	var y = ((2.0 * x) + z)/(2.0 * r);
-//	var spec = new Object();
-//	spec.width = ((2.0*x)+z);
-//	spec.height = (2.0*y);
-//	spec.side = side;
-//	return spec;
-//	
-//}
 
 /**
  * Constructs a hexagon.
@@ -271,100 +249,6 @@ function Hexagon(mx, my, map) {
 };
 
 
-//View
-/**
-* Hexagon Method:  Checks if point is in hexagon.
-* @this {Hexagon}
-*/
-//Hexagon.prototype.contains = function(/*Point*/ p) {
-//	var isIn = false;
-//	if(this.TopLeftPoint.X < p.X && this.TopLeftPoint.Y < p.Y &&
-//	   p.X < this.BottomRightPoint.X && p.Y < this.BottomRightPoint.Y)
-//	{
-//		//turn our absolute point into a relative point for comparing with the polygon's points
-//		//var pRel = new HT.Point(p.X - this.x, p.Y - this.y);
-//		var i, j = 0;
-//		for (i = 0, j = this.Points.length - 1; i < this.Points.length; j = i++)
-//		{
-//			var iP = this.Points[i];
-//			var jP = this.Points[j];
-//			if (
-//				(
-//				 ((iP.Y <= p.Y) && (p.Y < jP.Y)) ||
-//				 ((jP.Y <= p.Y) && (p.Y < iP.Y))
-//				//((iP.Y > p.Y) != (jP.Y > p.Y))
-//				) &&
-//				(p.X < (jP.X - iP.X) * (p.Y - iP.Y) / (jP.Y - iP.Y) + iP.X)
-//			   )
-//			{
-//				isIn = !isIn;
-//			}
-//		}
-//	}
-//	return isIn;
-//};
 
 
-//View
-/**
- * Hexagon Method: Update this hexagon and its unit on its layer
- * @this {Hexagon}
- */
-//Hexagon.prototype.update = function() {
-//	
-//	// update hexagon
-//	var points = [];
-//	for (var i = 0; i < this.Points.length; i++) {
-//		points.push([this.Points[i].X-this.camera.x, this.Points[i].Y-this.camera.y]);
-//	}
-//	this.hexagonToDraw.setPoints(points);
-//	this.hexagonToDraw.setFill('transparent');
-//	if (this.reachable || this.clientBuildable) {
-//		this.hexagonToDraw.setFill('rgba(120, 255,120, 0.3)');
-//	} else if (this.clientAttackable) {
-//		this.hexagonToDraw.setFill('rgba(255, 0, 0, 0.3)');
-//	}else if (this.guessing){
-//		this.hexagonToDraw.setFill('rgba(0,0,255,0.3)');
-//	}
-//    // else if(!this.clientViewable){
-//		// this.hexagonToDraw.setFill('rgba(120,0,0,0.3)');
-//	// }
-//	// add/update terrain
-//	var midPoint = new Point(this.MidPoint.X - this.camera.x, this.MidPoint.Y - this.camera.y);
-//	if (this.terrain) {
-//		if (this.terrainToDraw) {
-//			this.terrain.draw(midPoint, this.spec.height, this.terrainToDraw);
-//		} else {
-//			this.terrainToDraw = this.terrain.draw(midPoint, this.spec.height);
-//			this.map.terrainGroup.add(this.terrainToDraw);
-//		}
-//	}
-//	// add/update unit and hp
-//	if (this.unitToDraw)
-//		this.unitToDraw.destroy();
-//	if (this.piece != null) {
-//		this.unitToDraw = this.piece.draw(midPoint, this.spec.height);
-//		this.map.unitGroup.add(this.unitToDraw);
-//	}
-//    // add fog of war
-//    if (!this.fog) {
-//        this.fog = new Kinetic.Image({
-//            image: this.fogImg,
-//            opacity: 0,
-//            scale: {x:0.95, y:0.95}
-//        });
-//        this.map.fogGroup.add(this.fog);
-//    }
-//    this.fog.setX(midPoint.X - this.fogImg.width/3 - 18);
-//    this.fog.setY(midPoint.Y - this.fogImg.height/3 - 18);
-//    if (!this.clientViewable) {   
-//        if (this.opacity < 0.5) {
-//            this.fog.setOpacity(this.opacity);
-//            this.opacity += 0.01;
-//        } else {
-//            this.fog.setOpacity(0.5);
-//        }
-//    } else {
-//        this.fog.setOpacity(0);
-//    }
-//};
+

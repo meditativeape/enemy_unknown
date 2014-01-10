@@ -33,11 +33,6 @@ function Coordinate(/*int*/ x, /*int*/ y) {
  * Constants
  */
 var CONSTANTS = {
-	//width: 800, //TODO To be moved to client
-	//height: 600, //TODO To be moved to client
-	//hexSideLength: 60, //Move to UI
-	//hexRatio: 2.0, //Move to UI
-	//minimapWidth: 200 //Move to UI
 	unitCD: 10, //Unit countdown
     captureCD: 180, //Capture countdown
     unitCosts: [50, 40, 20, 30, 40], //Costs to build unit by type
