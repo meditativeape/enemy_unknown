@@ -501,7 +501,7 @@ GameClientUI.prototype.drawHexgrid = function(/*Hexgrid*/hexgrid){
  * Helper function to calculate the specs of a hexagon.
  * @return The specs for hexagons with given side length and ratio
  */
-GameClientUI.prototype.findHexSpecs = function()(/*double*/side, /*double*/ratio){
+GameClientUI.prototype.findHexSpecs = function(/*double*/side, /*double*/ratio){
 	var z = side;
 	var r = ratio;
 	
