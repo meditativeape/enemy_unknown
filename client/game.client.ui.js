@@ -8,7 +8,9 @@
 CONSTANTS.hexSideLength = 60;
 CONSTANTS.hexRatio = 2.0;
 CONSTANTS.mapScrollSpeed = 15;
-CONSTANTS.minimapWidth = 200;
+CONSTANTS.minimapWidth = 200; 
+CONSTANTS.width = 800;
+CONSTANTS.height = 600;
  
 /**
  * Setup stage and layers.
@@ -72,6 +74,7 @@ var GameClientUI = function(/*gameClient*/ gc, /*string*/ scenario) {
     
     // TODO: What's the meaning of these variables?
     this.markUnitGroup = null;
+	this.buildUnitGroup = null;
     this.hasLoaded = false;
     this.buildUnitMenu = false;
 }
@@ -500,7 +503,7 @@ GameClientUI.prototype.drawHexgrid = function(/*Hexgrid*/hexgrid){
  * Helper function to calculate the specs of a hexagon.
  * @return The specs for hexagons with given side length and ratio
  */
-GameClientUI.prototype.findHexSpecs = function()(/*double*/side, /*double*/ratio){
+GameClientUI.prototype.findHexSpecs = function(/*double*/side, /*double*/ratio){
 	var z = side;
 	var r = ratio;
 	
