@@ -70,7 +70,7 @@ ServerHexgrid.prototype.makeAttack = function(/*Coord*/ coord1, /*Coord*/ coord2
 };
 
 /**
- * Update visible pieces based on piece coord [x][y]
+ * Update pieces visible to enemy based on piece coord [x][y]
  */
 ServerHexgrid.prototype.updatePieceVisible = function(/*int*/ x, /*int*/ y) {
 	var myTeam = this.hexgrid.matrix[x][y].piece.team;
@@ -88,7 +88,7 @@ ServerHexgrid.prototype.updatePieceVisible = function(/*int*/ x, /*int*/ y) {
 }
 
 /**
- * Update visible peices. 
+ * Update pieces visible to enemy. 
  */ 
 ServerHexgrid.prototype.updateVisible = function(){  // only works for 1v1
 	var piecesToAdd = [[], []];
