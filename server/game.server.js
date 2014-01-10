@@ -197,7 +197,7 @@ GameServer.prototype.scanObjectives = function(){
 		for(var y in this.hexgrid.matrix[x]){
 			if(this.hexgrid.matrix[x][y].terrain){
 				var hexagon = this.hexgrid.matrix[x][y];
-				if(hexagon.terrain.objectiveType == 'flag'){  // is a flag
+				if(hexagon.terrain.objectiveType === 'flag'){  // is a flag
 					objectiveList.push("hexagon");
 				}
 				if (hexagon.terrain.resource){ //contains resource
@@ -315,7 +315,7 @@ GameServer.prototype.checkGameStatus = function(){
 	var winningTeam = -1;
 	for (var i in this.units) {
 		if (this.units[i] > 0) {
-			if (winningTeam != -1)
+			if (winningTeam !== -1)
 				return;
 			else
 				winningTeam = i;
