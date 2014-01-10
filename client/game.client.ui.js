@@ -528,9 +528,9 @@ Hexagon.prototype.contains = function(/*Point*/ p) {
     if (this.TopLeftPoint.X < p.X && this.TopLeftPoint.Y < p.Y &&
        p.X < this.BottomRightPoint.X && p.Y < this.BottomRightPoint.Y)
     {
-        //turn our absolute point into a relative point for comparing with the polygon's points
-        //var pRel = new HT.Point(p.X - this.x, p.Y - this.y);
         var i, j = 0;
+		//Point in polygon test from this webpage
+		//http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html#Originality
         for (i = 0, j = this.Points.length - 1; i < this.Points.length; j = i++)
         {
             var iP = this.Points[i];
