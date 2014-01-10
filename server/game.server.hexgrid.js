@@ -2,11 +2,11 @@
  * Server hexgrid functions.
  */ 
  
- /**
+/**
  * Constructor for server hexgrid.
  */ 
 var ServerHexgrid = function(/*Hexgrid*/ hexgrid) {
-	//Inherit properties
+	//Inherit old properties
 	this.prototype = hexgrid;
 };
 
@@ -70,7 +70,7 @@ ServerHexgrid.prototype.makeAttack = function(/*Coord*/ coord1, /*Coord*/ coord2
 };
 
 /**
- * Update visible peices based on piece coord [x][y]
+ * Update visible pieces based on piece coord [x][y]
  */
 ServerHexgrid.prototype.updatePieceVisible = function(/*int*/ x, /*int*/ y) {
 	var myTeam = this.hexgrid.matrix[x][y].piece.team;
@@ -78,7 +78,7 @@ ServerHexgrid.prototype.updatePieceVisible = function(/*int*/ x, /*int*/ y) {
 	for (var i = -vision; i <= vision; i++)
 		for (var j = -vision; j <= vision; j++) {
 			if (this.hexgrid.matrix[x+i] && this.hexgrid.matrix[x+i][y+j] && 
-				(this.hexgrid.hexDist(this.hexgrid.matrix[x][y], this.hexgrid.matrix[x+i][y+j]) <= 3) && 
+				(this.hexgrid.hexDist(this.hexgrid.matrix[x][y], this.hexgrid.matrix[x+i][y+j]) <= vision) && 
 				this.hexgrid.matrix[x+i][y+j].piece && 
 				(this.hexgrid.matrix[x+i][y+j].piece.team != myTeam))  { // there is an enemy piece within distance of 3
 				return this.hexgrid.matrix[x][y].piece.setVisible(true);

@@ -109,7 +109,7 @@ GameServer.prototype.buildUnit = function(/*int*/ type, /*Coord*/ coord,/*int*/ 
 	ys = [y, parseInt(y)+1, y-1, parseInt(y)+1, y-1, y];
 	for (var i = 0; i < 6; i++) {
 		unit = this.hexgrid.getUnit(new helper.Coordinate(xs[i], ys[i]));
-		if (unit && (unit.team == team)) {
+		if (unit && (unit.team === team)) {
 			hasAllyNearby = true;
 			break;
 		}
@@ -128,7 +128,7 @@ GameServer.prototype.buildUnit = function(/*int*/ type, /*Coord*/ coord,/*int*/ 
 			this.updateVisible();
 		} else {
 			for (var i in this.players) {
-				if (this.revealType || i == id) {
+				if (this.revealType || i === id) {
 					this.sendMsg(this.players[i], "1 add {0} {1} {2} {3} {4} {5} {6}".format([id, team, type, coord.X, coord.Y, CONSTANTS.cd, u.hp]));
 				} else {
 					this.sendMsg(this.players[i], "1 add {0} {1} {2} {3} {4} {5} {6}".format([id, team, 5, coord.X, coord.Y, CONSTANTS.cd, u.hp]));
@@ -146,7 +146,7 @@ GameServer.prototype.checkObjectives = function(){
 		this.objectiveList = this.scanObjectives();
 	}
 	for(var hexagon in this.objectiveList){	
-		if(hexagon.terrain.objectiveType == 'flag'){  // is a flag
+		if(hexagon.terrain.objectiveType === 'flag'){  // is a flag
 			var self = this;
 			if (hexagon.piece && !hexagon.captured) {
 				this.winner = hexagon.piece.team;
@@ -246,7 +246,7 @@ GameServer.prototype.handleClientInput = function(client, message){
 				var unit = this.hexgrid.getUnit(coord2);
 				unit.setcd(CONSTANTS.cd);
 				for (var i in this.players) {  // tell players the result of move
-					if (unit.player == i || !this.fogOn || unit.serverIsVisible)  // only works for 1v1
+					if (unit.player === i || !this.fogOn || unit.serverIsVisible)  // only works for 1v1
 						this.sendMsg(this.players[i], message + " " + CONSTANTS.cd);
 				}
 			}
@@ -406,7 +406,7 @@ GameServer.prototype.startGame = function(){
 		this.players[i].player = k;
 		this.players[i].team = k++;
 		for (var j in pieces) {
-			if (this.players[i].team == pieces[j].team) {
+			if (this.players[i].team === pieces[j].team) {
 				this.sendMsg(this.players[i], "1 add {0} {1} {2} {3} {4} {5} {6}".format([pieces[j].player, pieces[j].team, pieces[j].type, pieces[j].x, pieces[j].y, 0, pieces[j].hp]));
 			} else if (!this.fogOn) {
 				if (this.revealType) {
@@ -435,7 +435,7 @@ GameServer.prototype.startGame = function(){
  */
 GameServer.prototype.leaveGame = function(client){
 	for (var i in this.players)
-		if (this.players[i].userid == client.userid) {
+		if (this.players[i].userid === client.userid) {
 			this.players[i].game = null;
 			this.players.splice(i, i+1);
 			for (var i in this.players) {  // tell each player that someone leaves
@@ -445,7 +445,7 @@ GameServer.prototype.leaveGame = function(client){
 		}
 	console.log(":: " + this.id.substring(0,8) + " :: player " + client.userid.substring(0,8) + " has left the game.");
 	// if this game has no more than one player, end it
-	if (this.players.length == 1) {
+	if (this.players.length === 1) {
 		this.endGame(this.players[0].team);
 	}
 };

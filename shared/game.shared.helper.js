@@ -5,7 +5,7 @@
 /**
  * Server side we export Point and Coordinate.
  */
-if( 'undefined' != typeof global ) {
+if( 'undefined' !== typeof global ) {
     exports.Point = Point;
 	exports.Coordinate = Coordinate;
 	exports.CONSTANTS = CONSTANTS;
@@ -37,7 +37,7 @@ var CONSTANTS = {
     captureCD: 180, //Capture countdown
     unitCosts: [50, 40, 20, 30, 40], //Costs to build unit by type
 	unitMoveRange: 2.0 , //Movement range of all units.
-	unitViewRange: 4.0, //View range of all units.
+	unitViewRange: 3.0, //View range of all units.
     
 };
 

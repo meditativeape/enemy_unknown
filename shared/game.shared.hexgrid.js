@@ -5,7 +5,7 @@
 /**
  * Server side we import Point and Coordinate and export Map.
  */
-if( 'undefined' != typeof global ) {
+if( 'undefined' !== typeof global ) {
     var helper = require("./game.shared.helper.js");
 	var Point = helper.Point;
 	var Coordinate = helper.Coordinate;
@@ -24,8 +24,6 @@ var Hexgrid = function(/*string*/ mapName /*boolean*/ /*fogOn*/){
 	// /*camera*/camera, /*layer*/layer, /*function*/callback, 
 	//Move to view
 	///*img*/fogImg
-	var side = CONSTANTS.hexSideLength;
-	var ratio = CONSTANTS.hexRatio;
 	this.scenario = Scenarios[mapName];
 	var numRows = this.scenario.size.numRows;
 	var numCols = this.scenario.size.numCols;

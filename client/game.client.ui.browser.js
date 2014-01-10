@@ -73,16 +73,16 @@ this.gcUIBrowser.prototype.registerEventListeners = function() {
     // Event listener for pressing down a key to move the camera, make a
     // guess, or build a new unit.
 	var keydown = function(event) {
-		if (event.keyCode == 37 || event.keyCode == 65) { // left
+		if (event.keyCode === 37 || event.keyCode === 65) { // left
 			gcUI.camera.isMovingLeft = true;
-		} else if (event.keyCode == 39 || event.keyCode == 68) { // right
+		} else if (event.keyCode === 39 || event.keyCode === 68) { // right
 			gcUI.camera.isMovingRight = true;
-		} else if (event.keyCode == 38 || event.keyCode == 87) { // up
+		} else if (event.keyCode === 38 || event.keyCode === 87) { // up
 			gcUI.camera.isMovingUp = true;
-		} else if (event.keyCode == 40 || event.keyCode == 83) { // down
+		} else if (event.keyCode === 40 || event.keyCode === 83) { // down
 			gcUI.camera.isMovingDown = true;
 		}
-		if (event.keyCode == 49){
+		if (event.keyCode === 49){
 			if(gc.guess){
 				gc.hexgrid.getUnit(gc.guess).guess(0);
 				gc.hexgrid.matrix[gc.guess.X][gc.guess.Y].guessing = false;
@@ -96,7 +96,7 @@ this.gcUIBrowser.prototype.registerEventListeners = function() {
 				gc.build = false;
 			}
 		}
-		if (event.keyCode == 50){
+		if (event.keyCode === 50){
 			if(gc.guess){
 				gc.hexgrid.getUnit(gc.guess).guess(1);
 				gc.hexgrid.matrix[gc.guess.X][gc.guess.Y].guessing = false;
@@ -110,7 +110,7 @@ this.gcUIBrowser.prototype.registerEventListeners = function() {
 				gc.build = false;
 			}
 		}
-		if (event.keyCode == 51){
+		if (event.keyCode === 51){
 			if(gc.guess){
 				gc.hexgrid.getUnit(gc.guess).guess(2);
 				gc.hexgrid.matrix[gc.guess.X][gc.guess.Y].guessing = false;
@@ -124,7 +124,7 @@ this.gcUIBrowser.prototype.registerEventListeners = function() {
 				gc.build = false;
 			}
 		}
-		if (event.keyCode == 52){
+		if (event.keyCode === 52){
 			if(gc.guess){
 				gc.hexgrid.getUnit(gc.guess).guess(3);
 				gc.hexgrid.matrix[gc.guess.X][gc.guess.Y].guessing = false;

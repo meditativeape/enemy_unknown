@@ -5,7 +5,7 @@
 /**
  * Server side we export Scenarios.
  */
-if( 'undefined' != typeof global ) {
+if( 'undefined' !== typeof global ) {
     exports.Scenarios = Scenarios;
 }
 

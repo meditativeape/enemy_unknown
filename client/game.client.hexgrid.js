@@ -6,7 +6,7 @@
  * Constructor for client hexgrid.
  */ 
 var ClientHexgrid = function(/*Hexgrid*/ hexgrid) {
-	//Inherit properties
+	//Inherit old properties
 	this.prototype = hexgrid;
 	//Add new properties
 	this.reachables = [];
@@ -222,7 +222,10 @@ ClientHexgrid.prototype.clearViewables = function(){
 /**
  * Constructor for client hexagon.
  */
-var ClientHexagon = function(){
+var ClientHexagon = function(/*Hexagon*/ oldHexagon){
+	//Inherit old properties
+	clientHexagon.prototype = oldHexagon;
+	//Add new properties
 	this.reachable = false;
 	this.attackable = false;
 	this.buildable = false;
@@ -232,24 +235,13 @@ var ClientHexagon = function(){
 };
 
 /**
- * Convert regulat hexagon to client hexagon.
- */
-var clientHexagonFromHexagon = function(/*Hexagon*/ oldHexagon){
-	//Add new properties
-	var clientHexagon = new ClientHexagon();
-	//Inherit old properties
-	clientHexagon.prototype = oldHexagon;
-	return clientHexagon;
-}
-
-/**
  * Convert all regular hexagons in hexgrid to client hexagons.
  */ 
 var convertAllHexagonsToClientHexagon = function(/*hexgrid*/ hexgrid){
 	for(var i in hexgrid.matrix){
 		for(var j in hexgrid.matrix[i]){
 			var hexagon = hexgrid.matrix[i][j];
-			hexgrid.matrix[i][j] = clientHexagonFromHexagon(hexagon);
+			hexgrid.matrix[i][j] = ClientHexagon(hexagon);
 		}
 	}
 };
