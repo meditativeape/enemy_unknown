@@ -35,6 +35,7 @@ var GameClient = function() {
 	this.gcSound = null;
     this.scenario = null;
     this.canBuildUnit = [false, false, false, false, false];
+    this.guess = null;
 }
 
 GameClient.prototype.newSocket = function (){
@@ -364,9 +365,9 @@ GameClient.prototype.updateRA = function(){
 GameClient.prototype.updateUnitAvailability = function() {
     for (var i = 0; i < 5; i++) {
         if (this.resource >= CONSTANTS.cost[i]) {
-            this.buildUnit[i] = true;
+            this.canBuildUnit[i] = true;
         } else {
-            this.buildUnit[i] = false;
+            this.canBuildUnit[i] = false;
         }
     }
 }
