@@ -77,7 +77,6 @@ var GameClientUI = function(/*gameClient*/ gc, /*string*/ scenario) {
 	this.buildUnitGroup = null;
     this.hasLoaded = false;
     this.buildUnitMenu = false;
-    this.whichUnitToBuild = null;
 }
 
 /**
