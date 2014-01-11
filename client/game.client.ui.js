@@ -15,6 +15,7 @@ CONSTANTS.height = 600;
 /**
  * Setup stage and layers.
  */
+ // TODO: method to remove them
 var stage = new Kinetic.Stage({
     container: 'container',
     id: 'gameCanvas',
@@ -213,7 +214,6 @@ GameClientUI.prototype.loadImage = function() {
     CONSTANTS.thronTerrain.image = this.thronImg;
     CONSTANTS.flagTerrain.image = this.flagImg;
     CONSTANTS.resourceTerrain.image = this.resourceImg;
-    CONSTANTS.heart = this.heartImg;
 };
 
 /**
@@ -491,19 +491,22 @@ GameClientUI.prototype.drawHexgrid = function(/*Hexgrid*/hexgrid){
     mapLayer.add(hexGroup);
     mapLayer.add(unitGroup);
     mapLayer.add(fogGroup);
+    
+    var groups = {"hexGroup": hexGroup, "terrainGroup": terrainGroup,
+              "unitGroup": unitGroup, "fogGroup": fogGroup};
 
     // Calculate and draw hexagons for the first time.
     hexgrid.spec = findHexSpecs(CONSTANTS.hexSideLength, CONSTANTS.hexRatio);
     for (var x in hexgrid.matrix)
         for (var y in hexgrid.matrix[x])
-            this.drawHexagon(hexgrid, hexgrid.matrix[x][y], hexGroup);
+            this.drawHexagon(hexgrid, hexgrid.matrix[x][y], groups);
     
     // A Kinetic animation to update the hexagons periodically.
     var me = this;
     this.updateHexagonAnim = new Kinetic.Animation(function(frame){
         for (var x in hexgrid.matrix)
             for (var y in hexgrid.matrix[x])
-                me.updateHexagon(hexgrid, hexgrid[x][y]);
+                me.updateHexagon(hexgrid, hexgrid[x][y], groups);
     }, layer);
     this.updateHexagonAnim.start();
 };
@@ -584,7 +587,7 @@ Hexagon.prototype.contains = function(/*Point*/ p) {
 /**
  * Draw a hexagon for the first time.
  */
-GameClientUI.prototype.drawHexagon = function(/*Hexgrid*/hexgrid, /*Hexagon*/hexagon, /*Kinetic.Group*/hexGroup) {
+GameClientUI.prototype.drawHexagon = function(/*Hexgrid*/hexgrid, /*Hexagon*/hexagon, /*object*/groups) {
     // TODO: probably should move to somewhere else
     if (!hexgrid.fogOn)
         hexagon.viewable = true;
@@ -621,13 +624,13 @@ GameClientUI.prototype.drawHexagon = function(/*Hexgrid*/hexgrid, /*Hexagon*/hex
 		hexagonConfig.points.push([hexagon.Points[i].X - this.camera.x, hexagon.Points[i].Y - this.camera.y]);
 	}
 	hexagon.hexagonToDraw = new Kinetic.Polygon(hexagonConfig);
-    hexGroup.add(hexagon.hexagonToDraw);
+    groups["hexGroup"].add(hexagon.hexagonToDraw);
 };
 
 /**
  * Update the appearances of the hexagon, its terrain, its unit, and its fog.
  */
-GameClientUI.prototype.updateHexagon = function(/*Hexgrid*/hexgrid, /*Hexagon*/hexagon) {
+GameClientUI.prototype.updateHexagon = function(/*Hexgrid*/hexgrid, /*Hexagon*/hexagon, /*object*/groups) {
 
     // update hexagon position and color
     var points = [];
@@ -648,10 +651,12 @@ GameClientUI.prototype.updateHexagon = function(/*Hexgrid*/hexgrid, /*Hexagon*/h
     var midPoint = new Point(hexagon.MidPoint.X - this.camera.x, hexagon.MidPoint.Y - this.camera.y);
     if (hexagon.terrain) {
         if (hexagon.terrainToDraw) {
+            // TODO: draw terrain
             hexagon.terrain.draw(midPoint, hexgrid.spec.height, hexagon.terrainToDraw);
         } else {
+            // TODO: draw terrain
             hexagon.terrainToDraw = hexagon.terrain.draw(midPoint, hexgrid.spec.height);
-            this.terrainGroup.add(hexagon.terrainToDraw);
+            groups["terrainGroup"].add(hexagon.terrainToDraw);
         }
     }
     
@@ -659,8 +664,8 @@ GameClientUI.prototype.updateHexagon = function(/*Hexgrid*/hexgrid, /*Hexagon*/h
     if (hexagon.unitToDraw)
         hexagon.unitToDraw.destroy();
     if (hexagon.piece != null) {
-        hexagon.unitToDraw = hexagon.piece.draw(midPoint, hexgrid.spec.height);
-        this.unitGroup.add(hexagon.unitToDraw);
+        hexagon.unitToDraw = this.drawUnit(hexagon.piece, midPoint, hexgrid.spec.height);
+        groups["unitGroup"].add(hexagon.unitToDraw);
     }
     
     // add fog of war
@@ -670,7 +675,7 @@ GameClientUI.prototype.updateHexagon = function(/*Hexgrid*/hexgrid, /*Hexagon*/h
             opacity: 0,
             scale: {x:0.95, y:0.95}
         });
-        this.fogGroup.add(hexagon.fog);
+        groups["fogGroup"].add(hexagon.fog);
     }
     hexagon.fog.setX(midPoint.X - hexgrid.fogImg.width/3 - 18);
     hexagon.fog.setY(midPoint.Y - hexgrid.fogImg.height/3 - 18);
@@ -684,4 +689,83 @@ GameClientUI.prototype.updateHexagon = function(/*Hexgrid*/hexgrid, /*Hexagon*/h
     } else {
         hexagon.fog.setOpacity(0);
     }
+};
+
+/*********************************
+ Unit Helper Methods
+ *********************************/
+
+/**
+ * Returns a Kinetic group to draw the unit.
+ * Put it into the unit group.
+ */
+GameClientUI.prototype.drawUnit = function(/*ClientUnit*/unit, /*Point*/p, /*int*/height) {
+    var groupToDraw = new Kinetic.Group();
+    
+    // draw unit
+	var unitToDraw;
+    if (unit.hitCounter < 20) {
+        var hitImage;
+        if (unit.lastHitType == "small")
+            hitImage = this.getHitImgs.small[unit.team][unit.type];
+        else
+            hitImage = this.getHitImgs.big[unit.team][unit.type];
+        unitToDraw = new Kinetic.Image({
+			image: hitImage,
+			x: Math.floor(p.X - unit.image.width/2),
+			y: Math.floor(p.Y + height*2/5 - unit.image.height + 5),
+			width: unit.image.width,
+			height: unit.image.height
+		});
+		var offset = Math.floor(unit.hitCounter/2);
+		unitToDraw.setCrop({x:120*offset, y:0, width:120, height:120});
+        unit.hitCounter++;
+        
+	} else if (unit.cooldown > 0.2 && unit.cdImage) {
+		unitToDraw = new Kinetic.Image({
+			image: unit.cdImage,
+			x: Math.floor(p.X - unit.image.width/2),
+			y: Math.floor(p.Y + height*2/5 - unit.image.height + 5),
+			width: unit.image.width,
+			height: unit.image.height
+		});
+		var offset = Math.round((5 - unit.cooldown/2)*10);
+		unitToDraw.setCrop({x:120*offset, y:0, width:120, height:120});
+        
+	} else {
+		unitToDraw = new Kinetic.Image({
+			image: unit.image,
+			x: Math.floor(p.X - unit.image.width/2),
+			y: Math.floor(p.Y + height*2/5 - unit.image.height + 5),
+			width: unit.image.width,
+			height: unit.image.height
+		});
+	}
+    groupToDraw.add(unitToDraw);
+    
+    // draw hp
+    for (var i = 0; i < unit.hp; i++) {
+        var hpHeart = new Kinetic.Image({
+            image: this.heartImage,
+            x: Math.floor(p.X + 22),
+            y: Math.floor(p.Y + 15 * i - 30)
+        });
+        groupToDraw.add(hpHeart);
+    }
+    
+    // draw number
+    if (unit.showNum && unit.type != 5) {
+        var num = unit.type + 1;
+        var numText = new Kinetic.Text({
+            fontFamily: "Impact",
+            fontSize: 30,
+            stroke: "white",
+            text: num,
+            x: p.X,
+            y: p.Y
+        });
+        groupToDraw.add(numText);
+    }
+    
+	return groupToDraw;
 };
