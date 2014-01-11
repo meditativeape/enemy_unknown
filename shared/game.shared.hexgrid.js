@@ -31,7 +31,8 @@ var Hexgrid = function(/*string*/ mapName, /*boolean*/ fogOn){
 			this.matrix[i][j] = new Hexagon(new Coordinate(i, j));
 		}
 	}		
-	
+
+// Moved to view
 //	while(xpos < x/2 && (ypos - spec.height/2>0)){
 //		while(matrixx <= rows && (ypos + spec.height/2<y)){
 //			var id = matrixx.toString(10) + matrixy.toString(10);
@@ -53,7 +54,7 @@ var Hexgrid = function(/*string*/ mapName, /*boolean*/ fogOn){
 //		xpos = offset+ (spec.width/2 + spec.side/2)*matrixy;
 //	}
 	
-	//View
+	//Moved to View
 	// draw hexagons, terrains, units, and hp bars, then update them
 //	if (camera && layer) {
 //		layer.add(this.terrainGroup);
@@ -147,6 +148,8 @@ function Hexagon(/*Coordinate*/coord) {
 	// original argument list: id, mx, my, x, y, spec, camera, map, callback, fogOn, fogImg
 	this.piece = null;
     this.coord = coord;
+    
+    // Moved to view
 	//this.matrixx = mx;
 	//this.matrixy = my;
     //if (fogOn != true)
@@ -180,7 +183,7 @@ function Hexagon(/*Coordinate*/coord) {
 //	
 //	this.selected = false;
 	
-	//View
+	//moved to View
 //	if (callback) {
 //		this.callback = callback;
 //	}

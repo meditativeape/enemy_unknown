@@ -224,6 +224,7 @@ ClientHexgrid.prototype.clearViewables = function(){
 var ClientHexagon = function(/*Hexagon*/ oldHexagon){
 	//Inherit old properties
 	clientHexagon.prototype = oldHexagon;
+    
 	//Add new properties
 	this.reachable = false;
 	this.attackable = false;
@@ -231,6 +232,8 @@ var ClientHexagon = function(/*Hexagon*/ oldHexagon){
 	this.viewable = false;
 	this.opacity = 1;
 	this.pastViewable = false;
+    this.guessing = false;
+    this.selected = false;
 };
 
 /**
@@ -244,6 +247,3 @@ var convertAllHexagonsToClientHexagon = function(/*hexgrid*/ hexgrid){
 		}
 	}
 };
-
-
-

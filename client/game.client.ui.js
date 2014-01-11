@@ -223,6 +223,7 @@ GameClientUI.prototype.initGameUI = function(){
     var me = this;
     
     // Build camera.
+    // TODO: change the constructors of camera and minimap
     this.camera = new BuildCamera([this.scenario.size.x + this.scenario.offset*2, this.scenario.size.y], CONSTANTS.mapScrollSpeed, this.background, mapLayer);
     
     // Build minimap.
@@ -244,6 +245,9 @@ GameClientUI.prototype.initGameUI = function(){
                 break;
             }
         }
+    
+    // Calculate the position of hexagons and draw them on the map.
+    this.drawHexgrid(gc.hexgrid);
     
     // A Kinetic text to show text message at the center of canvas.
     var centerMsg = new Kinetic.Text({
@@ -409,11 +413,6 @@ GameClientUI.prototype.initGameUI = function(){
         image: this.buttonImgs.unlit.menu,
         listening: true
     });
-    
-    this.buttons.menu.on('click', function(){
-        // click event listener goes here
-        alert("clicked!");
-    });
     UILayer.add(this.buttons.menu);
     
     this.buttons.sound = new Kinetic.Image({
@@ -481,17 +480,8 @@ GameClientUI.prototype.startingMessageControl = function(){
  * Function to draw and periodically update the hexgrid.
  */
 GameClientUI.prototype.drawHexgrid = function(/*Hexgrid*/hexgrid){
-    //var fogImg;
-    //var x = this.scenario.size.x;
-	//var y = this.scenario.size.y;
-	//var offset = this.scenario.offset;
-    hexgrid.spec = findHexSpecs(CONSTANTS.hexSideLength, CONSTANTS.hexRatio);
-    for (var x in hexgrid.matrix)
-        for (var y in hexgrid.matrix[x])
-            this.drawHexagon(hexgrid, hexgrid.matrix[x][y]);
-	//var xpos = offset;
-	//var ypos = y/2 - spec.height/2;
-    
+
+    // Add Kinetic groups for hexagons, terrains, units, and fogs to map layer
     this.hexGroup = new Kinetic.Group();  // only hexagons listen to events
     this.terrainGroup = new Kinetic.Group({listening: false});
     this.unitGroup = new Kinetic.Group({listening: false});
@@ -501,15 +491,43 @@ GameClientUI.prototype.drawHexgrid = function(/*Hexgrid*/hexgrid){
     mapLayer.add(hexGroup);
     mapLayer.add(unitGroup);
     mapLayer.add(fogGroup);
+
+    // Calculate and draw hexagons for the first time.
+    hexgrid.spec = findHexSpecs(CONSTANTS.hexSideLength, CONSTANTS.hexRatio);
+    for (var x in hexgrid.matrix)
+        for (var y in hexgrid.matrix[x])
+            this.drawHexagon(hexgrid, hexgrid.matrix[x][y], hexGroup);
     
-    // A Kinetic animation to update the hexagons.
+    // A Kinetic animation to update the hexagons periodically.
     var me = this;
-    this.anim = new Kinetic.Animation(function(frame){
+    this.updateHexagonAnim = new Kinetic.Animation(function(frame){
         for (var x in hexgrid.matrix)
             for (var y in hexgrid.matrix[x])
                 me.updateHexagon(hexgrid, hexgrid[x][y]);
     }, layer);
-    this.anim.start();
+    this.updateHexagonAnim.start();
+};
+
+/**
+ * Register a callback function on a certain event for all hexagons.
+ * This callback function should take two arguments: the hexagon that the event 
+ * is triggered on, and the event.
+ */
+GameClientUI.prototype.registerCallbackForHexagons = function(/*string*/eventName, /*function*/callback){
+    for (var x in gc.hexgrid.matrix)
+        for (var y in gc.hexgrid.matrix[x]) {
+            var hexagon = gc.hexgrid.matrix[x][y];
+            hexagon.hexagonToDraw.on(eventName, function(){callback(hexagon, event)});
+        }
+}
+
+/**
+ * Stop all animations created by game client UI. 
+ */
+GameClientUI.prototype.stopAnimations = function(){
+    this.msgLayerAnim.stop();
+    this.UILayerAnim.stop();
+    this.updateHexagonAnim.stop();
 };
 
 /*********************************
@@ -566,10 +584,44 @@ Hexagon.prototype.contains = function(/*Point*/ p) {
 /**
  * Draw a hexagon for the first time.
  */
-GameClientUI.prototype.drawHexagon = function(/*Hexgrid*/hexgrid, /*Hexagon*/hexagon) {
+GameClientUI.prototype.drawHexagon = function(/*Hexgrid*/hexgrid, /*Hexagon*/hexagon, /*Kinetic.Group*/hexGroup) {
+    // TODO: probably should move to somewhere else
+    if (!hexgrid.fogOn)
+        hexagon.viewable = true;
+    
+    // Calculate the points for this hexagon.
     var spec = hexgrid.spec;
+    var x = this.scenario.offset + (spec.width / 2 + spec.side / 2) * (hexagon.coord.X + hexagon.coord.Y);
+    var y = this.scenario.size.y / 2 - spec.height / 2 * (hexagon.coord.Y + 1 - hexagon.coord.X);
+    var x1 = (spec.width - spec.side)/2;
+	var y1 = (spec.height / 2);
+    hexagon.Points = [];
+   	hexagon.Points.push(new Point(x1 + x, y));
+	hexagon.Points.push(new Point(x1 + spec.side + x, y));
+	hexagon.Points.push(new Point(spec.width + x, y1 + y));
+	hexagon.Points.push(new Point(x1 + spec.side + x, spec.height + y));
+	hexagon.Points.push(new Point(x1 + x, spec.height + y));
+	hexagon.Points.push(new Point(x, y1 + y));
     
+    hexagon.x = xpos;
+	hexagon.y = ypos;
+	hexagon.x1 = x1;
+	hexagon.y1 = y1;
+	hexagon.TopLeftPoint = new Point(hexagon.x, hexagon.y);
+	hexagon.BottomRightPoint = new Point(hexagon.x + spec.width, hexagon.y + spec.height);
+	hexagon.MidPoint = new Point(hexagon.x + (spec.width / 2), hexagon.y + y1);
+	hexagon.P1 = new Point(x + x1, y + y1);
     
+    // Create a Kinetic polygon to show the hexagon.
+    var hexagonConfig = {
+        points:[],
+		stroke:'rgb(255,255,255)',
+	};
+	for (var i = 0; i < hexagon.Points.length; i++) {
+		hexagonConfig.points.push([hexagon.Points[i].X - this.camera.x, hexagon.Points[i].Y - this.camera.y]);
+	}
+	hexagon.hexagonToDraw = new Kinetic.Polygon(hexagonConfig);
+    hexGroup.add(hexagon.hexagonToDraw);
 };
 
 /**

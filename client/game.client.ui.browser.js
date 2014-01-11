@@ -221,14 +221,16 @@ gcUIBrowser.prototype.registerEventListeners = function(){
         }(i));
     }
     
-    // Register a callback function for click events on a hexagon.
-    var clickCallback = function(coord, event){
+    // Callback functions for hexagons.
+    var clickCallback = function(hexagon, event){
+        var coord = hexagon.coord;
+        
         if (!gc.alive){
             return;
         }
         
         if (event.which === 3){  // trigger right click event
-            gc.contextmenu(event);
+            contextmenu(event);
         }
         
         var unitplayer = -1;
@@ -289,5 +291,18 @@ gcUIBrowser.prototype.registerEventListeners = function(){
             gc.hexgrid.clearBuildable();
         }
     };
-    // TODO: register this callback
+    gcUI.registerCallbackForHexagons('click', clickCallback);
+    
+    gcUI.registerCallbackForHexagons('mouseover', function(hexagon, event){
+        if (hexagon.piece || hexagon.reachable || hexagon.clientAttackable || hexagon.clientBuildable) {
+            hexagon.hexagonToDraw.setStroke("orange");
+            hexagon.hexagonToDraw.moveToTop();
+            document.body.style.cursor = "pointer";
+        }
+    });
+    
+    gcUI.registerCallbackForHexagons('mouseout', function(){
+        hexagon.hexagonToDraw.setStroke("white");
+        document.body.style.cursor = "auto";
+    });
 }
