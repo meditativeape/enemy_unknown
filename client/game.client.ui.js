@@ -28,9 +28,9 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 /**
  * The GameClientUI class.
  */
-var GameClientUI = function(/*gameClient*/ gc, /*string*/ scenario) {
+var GameClientUI = function(/*gameClient*/ gc, /*string*/ scenarioName) {
     this.gc = gc;
-    this.scenario = scenario;
+    this.scenario = Scenarios[scenarioName];
     
     // Initialize platform-dependent UI
     this.platformUI;
@@ -77,7 +77,7 @@ var GameClientUI = function(/*gameClient*/ gc, /*string*/ scenario) {
 	this.buildUnitGroup = null;
     this.hasLoaded = false;
     this.buildUnitMenu = false;
-}
+};
 
 /**
  * Function to load all sprite images.
@@ -98,7 +98,7 @@ GameClientUI.prototype.loadImage = function() {
         if (filesLoaded >= 90) {
             this.hasLoaded = true;
         }
-    }
+    };
     
     // Load standalone images.
     this.background = loadImage("sprites\\bg_grey.jpg");
@@ -214,7 +214,7 @@ GameClientUI.prototype.loadImage = function() {
     CONSTANTS.flagTerrain.image = this.flagImg;
     CONSTANTS.resourceTerrain.image = this.resourceImg;
     CONSTANTS.heart = this.heartImg;
-}
+};
 
 /**
  * Function to initialize game UI.
@@ -464,39 +464,56 @@ GameClientUI.prototype.initGameUI = function(){
     stage.add(mapLayer);
     stage.add(UILayer);
     stage.add(msgLayer);
-}
+};
+
+/**
+ * Function to control the showing time of starting message.
+ */
+GameClientUI.prototype.startingMessageControl = function(){
+    this.starting = true;
+    var self = this;
+    window.setTimeout(function(){
+            self.starting = false;
+            }, 2000);
+};
 
 /**
  * Function to draw and periodically update the hexgrid.
  */
 GameClientUI.prototype.drawHexgrid = function(/*Hexgrid*/hexgrid){
-    var x = this.scenario.size.x;
-	var y = this.scenario.size.y;
-	var offset = this.scenario.offset;
-    var spec = findHexSpecs(CONSTANTS.hexSideLength, CONSTANTS.hexRatio);
-	var xpos = offset;
-	var ypos = y/2-spec.height/2;
-    var hexGroup = new Kinetic.Group();  // only hexagons listen to events
-    var terrainGroup = new Kinetic.Group({listening: false});
-    var unitGroup = new Kinetic.Group({listening: false});
-    var fogGroup = new Kinetic.Group({listening: false});
+    //var fogImg;
+    //var x = this.scenario.size.x;
+	//var y = this.scenario.size.y;
+	//var offset = this.scenario.offset;
+    hexgrid.spec = findHexSpecs(CONSTANTS.hexSideLength, CONSTANTS.hexRatio);
+    for (var x in hexgrid.matrix)
+        for (var y in hexgrid.matrix[x])
+            this.drawHexagon(hexgrid, hexgrid.matrix[x][y]);
+	//var xpos = offset;
+	//var ypos = y/2 - spec.height/2;
+    
+    this.hexGroup = new Kinetic.Group();  // only hexagons listen to events
+    this.terrainGroup = new Kinetic.Group({listening: false});
+    this.unitGroup = new Kinetic.Group({listening: false});
+    this.fogGroup = new Kinetic.Group({listening: false});
     
     mapLayer.add(terrainGroup);
     mapLayer.add(hexGroup);
     mapLayer.add(unitGroup);
     mapLayer.add(fogGroup);
-    this.anim = new Kinetic.Animation(function(frame) {
-       for(var x in hexgrid.matrix){
-           for(var y in hexgrid.matrix[x]){
-               hexgrid.matrix[x][y].update();
-           }
-       }
+    
+    // A Kinetic animation to update the hexagons.
+    var me = this;
+    this.anim = new Kinetic.Animation(function(frame){
+        for (var x in hexgrid.matrix)
+            for (var y in hexgrid.matrix[x])
+                me.updateHexagon(hexgrid, hexgrid[x][y]);
     }, layer);
     this.anim.start();
-}
+};
 
 /*********************************
- Hexgrid & Hexagon Related Methods
+ Hexgrid & Hexagon Helper Methods
  *********************************/
  
 /**
@@ -519,7 +536,7 @@ GameClientUI.prototype.findHexSpecs = function(/*double*/side, /*double*/ratio){
 	spec.height = (2.0*y);
 	spec.side = side;
 	return spec;	
-}
+};
 
 /**
  * Hexagon Method:  Checks if point is in hexagon.
@@ -547,74 +564,72 @@ Hexagon.prototype.contains = function(/*Point*/ p) {
 };
 
 /**
- * Update the appearances of the hexagon, its terrain, its unit, and its fog.
+ * Draw a hexagon for the first time.
  */
-GameClientUI.prototype.updateHexagon = function(/*Hexagon*/hexagon) {
-   
-    // update hexagon
-    var points = [];
-    for (var i = 0; i < this.Points.length; i++) {
-        points.push([this.Points[i].X-this.camera.x, this.Points[i].Y-this.camera.y]);
-    }
-    this.hexagonToDraw.setPoints(points);
-    this.hexagonToDraw.setFill('transparent');
-    if (this.reachable || this.buildable) {
-        this.hexagonToDraw.setFill('rgba(120, 255,120, 0.3)');
-    } else if (this.attackable) {
-        this.hexagonToDraw.setFill('rgba(255, 0, 0, 0.3)');
-    }else if (this.guessing){
-        this.hexagonToDraw.setFill('rgba(0,0,255,0.3)');
-    }
-    // else if(!this.viewable){
-        // this.hexagonToDraw.setFill('rgba(120,0,0,0.3)');
-    // }
-    // add/update terrain
-    var midPoint = new Point(this.MidPoint.X - this.camera.x, this.MidPoint.Y - this.camera.y);
-    if (this.terrain) {
-        if (this.terrainToDraw) {
-            this.terrain.draw(midPoint, this.spec.height, this.terrainToDraw);
-        } else {
-            this.terrainToDraw = this.terrain.draw(midPoint, this.spec.height);
-            this.map.terrainGroup.add(this.terrainToDraw);
-        }
-    }
-    // add/update unit and hp
-    if (this.unitToDraw)
-        this.unitToDraw.destroy();
-    if (this.piece != null) {
-        this.unitToDraw = this.piece.draw(midPoint, this.spec.height);
-        this.map.unitGroup.add(this.unitToDraw);
-    }
-    // add fog of war
-    if (!this.fog) {
-        this.fog = new Kinetic.Image({
-            image: this.fogImg,
-            opacity: 0,
-            scale: {x:0.95, y:0.95}
-        });
-        this.map.fogGroup.add(this.fog);
-    }
-    this.fog.setX(midPoint.X - this.fogImg.width/3 - 18);
-    this.fog.setY(midPoint.Y - this.fogImg.height/3 - 18);
-    if (!this.viewable) {   
-        if (this.opacity < 0.5) {
-            this.fog.setOpacity(this.opacity);
-            this.opacity += 0.01;
-        } else {
-            this.fog.setOpacity(0.5);
-        }
-    } else {
-        this.fog.setOpacity(0);
-    }
+GameClientUI.prototype.drawHexagon = function(/*Hexgrid*/hexgrid, /*Hexagon*/hexagon) {
+    var spec = hexgrid.spec;
+    
+    
 };
 
 /**
- * Function to control the showing time of starting message.
+ * Update the appearances of the hexagon, its terrain, its unit, and its fog.
  */
-GameClientUI.prototype.startingMessageControl = function(){
-    this.starting = true;
-    var self = this;
-    window.setTimeout(function(){
-            self.starting = false;
-            }, 2000);
-}
+GameClientUI.prototype.updateHexagon = function(/*Hexgrid*/hexgrid, /*Hexagon*/hexagon) {
+
+    // update hexagon position and color
+    var points = [];
+    for (var i = 0; i < hexagon.Points.length; i++) {
+        points.push([hexagon.Points[i].X - this.camera.x, hexagon.Points[i].Y - this.camera.y]);
+    }
+    hexagon.hexagonToDraw.setPoints(points);
+    hexagon.hexagonToDraw.setFill('transparent');
+    if (hexagon.reachable || hexagon.buildable) {
+        hexagon.hexagonToDraw.setFill('rgba(120, 255,120, 0.3)');
+    } else if (hexagon.attackable) {
+        hexagon.hexagonToDraw.setFill('rgba(255, 0, 0, 0.3)');
+    }else if (hexagon.guessing){
+        hexagon.hexagonToDraw.setFill('rgba(0,0,255,0.3)');
+    }
+    
+    // add/update terrain
+    var midPoint = new Point(hexagon.MidPoint.X - this.camera.x, hexagon.MidPoint.Y - this.camera.y);
+    if (hexagon.terrain) {
+        if (hexagon.terrainToDraw) {
+            hexagon.terrain.draw(midPoint, hexgrid.spec.height, hexagon.terrainToDraw);
+        } else {
+            hexagon.terrainToDraw = hexagon.terrain.draw(midPoint, hexgrid.spec.height);
+            this.terrainGroup.add(hexagon.terrainToDraw);
+        }
+    }
+    
+    // add/update unit and hp
+    if (hexagon.unitToDraw)
+        hexagon.unitToDraw.destroy();
+    if (hexagon.piece != null) {
+        hexagon.unitToDraw = hexagon.piece.draw(midPoint, hexgrid.spec.height);
+        this.unitGroup.add(hexagon.unitToDraw);
+    }
+    
+    // add fog of war
+    if (!hexagon.fog) {
+        hexagon.fog = new Kinetic.Image({
+            image: hexgrid.fogImg,
+            opacity: 0,
+            scale: {x:0.95, y:0.95}
+        });
+        this.fogGroup.add(hexagon.fog);
+    }
+    hexagon.fog.setX(midPoint.X - hexgrid.fogImg.width/3 - 18);
+    hexagon.fog.setY(midPoint.Y - hexgrid.fogImg.height/3 - 18);
+    if (!hexagon.viewable) {   
+        if (hexagon.opacity < 0.5) {
+            hexagon.fog.setOpacity(hexagon.opacity);
+            hexagon.opacity += 0.01;
+        } else {
+            hexagon.fog.setOpacity(0.5);
+        }
+    } else {
+        hexagon.fog.setOpacity(0);
+    }
+};

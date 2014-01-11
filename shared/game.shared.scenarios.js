@@ -62,8 +62,7 @@ var Scenarios = {
 			0: 30,
 			1: 30
 		},
-		"revealtype": true,
-        "fog": false
+		"revealtype": true
 	},
 	
 	"slayer": {
@@ -123,8 +122,7 @@ var Scenarios = {
             0: [2, 4],
             1: [7, 7]
         },
-		"revealtype": false,
-        "fog": true
+		"revealtype": false
 	},
 	
 	"captureflag": {
@@ -162,8 +160,7 @@ var Scenarios = {
             0: [2, 4],
             1: [7, 7]
         },
-		"revealtype": false,
-        "fog": true
+		"revealtype": false
 	},
 
 	"vampirehunter": {
@@ -197,8 +194,7 @@ var Scenarios = {
             0: [4, 4],
             1: [5, 6]
         },
-		"revealtype": false,
-        "fog": true
+		"revealtype": false
 	},
     
 	"zombieisbetter": {
@@ -232,9 +228,9 @@ var Scenarios = {
             0: [4, 4],
             1: [5, 6]
         },
-		"revealtype": false,
-        "fog": true
+		"revealtype": false
 	},
+    
 	"rockpapersissors": {
 		"size": {"numRows": 11, "numCols": 11},
 		"terrain": (function(){
@@ -266,8 +262,7 @@ var Scenarios = {
             0: [4, 4],
             1: [5, 6]
         },
-		"revealtype": false,
-        "fog": true
+		"revealtype": false
 	},
 	
 	"warzone": {
@@ -301,8 +296,7 @@ var Scenarios = {
             0: [3, 3],
             1: [7, 7]
         },
-		"revealtype": false,
-        "fog": true
+		"revealtype": false
 	}
 };
 

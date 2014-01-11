@@ -8,13 +8,13 @@
 var gcUIBrowser = function(/*GameClient*/ gc, /*GameClientUI*/ gcUI){
     this.gc = gc;
 	this.gcUI = gcUI;
-}
+};
 
 /**
  * Register event listeners for mouse and keyboard actions performed in
  * a desktop-version browser.
  */
-this.gcUIBrowser.prototype.registerEventListeners = function(){
+gcUIBrowser.prototype.registerEventListeners = function(){
     var gc = this.gc;
     var gcUI = this.gcUI;
 	
