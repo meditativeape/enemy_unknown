@@ -1,14 +1,8 @@
 /** 
  * Client-side code. 
  */
- 
-/**
- * Constants
- */
-CONSTANTS.width = 800;
-CONSTANTS.height = 600;
 
-/**
+ /**
  * The GameClient constructor. 
  */
 var GameClient = function() {
@@ -61,6 +55,7 @@ GameClient.prototype.loadAssets = function(/*string*/ scenario) {
 	gcUI.loadImage();
 	this.gcSound = new GameClientSounds();
 	gcSound.loadSound();
+	//Do we really need hasLoaded? JavaScript is linear.
 };
 
 GameClient.prototype.joinGame = function(/*string*/ scenario, /*int*/ type){  //Server connection functionality..
@@ -84,10 +79,10 @@ GameClient.prototype.onnetmessage = function(data){
 		case 0:
 			switch (keywords[1]) {
 			case "menuReset":
-				resetMenu();
+				resetMenu();//Menu method
 				break;
 			case "menu":
-				updateMenu(keywords[2]);
+				updateMenu(keywords[2]);//Menu method
 				break;
 			case "init":  // Init Game
 				this.mapName = keywords[2];
@@ -100,41 +95,12 @@ GameClient.prototype.onnetmessage = function(data){
 				this.initGame();
 				break;
 			case "start": // Start Game
-				start();
+				start(); //Menu method. Tell menu to display game.
 				this.started = true;
 				var p = this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].MidPoint;
 				this.camera.setPos(new Point(p.X-CONSTANTS.width/2,p.Y-CONSTANTS.height/2))
-				soundAssets.menusound.setVolume(soundAssets.menusound.volume-1);
-				var now, before = new Date();
-				var fadeOut = window.setInterval(function(){
-						now = new Date();
-						if(soundAssets.menusound.volume>=0){
-							var elapsedTime = now.getTime() - before.getTime();
-							if (elapsedTime > 100)  // in case tab is not active in Chrome
-								soundAssets.menusound.setVolume(soundAssets.menusound.volume-Math.round(elapsedTime/100));
-							else
-								soundAssets.menusound.setVolume(soundAssets.menusound.volume-1);
-						}else{
-							window.clearInterval(fadeOut);
-							soundAssets.menusound.stop();
-							soundAssets.backgroundsound.destruct();
-							soundAssets.backgroundsound = soundManager.createSound({
-								  id: 'background',
-								  url: '/sounds/background.mp3',
-								  volume: 30,
-								  onfinish: function(){soundAssets.backgroundsound.play();},
-							});
-							soundAssets.backgroundsound.play();
-							if(!blurred){
-								console.log("unmuting backgroundsound");
-								soundAssets.backgroundsound.unmute();
-							}else{
-								console.log("muting backgroundsound");
-								soundAssets.backgroundsound.mute();
-							}
-						}
-						before = new Date();
-					} ,100);
+				//Start background sound.
+				this.gcSound.playBackgroundSound();
 				break;
 			case "end":
 				if (this.countdownTimer){
@@ -165,39 +131,8 @@ GameClient.prototype.onnetmessage = function(data){
 				UILayer = new Kinetic.Layer();
 				msgLayer.destroy();
 				msgLayer = new Kinetic.Layer({listening: false});
-				soundAssets.flagcapsound.stop();
-				soundAssets.backgroundsound.setVolume(soundAssets.backgroundsound.volume-1);
-				var now, before = new Date();
-				var fadeOut = window.setInterval(function(){
-						now = new Date();
-						if(soundAssets.backgroundsound.volume>=0){
-							var elapsedTime = now.getTime() - before.getTime();
-							if (elapsedTime > 100)  // in case tab is not active in Chrome
-								soundAssets.backgroundsound.setVolume(soundAssets.backgroundsound.volume-Math.round(elapsedTime/100));
-							else
-								soundAssets.backgroundsound.setVolume(soundAssets.backgroundsound.volume-1);
-						}else{
-							window.clearInterval(fadeOut);
-							soundAssets.backgroundsound.stop();
-							soundAssets.menusound.destruct();
-							soundAssets.menusound = soundManager.createSound({
-								  id: 'menu',
-								  url: '/sounds/menu.mp3',
-								  onfinish: function(){soundAssets.menusound.play();},
-								  volume: 30
-							});
-							soundAssets.menusound.play();
-							if(!blurred){
-								console.log("unmuting menusound");
-								soundAssets.menusound.unmute();
-							}else{
-								console.log("muting menusound");
-								soundAssets.menusound.mute();
-							}
-						}
-						before = new Date();
-					} ,100);
-					
+				//Stop in game sounds.
+				this.gcSound.stopBackgroundSound();
 				// switch back to menu
 				if (this.winner == this.team){
 					gameEnded(true);
@@ -213,10 +148,9 @@ GameClient.prototype.onnetmessage = function(data){
 			case "countdown":
 				var capteam = parseInt(keywords[2]);
 				if(this.team != capteam && capteam != -1){
-					soundAssets.flagcapsound.play();
-					soundAssets.flagcapsound.setVolume(3);
+					this.gcSound.playFlagcapSound();
 				}else{
-					soundAssets.flagcapsound.stop();
+					this.gcSound.stopFlagcapSound();
 				}
                 // draw flag
                 for (var i = 0; i < this.flags.length; i++) {

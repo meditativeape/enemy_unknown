@@ -13,16 +13,16 @@ var ServerUnit = function(/*Unit*/ oldUnit){
      * Record on server side whether a unit is visible to the opponent.
      * WORK FOR 1 VS 1 ONLY!
      */
-	this.serverIsVisible = false;
+	this.isVisibleToEnemy = false;
 }
 
 /**
- * Setter for Unit.serverIsVisible.
+ * Setter for Unit.isVisibleToEnemy.
  * Returns true if this unit becomes visible; returns false otherwise.
  */
-ServerUnit.prototype.setServerIsVisible = function(/*boolean*/ isVisible) {
-	var old = this.serverIsVisible;
-	this.serverIsVisible = isVisible;
+ServerUnit.prototype.setIsVisibleToEnemy = function(/*boolean*/ isVisible) {
+	var old = this.isVisibleToEnemy;
+	this.isVisibleToEnemy = isVisible;
 	if (!old && isVisible)
 		return true;
 	else

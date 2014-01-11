@@ -22,7 +22,6 @@ var Unit = function(/*int*/ player, /*int*/ team, /*int*/hp, /*int*/ type, /*Coo
 	this.hp = hp; // Unit health points
 	this.type = type; // TODO
 	this.coord = startCoord; // Unit position
-    //this.typeVisibleToEnemy = false; // This unit's type is visible to enemy //Move to server
 	this.attacked = false;
     this.cooldown = 0;
 	this.attacking = false;
