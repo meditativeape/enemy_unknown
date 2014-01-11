@@ -12,6 +12,19 @@ var ServerHexgrid = function(/*Hexgrid*/ hexgrid) {
 	convertAllUnitsToServerUnits(this);
 };
 
+
+/**
+ * Convert all units in server hexgrid to server units.
+ */ 
+var convertAllUnitsToServerUnits = function(/*hexgrid*/ hexgrid){
+	for(var i in hexgrid.matrix){
+		for(var j in hexgrid.matrix[i]){
+			var oldUnit = hexgrid.matrix[i][j].unit;
+			hexgrid.matrix[i][j].unit = ServerUnit(oldUnit);
+		}
+	}
+};
+
  
 /**
  * Check if the unit can move from coord1 to coord2.
@@ -114,15 +127,3 @@ ServerHexgrid.prototype.updateVisible = function(){  // only works for 1v1
 	  	}
 	}
 }
-
-/**
- * Convert all units in server hexgrid to server units.
- */ 
-var convertAllUnitsToServerUnits = function(/*hexgrid*/ hexgrid){
-	for(var i in hexgrid.matrix){
-		for(var j in hexgrid.matrix[i]){
-			var oldUnit = hexgrid.matrix[i][j].unit;
-			hexgrid.matrix[i][j].unit = ServerUnit(oldUnit);
-		}
-	}
-};

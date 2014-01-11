@@ -19,6 +19,39 @@ var ClientHexgrid = function(/*Hexgrid*/ hexgrid) {
 	convertAllHexagonsToClientHexagon(this);
 };
 
+
+/**
+ * Constructor for client hexagon.
+ */
+var ClientHexagon = function(/*Hexagon*/ oldHexagon){
+
+	//Inherit old properties
+	clientHexagon.prototype = oldHexagon;
+    
+	//Add new properties
+	this.reachable = false;
+	this.attackable = false;
+	this.buildable = false;
+	this.viewable = false;
+	this.opacity = 1;
+	this.pastViewable = false;
+    this.guessing = false;
+    this.selected = false;
+};
+
+/**
+ * Convert all regular hexagons in hexgrid to client hexagons.
+ */ 
+var convertAllHexagonsToClientHexagon = function(/*hexgrid*/ hexgrid){
+	for(var i in hexgrid.matrix){
+		for(var j in hexgrid.matrix[i]){
+			var hexagon = hexgrid.matrix[i][j];
+			hexgrid.matrix[i][j] = ClientHexagon(hexagon);
+		}
+	}
+
+};
+
 /**
  * Mark reachable locations from coord.
  */
@@ -149,30 +182,6 @@ ClientHexgrid.prototype.isAttackable = function(/*Coordinate*/coord){
 };
 
 /**
- * Remove units that can't be seen.
- * Should only be used after markViewable.
- */
-ClientHexgrid.prototype.removeUnviewable = function(/*minimap (optional) */minimap){
-	for(var x in this.matrix){ // brute force!
-		for(var y in this.matrix[x]){
-			if(this.matrix[x][y].viewable == false){
-				if(this.matrix[x][y].piece){
-					minimap.removeUnit(this.toMap(new Coordinate(x,y)));
-				}
-				if(this.matrix[x][y].pastViewable == true){
-					// reset opacity to 0
-					this.matrix[x][y].opacity = 0;
-					this.matrix[x][y].piece = null;
-					this.matrix[x][y].pastViewable = false;
-				}
-				this.matrix[x][y].piece = null;			
-				
-			}
-		}
-	}
-};
-
-/**
  * Clear reachables.
  */
 ClientHexgrid.prototype.clearReachables = function(){
@@ -219,31 +228,36 @@ ClientHexgrid.prototype.clearViewables = function(){
 };
 
 /**
- * Constructor for client hexagon.
+ * Remove units that can't be seen.
+ * Should only be used after markViewable.
  */
-var ClientHexagon = function(/*Hexagon*/ oldHexagon){
-	//Inherit old properties
-	clientHexagon.prototype = oldHexagon;
-    
-	//Add new properties
-	this.reachable = false;
-	this.attackable = false;
-	this.buildable = false;
-	this.viewable = false;
-	this.opacity = 1;
-	this.pastViewable = false;
-    this.guessing = false;
-    this.selected = false;
-};
-
-/**
- * Convert all regular hexagons in hexgrid to client hexagons.
- */ 
-var convertAllHexagonsToClientHexagon = function(/*hexgrid*/ hexgrid){
-	for(var i in hexgrid.matrix){
-		for(var j in hexgrid.matrix[i]){
-			var hexagon = hexgrid.matrix[i][j];
-			hexgrid.matrix[i][j] = ClientHexagon(hexagon);
+ClientHexgrid.prototype.removeUnviewable = function(/*MiniMap*/miniMap){
+	for(var x in this.matrix){ // brute force!
+		for(var y in this.matrix[x]){
+			if(this.matrix[x][y].viewable == false){
+				if(this.matrix[x][y].piece){
+					miniMap.removeUnit(this.toMap(new Coordinate(x,y)));
+				}
+				if(this.matrix[x][y].pastViewable == true){
+					// reset opacity to 0
+					this.matrix[x][y].opacity = 0;
+					this.matrix[x][y].piece = null;
+					this.matrix[x][y].pastViewable = false;
+				}
+				this.matrix[x][y].piece = null;			
+				
+			}
 		}
 	}
 };
+
+/**
+ * Update viewable units.
+ */
+ClientHexgrid.prototype.updateViewable = function(/*int*/team, /*MiniMap*/miniMap){
+	if (this.fogOn) {
+	  this.clearViewables();
+	  this.markViewable(team);
+	  this.removeUnviewable(minimap);
+    }
+}
