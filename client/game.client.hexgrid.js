@@ -17,7 +17,6 @@ var ClientHexgrid = function(/*Hexgrid*/ hexgrid) {
     
 	//Convert all hexagons in client hexgrid to client hexagons
 	convertAllHexagonsToClientHexagon(this);
-<<<<<<< HEAD
 };
 
 
@@ -46,8 +45,7 @@ var convertAllHexagonsToClientHexagon = function(/*hexgrid*/ hexgrid){
 			hexgrid.matrix[i][j] = ClientHexagon(hexagon);
 		}
 	}
-=======
->>>>>>> 41868f3ed8aba46c3bf3505c2c5153c52d8dab7f
+
 };
 
 /**
