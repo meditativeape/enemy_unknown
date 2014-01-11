@@ -23,13 +23,14 @@ var GameClient = function() {
 	this.toBuild = null;
 	this.soundOn = true;
 	this.unitCounter = [0, 0];
-	this.newSocket();
 	this.vampireKO = false;
 	this.gcUI = null;
 	this.gcSound = null;
     this.scenario = null;
     this.canBuildUnit = [false, false, false, false, false];
     this.guess = null;
+	
+	this.newSocket();
 }
 
 GameClient.prototype.newSocket = function (){
@@ -118,6 +119,8 @@ GameClient.prototype.onnetmessage = function(data){
 				this.countdownTimer = null;
 				this.resource = 0;
                 this.unitCounter = [0, 0];
+				
+				//TODO move to client.ui
 				// stop animations
 				this.camera.stop();
 				this.minimap.stop();
@@ -131,6 +134,9 @@ GameClient.prototype.onnetmessage = function(data){
 				UILayer = new Kinetic.Layer();
 				msgLayer.destroy();
 				msgLayer = new Kinetic.Layer({listening: false});
+				//End TODO
+				
+				
 				//Stop in game sounds.
 				this.gcSound.stopBackgroundSound();
 				// switch back to menu
@@ -189,20 +195,14 @@ GameClient.prototype.onnetmessage = function(data){
 				this.hexgrid.matrix[parseInt(keywords[5])][parseInt(keywords[6])].piece = new Unit(parseInt(keywords[2]), parseInt(keywords[3]),
                        parseInt(keywords[8]), parseInt(keywords[4]), new Coordinate(parseInt(keywords[5]),parseInt(keywords[6])), sprite, cd, this.showNum);
 				this.hexgrid.matrix[parseInt(keywords[5])][parseInt(keywords[6])].piece.setcd(parseFloat(keywords[7]));
-				if (this.fogOn) {
-                    this.hexgrid.clientClearViewable();
-                    this.hexgrid.clientMarkViewable(this.team);
-                    this.hexgrid.clientRemoveUnseeable(this.minimap);
-                }
-				this.updateRA();
+				//Duplicate should be fine even when removed. 
+				//this.hexgrid.updateViewable(this.team,this.minimap);
+				//this.updateRA();
+				
 				// update minimap
 				var pointOnMap = this.hexgrid.toMap(new Coordinate(parseInt(keywords[5]), parseInt(keywords[6])));
 				this.minimap.addUnit(pointOnMap, parseInt(keywords[2]));
-                if (this.fogOn) {
-                    this.hexgrid.clientClearViewable();
-                    this.hexgrid.clientMarkViewable(this.team);
-                    this.hexgrid.clientRemoveUnseeable(this.minimap);
-                }
+                this.hexgrid.updateViewable(this.team,this.minimap);
 				this.updateRA();
 				break;
 			case "resource":
@@ -216,16 +216,14 @@ GameClient.prototype.onnetmessage = function(data){
 				var oldPointOnMap = this.hexgrid.toMap(new Coordinate(parseInt(keywords[2]), parseInt(keywords[3])));
 				var newPointOnMap = this.hexgrid.toMap(new Coordinate(parseInt(keywords[4]), parseInt(keywords[5])));
 				this.minimap.moveUnit(oldPointOnMap, newPointOnMap);
-				if (this.fogOn) {
-                    this.hexgrid.clientClearViewable();
-                    this.hexgrid.clientMarkViewable(this.team);
-                    this.hexgrid.clientRemoveUnseeable(this.minimap);
-                }
+				this.hexgrid.updateViewable(this.team,this.minimap);
 				this.updateRA();
 				break;
 			case "attack":
+				//Piece at ('2','3') attacks piece at ('5','6'). Piece at ('2','3') loses '4' hp, and piece at ('5','6') loses '7' hp.
 				this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece.minusHP(parseInt(keywords[4]));
 				this.hexgrid.matrix[parseInt(keywords[5])][parseInt(keywords[6])].piece.minusHP(parseInt(keywords[7]));
+				//Piece at ('2','3') has cd set.
 				this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece.setcd(CONSTANTS.cd);
 				this.updateRA();
 				break;
@@ -261,11 +259,7 @@ GameClient.prototype.onnetmessage = function(data){
 						}
 					}
 				}
-				if (this.fogOn) {
-                    this.hexgrid.clientClearViewable();
-                    this.hexgrid.clientMarkViewable(this.team);
-                    this.hexgrid.clientRemoveUnseeable(this.minimap);
-                }
+				this.hexgrid.updateViewable(this.team,this.minimap);
 				this.updateRA();
 				break;
 			}

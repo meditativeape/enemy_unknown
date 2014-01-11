@@ -248,7 +248,13 @@ ClientHexgrid.prototype.removeUnviewable = function(/*MiniMap*/miniMap){
 	}
 };
 
-
-
-
-
+/**
+ * Update viewable units.
+ */
+ClientHexgrid.prototype.updateViewable = function(/*int*/team, /*MiniMap*/miniMap){
+	if (this.fogOn) {
+	  this.clearViewables();
+	  this.markViewable(team);
+	  this.removeUnviewable(minimap);
+    }
+}
