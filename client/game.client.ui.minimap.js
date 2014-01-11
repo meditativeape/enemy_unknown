@@ -97,15 +97,15 @@ MiniMap.prototype.stop = function(){
 MiniMap.prototype.addUnit = function(/*Point*/ p, /*int*/ player){
     // figure out player's color
     var color;
-    switch (player) {    
-    case 2:
+    switch (player) {  
+	case 0:
+        color = "red";
+        break;  
+	case 1:
         color = "lightskyblue";
         break;
-    case 1:
-        color = "yellow";
-        break;
-    case 0:
-        color = "red";
+    case 2:
+        color =  "yellow";
         break;
     case 3:
         color = "green";

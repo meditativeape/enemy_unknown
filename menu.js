@@ -54,49 +54,8 @@ var menuBack = function(){
 	mainMenu.style.visibility = "visible";
 }
 
-//TODO Load sounds in menu.
-////Load sounds
-//soundManager.setup({
-//  url: '/lib/',
-//  flashVersion: 8, // optional: shiny features (default = 8)
-//  useFlashBlock: true, // optionally, enable when you're ready to dive in
-//  /**
-//   * read up on HTML5 audio support, if you're feeling adventurous.
-//   * iPad/iPhone and devices without flash installed will always attempt to use it.
-//   */
-//  onready: function() {
-//    	soundAssets.menusound = soundManager.createSound({
-//			  id: 'menu',
-//			  url: '/sounds/menu.mp3',
-//			  onfinish: function(){soundAssets.menusound.play();},
-//			  volume: 30
-//		});
-//		soundAssets.menusound.play();
-//  },
-//  ontimeout: function() {
-//		alert("soundManager failed to load");	
-//	}
-//});
 
 
-
-var soundAssets = {};
-
-var blurred = false;
-
-var onBlur = function() {
-	if(!blurred){
-		soundManager.mute();
-		blurred = true;
-	}
-};
-
-var onFocus = function() {
-	if(blurred){
-		soundManager.unmute();
-		blurred = false;
-	}
-};
 
 var senarioList = [];
 var senarioCount = 0;
@@ -125,8 +84,51 @@ var updateMenu = function(/*string*/senario){
 	document.getElementById('lobby').value = 'Senarios created by players: ' + string + '.';
 	
 }
-//document.onfocusin = onFocus;
-//document.onfocusout = onBlur;
-window.onfocus = onFocus;
 
+/**
+ * Sound manager setup.
+ */
+ 
+ //Data structure for sound Assets.
+ var soundAssets = {};
+ 
+//Load sounds
+soundManager.setup({
+  url: '/lib/',
+  flashVersion: 8, // optional: shiny features (default = 8)
+  useFlashBlock: true, // optionally, enable when you're ready to dive in
+//   * read up on HTML5 audio support, if you're feeling adventurous.
+//   * iPad/iPhone and devices without flash installed will always attempt to use it.
+//   
+  onready: function() {
+    	soundAssets.menuSound = soundManager.createSound({
+			  id: 'menu',
+			  url: '/sounds/menu.mp3',
+			  onfinish: function(){soundAssets.menusound.play();},
+			  volume: 30
+		});
+		soundAssets.menuSound.play();
+  },
+  ontimeout: function() {
+		alert("soundManager failed to load");	
+	}
+});
+
+var blurred = false;
+
+var onBlur = function() {
+	if(!blurred){
+		soundManager.mute();
+		blurred = true;
+	}
+};
+
+var onFocus = function() {
+	if(blurred){
+		soundManager.unmute();
+		blurred = false;
+	}
+};
+
+window.onfocus = onFocus;
 window.onblur = onBlur;
