@@ -3,7 +3,7 @@
  */
  
 /**
- * Server side we import Point and Coordinate and export Map.
+ * Server side we import helper objects and scenarios, and export Hexgrid.
  */
 if( 'undefined' !== typeof global ) {
     var helper = require("./game.shared.helper.js");
@@ -18,41 +18,19 @@ if( 'undefined' !== typeof global ) {
  * Constructor for a shared hexgird. Automatically builds matrix of hexagons.
  * @constructor
  */
-var Hexgrid = function(/*string*/ mapName /*boolean*/ /*fogOn*/){
-	
-	//Move to server
-	// /*camera*/camera, /*layer*/layer, /*function*/callback, 
-	//Move to view
-	///*img*/fogImg
+var Hexgrid = function(/*string*/ mapName, /*boolean*/ fogOn){
+
 	this.scenario = Scenarios[mapName];
-	var numRows = this.scenario.size.numRows;
-	var numCols = this.scenario.size.numCols;
-	//var x = this.scenario.size.x;
-	//var y = this.scenario.size.y;
-	//Move to view
-	//var offset = this.scenario.offset;
-	
-	
-//	if (camera && layer) {
-//		this.layer = layer;
-//		this.hexGroup = new Kinetic.Group();  // only hexagons listen to events
-//		this.terrainGroup = new Kinetic.Group({listening: false});
-//		this.unitGroup = new Kinetic.Group({listening: false});
-//        this.fogGroup = new Kinetic.Group({listening: false});
-//	}
-	
+    this.fogOn = fogOn;
 	this.matrix = [];
-	
-	//var spec = findHexSpecs(side,ratio);
-	//var xpos = offset;
-	//var ypos = y/2-spec.height/2;
+    var numRows = this.scenario.size.numRows;
+	var numCols = this.scenario.size.numCols;
 	for (var i = 0; i < numRows; i++) {
 		this.matrix[i] = [];
 		for (var j = 0; j < numCols; j++) {
-			this.matrix[i][j] = new Hexagon(/*todo*/);
+			this.matrix[i][j] = new Hexagon(new Coordinate(i, j));
 		}
-	}
-			
+	}		
 	
 //	while(xpos < x/2 && (ypos - spec.height/2>0)){
 //		while(matrixx <= rows && (ypos + spec.height/2<y)){
@@ -158,22 +136,19 @@ var Hexgrid = function(/*string*/ mapName /*boolean*/ /*fogOn*/){
 	this.addTerrain = function(toAdd, /*Coordinate*/dest){
 		this.matrix[dest.X][dest.Y].terrain = toAdd;
 	}
-}//End class.
-
-
-
+};
 
 /**
  * Constructs a hexagon.
  * camera and fogImg could be null on server side, since no visualization is needed.
  * @constructor
  */
-function Hexagon(mx, my, map) {
+function Hexagon(/*Coordinate*/coord) {
 	// original argument list: id, mx, my, x, y, spec, camera, map, callback, fogOn, fogImg
 	this.piece = null;
-	this.map = map;
-	this.matrixx = mx;
-	this.matrixy = my;
+    this.coord = coord;
+	//this.matrixx = mx;
+	//this.matrixy = my;
     //if (fogOn != true)
     //    this.clientViewable = true;
     //this.opacity = 1;
@@ -245,8 +220,3 @@ function Hexagon(mx, my, map) {
 //		this.map.hexGroup.add(this.hexagonToDraw);
 //	}
 };
-
-
-
-
-

@@ -8,15 +8,15 @@
 var ClientHexgrid = function(/*Hexgrid*/ hexgrid) {
 	//Inherit old properties
 	this.prototype = hexgrid;
+    
 	//Add new properties
 	this.reachables = [];
 	this.attackables = [];
 	this.buildables = [];
 	this.viewables = [];
+    
 	//Convert all hexagons in client hexgrid to client hexagons
 	convertAllHexagonsToClientHexagon(this);
-	
-	
 };
 
 /**
@@ -148,7 +148,6 @@ ClientHexgrid.prototype.isAttackable = function(/*Coordinate*/coord){
 	return this.matrix[coord.X][coord.Y].attackable;
 };
 
-
 /**
  * Remove units that can't be seen.
  * Should only be used after markViewable.
@@ -177,7 +176,7 @@ ClientHexgrid.prototype.removeUnviewable = function(/*minimap (optional) */minim
  * Clear reachables.
  */
 ClientHexgrid.prototype.clearReachables = function(){
-	for (var i in this.reachables){  // clear clientReachables
+	for (var i in this.reachables){
 		var check = this.reachables[i];
 		check.reachable = false;
 	}
@@ -188,7 +187,7 @@ ClientHexgrid.prototype.clearReachables = function(){
  * Clear attackables.
  */
 ClientHexgrid.prototype.clearAttackables = function(){
-	for (var i in this.attackables){  // clear clientReachables
+	for (var i in this.attackables){
 		var check = this.attackables[i];
 		check.attackable = false;
 	}
@@ -199,7 +198,7 @@ ClientHexgrid.prototype.clearAttackables = function(){
  * Clear buildables.
  */
 ClientHexgrid.prototype.clearBuildables = function(){
-	for (var i in this.buildables){  // clear clientReachables
+	for (var i in this.buildables){
 		var check = this.buildables[i];
 		check.buildable = false;
 	}
@@ -210,7 +209,7 @@ ClientHexgrid.prototype.clearBuildables = function(){
  * Clear viewables.
  */
 ClientHexgrid.prototype.clearViewables = function(){
-	for (var i in this.viewables){  // clear clientReachables
+	for (var i in this.viewables){
 		var check = this.viewables[i];
 		check.viewable = false;
 		check.pastViewable = true;
