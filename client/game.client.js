@@ -192,7 +192,7 @@ GameClient.prototype.onnetmessage = function(data){
 				if (this.fogOn) {
                     this.hexgrid.clientClearViewable();
                     this.hexgrid.clientMarkViewable(this.team);
-                    this.hexgrid.clientRemoveUnseeable();
+                    this.hexgrid.clientRemoveUnseeable(this.minimap);
                 }
 				this.updateRA();
 				// update minimap
