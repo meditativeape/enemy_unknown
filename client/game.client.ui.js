@@ -493,7 +493,7 @@ GameClientUI.prototype.drawHexgrid = function(/*Hexgrid*/hexgrid){
     mapLayer.add(fogGroup);
     
     var groups = {"hexGroup": hexGroup, "terrainGroup": terrainGroup,
-              "unitGroup": unitGroup, "fogGroup": fogGroup};
+                 "unitGroup": unitGroup, "fogGroup": fogGroup};
 
     // Calculate and draw hexagons for the first time.
     hexgrid.spec = findHexSpecs(CONSTANTS.hexSideLength, CONSTANTS.hexRatio);
@@ -538,8 +538,7 @@ GameClientUI.prototype.stopAnimations = function(){
  *********************************/
  
 /**
- * Helper function to calculate the specs of a hexagon.
- * @return The specs for hexagons with given side length and ratio
+ * Helper function to calculate the specs of hexagons with given side length and ratio.
  */
 GameClientUI.prototype.findHexSpecs = function(/*double*/side, /*double*/ratio){
 	var z = side;
@@ -560,8 +559,7 @@ GameClientUI.prototype.findHexSpecs = function(/*double*/side, /*double*/ratio){
 };
 
 /**
- * Hexagon Method:  Checks if point is in hexagon.
- * @this {Hexagon}
+ * Checks if point is in hexagon.
  */
 Hexagon.prototype.contains = function(/*Point*/ p) {
     var isIn = false;
@@ -651,11 +649,9 @@ GameClientUI.prototype.updateHexagon = function(/*Hexgrid*/hexgrid, /*Hexagon*/h
     var midPoint = new Point(hexagon.MidPoint.X - this.camera.x, hexagon.MidPoint.Y - this.camera.y);
     if (hexagon.terrain) {
         if (hexagon.terrainToDraw) {
-            // TODO: draw terrain
-            hexagon.terrain.draw(midPoint, hexgrid.spec.height, hexagon.terrainToDraw);
+            this.drawTerrain(hexagon.terrain, midPoint, hexgrid.spec.height, hexagon.terrainToDraw);
         } else {
-            // TODO: draw terrain
-            hexagon.terrainToDraw = hexagon.terrain.draw(midPoint, hexgrid.spec.height);
+            hexagon.terrainToDraw = this.drawTerrain(hexagon.terrain, midPoint, hexgrid.spec.height);
             groups["terrainGroup"].add(hexagon.terrainToDraw);
         }
     }
@@ -696,10 +692,10 @@ GameClientUI.prototype.updateHexagon = function(/*Hexgrid*/hexgrid, /*Hexagon*/h
  *********************************/
 
 /**
- * Returns a Kinetic group to draw the unit.
- * Put it into the unit group.
+ * Returns a Kinetic group to be put into the unit group and draw by UI.
  */
 GameClientUI.prototype.drawUnit = function(/*ClientUnit*/unit, /*Point*/p, /*int*/height) {
+
     var groupToDraw = new Kinetic.Group();
     
     // draw unit
@@ -768,4 +764,27 @@ GameClientUI.prototype.drawUnit = function(/*ClientUnit*/unit, /*Point*/p, /*int
     }
     
 	return groupToDraw;
+};
+
+/*********************************
+ Terrain Helper Methods
+ *********************************/
+ 
+/**
+ * Returns a Kinetic.Image to be put into the terrain group and draw by UI.
+ * If oldTerrain is provided, update on oldTerrain and returns nothing.
+ */
+GameClientUI.prototype.drawTerrain = function(/*Terrain*/ terrain, /*Point*/ p, 
+                                    /*int*/ height, /*Kinetic.Image*/ oldTerrain) {
+    if (oldTerrain) {
+        oldTerrain.setX(Math.floor(p.X - terrain.image.width/2));
+        oldTerrain.setY(Math.floor(p.Y + height/2 - terrain.image.height));
+    } else {
+        var terrainToDraw = new Kinetic.Image({
+            image: terrain.image,
+            x: Math.floor(p.X - terrain.image.width/2),
+            y: Math.floor(p.Y + height/2 - terrain.image.height)
+        });
+        return terrainToDraw;
+    }
 };
