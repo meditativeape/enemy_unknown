@@ -226,15 +226,17 @@ GameClient.prototype.onnetmessage = function(data){
 				}
 				//Our unit was killed.
 				if(this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece.team == gc.team){
-					soundAssets.diesound.play();
+					this.gcSound.playDieSound();
 				//Enemy unit was killed.
 				}else{
-					if(!this.vampireKO){
-						soundAssets.killsound.play();
-					//If 
-					}else{
-						soundAssets.kosound.play(); 
+					if(this.vampireKO){
+						//If vampire is unit killed, play vampireKO sound.
+						//Uses information from updateHP that has been passed to client.
+						this.gcSound.playVampireKOSound.play(); 
 						this.vampireKO = false;
+					}else{
+						this.gcSound.playKillSound();
+						
 					}
 				}
 				this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece = null;

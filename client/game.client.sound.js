@@ -36,7 +36,7 @@ GameClientSounds.prototype.loadSound = function(){
 	  url: '/sounds/attack2.mp3'
 	});
 	
-	soundAssets.koSound = soundManager.createSound({
+	soundAssets.vampireKOSound = soundManager.createSound({
 	  id: 'ko',
 	  url: '/sounds/ko.mp3'
 	});
@@ -155,30 +155,52 @@ GameClientSounds.prototype.stopFlagcapSound = function(){
 }
 
 /**
- * Play attack_1sound
+ * Play attack_1Sound
  */
 GameClientSounds.prototype.playAttack_1Sound = function(){
 	soundAssets.attack_1Sound.play();
 }
 
 /**
- * Play attack_2sound
+ * Play attack_2Sound
  */
 GameClientSounds.prototype.playAttack_2Sound = function(){
 	soundAssets.attack_2Sound.play();
 }
 
 /**
- * Play attack1sound
+ * Play attack1Sound
  */
 GameClientSounds.prototype.playAttack1Sound = function(){
 	soundAssets.attack1Sound.play();
 }
 
 /**
- * Play attack2sound
+ * Play attack2Sound
  */
 GameClientSounds.prototype.playAttack2Sound = function(){
 	soundAssets.attack2Sound.play();
 }
+
+/**
+ * Play dieSound
+ */
+GameClientSounds.prototype.playDieSound = function(){
+	soundAssets.dieSound.play();
+}
+
+/**
+ * Play dieSound
+ */
+GameClientSounds.prototype.playKillSound = function(){
+	soundAssets.killSound.play();
+}
+
+/**
+ * Play dieSound
+ */
+GameClientSounds.prototype.playVampireKOSound = function(){
+	soundAssets.vampireKOSound.play();
+}
+
 		
