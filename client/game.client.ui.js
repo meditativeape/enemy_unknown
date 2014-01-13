@@ -14,8 +14,8 @@ CONSTANTS.height = 600;
  
 /**
  * Setup stage and layers.
+ * TODO: change to local variable inside GameClientUI?
  */
- // TODO: method to remove them
 var stage = new Kinetic.Stage({
     container: 'container',
     id: 'gameCanvas',
@@ -525,12 +525,26 @@ GameClientUI.prototype.registerCallbackForHexagons = function(/*string*/eventNam
 }
 
 /**
- * Stop all animations created by game client UI. 
+ * Stop all animations, destroy all nodes, and stop the camera and the minimap.
+ * TODO: should destroy every node? 
  */
-GameClientUI.prototype.stopAnimations = function(){
+GameClientUI.prototype.cleanUp = function(){
+
+    // stop animations
     this.msgLayerAnim.stop();
     this.UILayerAnim.stop();
     this.updateHexagonAnim.stop();
+    
+    // destroy all layers and the stage
+    mapLayer.destroy();
+    UILayer.destroy();
+    msgLayer.destroy();
+    stage.destroy();
+    
+    // stop the camera and the minimap
+    this.camera.stop();
+    this.minimap.stop();
+    
 };
 
 /*********************************
