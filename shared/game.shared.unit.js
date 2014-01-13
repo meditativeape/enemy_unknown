@@ -31,7 +31,7 @@ var Unit = function(/*int*/ player, /*int*/ team, /*int*/hp, /*int*/ type, /*Coo
 	this.damaged = false;
 	this.death = null;
 	*/ 
-}
+};
 
 
 /**
@@ -55,81 +55,7 @@ Unit.prototype.setcd = function(/*float*/ time){
 			}
 			before = new Date();
 		} ,100);
-}
-
-
-//Move to view
-/**
- * Unit Method: return a Kinetic.Image to be put into the unit group.
- * @this {Unit}
- */
-Unit.prototype.draw = function(/*Point*/p, /*int*/height) {
-    var groupToDraw = new Kinetic.Group();
-    // draw unit
-	var unitToDraw;
-    if (this.hitCounter < 20) {
-        var hitImage;
-        if (this.lastHitType == "small")
-            hitImage = gc.getHitImgs.small[this.team][this.type];
-        else
-            hitImage = gc.getHitImgs.big[this.team][this.type];
-        unitToDraw = new Kinetic.Image({
-			image: hitImage,
-			x: Math.floor(p.X - this.image.width/2),
-			y: Math.floor(p.Y + height*2/5 - this.image.height + 5),
-			width: this.image.width,
-			height: this.image.height
-		});
-		var offset = Math.floor(this.hitCounter/2);
-		unitToDraw.setCrop({x:120*offset, y:0, width:120, height:120});
-        this.hitCounter++;
-	} else if (this.cooldown > 0.2 && this.cdImage) {
-		unitToDraw = new Kinetic.Image({
-			image: this.cdImage,
-			x: Math.floor(p.X - this.image.width/2),
-			y: Math.floor(p.Y + height*2/5 - this.image.height + 5),
-			width: this.image.width,
-			height: this.image.height
-		});
-		var offset = Math.round((5 - this.cooldown/2)*10);
-		unitToDraw.setCrop({x:120*offset, y:0, width:120, height:120});
-	} else {
-		unitToDraw = new Kinetic.Image({
-			image: this.image,
-			x: Math.floor(p.X - this.image.width/2),
-			y: Math.floor(p.Y + height*2/5 - this.image.height + 5),
-			width: this.image.width,
-			height: this.image.height
-		});
-	}
-    groupToDraw.add(unitToDraw);
-    // draw hp
-    for (var i = 0; i < this.hp; i++) {
-        var hpHeart = new Kinetic.Image({
-            image: this.heartImage,
-            x: Math.floor(p.X + 22),
-            y: Math.floor(p.Y + 15 * i - 30)
-        });
-        groupToDraw.add(hpHeart);
-    }
-    // draw number
-    if (this.showNum && this.type != 5) {
-        var num = this.type + 1;
-        var numText = new Kinetic.Text({
-            fontFamily: "Impact",
-            fontSize: 30,
-            stroke: "white",
-            text: num,
-            x: p.X,
-            y: p.Y
-        });
-        groupToDraw.add(numText);
-    }
-    
-	return groupToDraw;
 };
-
-
 
 /**
  * Method called when unit gets hit by enemy unit and loses hp.
@@ -162,5 +88,3 @@ Unit.prototype.gotHit = function(/*Unit*/enemy){
 		enemy.hp = 0;
 	}
 };
-
-
