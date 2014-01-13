@@ -20,19 +20,22 @@ var Unit = function(/*int*/ player, /*int*/ team, /*int*/hp, /*int*/ type, /*Coo
 	this.player = player; // Starts from 0
 	this.team = team; // Starts from 0
 	this.hp = hp; // Unit health points
-	this.type = type; // TODO
+	this.type = type; //0:Vampire,1:Wolf,2:Hunter,3:Zombie,4:Wizard,5:Unknown. Unit will never be unknown on server.
 	this.coord = startCoord; // Unit position
+    this.cooldown = 0; //Unit cooldown remianing. 
+	
+	//Future features
+	/*
 	this.attacked = false;
-    this.cooldown = 0;
 	this.attacking = false;
 	this.damaged = false;
-	this.death = null; // For death animation
-	this.lostHP = 0;
-	//this.lastHitType. 
+	this.death = null;
+	*/ 
 };
 
+
 /**
- * Set the cd for unit. Dirty hack used by both client server.
+ * Set the cd for unit. Dirty hack used by both client and server.
  */
 Unit.prototype.setcd = function(/*float*/ time){
 	this.cooldown = time;
