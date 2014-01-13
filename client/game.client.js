@@ -121,22 +121,7 @@ GameClient.prototype.onnetmessage = function(data){
 				this.resource = 0;
                 this.unitCounter = [0, 0];
 				
-				//TODO move to client.ui
-				// stop animations
-				this.camera.stop();
-				this.minimap.stop();
-				this.hexgrid.stop();
-				this.UILayerAnim.stop();
-                this.msgLayerAnim.stop();
-				// clear all layers
-				mapLayer.destroy();
-				mapLayer = new Kinetic.Layer();
-				UILayer.destroy();
-				UILayer = new Kinetic.Layer();
-				msgLayer.destroy();
-				msgLayer = new Kinetic.Layer({listening: false});
-				//End TODO
-				
+				//TODO call gcUI.cleanUp();
 				
 				//Stop in game sounds.
 				this.gcSound.stopBackgroundSound();
