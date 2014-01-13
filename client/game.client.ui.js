@@ -223,11 +223,10 @@ GameClientUI.prototype.initGameUI = function(){
     var me = this;
     
     // Build camera.
-    // TODO: change the constructors of camera and minimap
-    this.camera = new BuildCamera([this.scenario.size.x + this.scenario.offset*2, this.scenario.size.y], CONSTANTS.mapScrollSpeed, this.background, mapLayer);
+    this.camera = new BuildCamera(this.scenario.name, this.background, mapLayer);
     
     // Build minimap.
-    this.minimap = new BuildMiniMap(this.camera, [this.scenario.size.x + this.scenario.offset*2, this.scenario.size.y], CONSTANTS.minimapWidth, this.background, UILayer, stage);
+    this.minimap = new BuildMiniMap(this.camera, this.scenario.name, this.background, UILayer, stage);
     
     // Initialize terrains in the hexgrid.
     var terrain = this.scenario.terrain;

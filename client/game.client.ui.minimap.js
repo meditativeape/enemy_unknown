@@ -6,20 +6,20 @@
  * Constructor to build a new miniMap object.
  * @constructor
  * @camera: a camera object.
- * @mapSize: an array of length 2 indicating the width and height of the map.
- * @width: an integer, which is the actual width of the minimap on the screen.
+ * @scenarioName: name of the scenario.
  * @img: background image for the minimap.
  * @layer: the kinetic layer that miniMap will be drawn on.
  * @stage: the kinetic stage that our game is rendered on.
  **/
-var MiniMap = function(/*Camera*/ camera, /*int[]*/ mapSize, /*int*/ width, /*Image*/ img, /*Kinetic.Layer*/ layer, /*Kinetic.Stage*/ stage){
+var MiniMap = function(/*Camera*/ camera, /*String*/ scenarioName, /*Image*/ img, /*Kinetic.Layer*/ layer, /*Kinetic.Stage*/ stage){
 	
     var me = this;
     
     // fields
     this.camera = camera;
-    this.mapSize = mapSize;
-    this.width = width;
+    var scenario = Scenarios[scenarioName];
+    this.mapSize = [scenario.size.x + scenario.offset * 2, scenario.size.y];
+    this.width = CONSTANTS.minimapWidth;
     this.height = Math.floor(mapSize[1]/(mapSize[0]/width));
     this.toDraw = new Kinetic.Group();
     this.units = [];

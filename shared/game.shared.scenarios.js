@@ -14,6 +14,7 @@ if( 'undefined' !== typeof global ) {
  */
 var Scenarios = {
 	"tutorial_1": {
+        "name": "tutorial_1",
 		"size": {"numRows": 11, "numCols": 11},
 		"terrain": (function(){
 			var terrain = [];
@@ -66,6 +67,7 @@ var Scenarios = {
 	},
 	
 	"slayer": {
+        "name": "slayer",
 		"size": {"numRows": 11, "numCols": 11},
 		"terrain": (function(){
 			var terrain = [];
@@ -126,6 +128,7 @@ var Scenarios = {
 	},
 	
 	"captureflag": {
+        "name": "captureflag",
 		"size": {"numRows": 11, "numCols": 11},
 		"terrain": (function(){
 			var terrain = [];
@@ -164,6 +167,7 @@ var Scenarios = {
 	},
 
 	"vampirehunter": {
+        "name": "vampirehunter",
 		"size": {"numRows": 11, "numCols": 11},
 		"terrain": (function(){
 			var terrain = [];
@@ -198,6 +202,7 @@ var Scenarios = {
 	},
     
 	"zombieisbetter": {
+        "name": "zombieisbetter",
 		"size": {"numRows": 11, "numCols": 11},
 		"terrain": (function(){
 			var terrain = [];
@@ -232,6 +237,7 @@ var Scenarios = {
 	},
     
 	"rockpapersissors": {
+        "name": "rockpapersissors",
 		"size": {"numRows": 11, "numCols": 11},
 		"terrain": (function(){
 			var terrain = [];
@@ -266,6 +272,7 @@ var Scenarios = {
 	},
 	
 	"warzone": {
+        "name": "warzone",
 		"size": {"numRows": 11, "numCols": 11},
 		"terrain": (function(){
 			var terrain = [];
@@ -299,5 +306,3 @@ var Scenarios = {
 		"revealtype": false
 	}
 };
-
-

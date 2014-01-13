@@ -5,20 +5,20 @@
 /**
  * Constructor to build a new camera object that shows game contents.
  * @constructor
- * @mapSize: an array of length 2, indicating the size of the map
- * @movingSpeed: the distance that the camera should move when user presses an arrow key once.
+ * @scenarioName: name of the scenario.
  * @img: background image for the game.
  * @layer: the kinetic layer that the game will be drawn on.
  **/
-var Camera = function(/*int[]*/ mapSize, /*int*/ movingSpeed, /*Image*/ img, /*Kinetic.Layer*/ layer) {
+var Camera = function(/*String*/ scenarioName, /*Image*/ img, /*Kinetic.Layer*/ layer) {
 
     var me = this;
 
     // fields
-    this.mapSize = mapSize;
+    var scenario = Scenarios[scenarioName];
+    this.mapSize = [scenario.size.x + scenario.offset * 2, scenario.size.y];
     this.x = 0;
     this.y = 0;
-    this.speed = movingSpeed;
+    this.speed = CONSTANTS.mapScrollSpeed;
     this.isMovingLeft = false;
     this.isMovingRight = false;
     this.isMovingUp = false;
