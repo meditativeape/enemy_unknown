@@ -144,13 +144,41 @@ GameClientSounds.prototype.stopBackgroundSound = function(){
  * Play flagcapSound
  */
 GameClientSounds.prototype.playFlagcapSound = function(){
-	soundAssets.flagcapsound.play();
+	soundAssets.flagcapSound.play();
 }
 
 /**
  * Stop flagcapSound
  */
 GameClientSounds.prototype.stopFlagcapSound = function(){
-	soundAssets.flagcapsound.stop();
+	soundAssets.flagcapSound.stop();
+}
+
+/**
+ * Play attack_1sound
+ */
+GameClientSounds.prototype.playAttack_1Sound = function(){
+	soundAssets.attack_1Sound.play();
+}
+
+/**
+ * Play attack_2sound
+ */
+GameClientSounds.prototype.playAttack_2Sound = function(){
+	soundAssets.attack_2Sound.play();
+}
+
+/**
+ * Play attack1sound
+ */
+GameClientSounds.prototype.playAttack1Sound = function(){
+	soundAssets.attack1Sound.play();
+}
+
+/**
+ * Play attack2sound
+ */
+GameClientSounds.prototype.playAttack2Sound = function(){
+	soundAssets.attack2Sound.play();
 }
 		

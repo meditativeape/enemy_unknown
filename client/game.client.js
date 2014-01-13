@@ -50,8 +50,9 @@ GameClient.prototype.newSocket = function (){
 /**
  * Load UI and sound assets.
  */
-GameClient.prototype.loadAssets = function(/*string*/ scenario) {
+GameClient.prototype.loadAssets = function(/*string*/ scenario,/*boolean*/ fogOn) {
     this.scenario = scenario;
+	this.fogOn = fogOn;
 	this.gcUI = new GameClientUI(this, scenario);
 	gcUI.loadImage();
 	this.gcSound = new GameClientSounds();
@@ -64,7 +65,7 @@ GameClient.prototype.joinGame = function(/*string*/ scenario, /*int*/ type){  //
 };
 
 GameClient.prototype.initGame = function(){
-    this.fogOn = this.scenario.fog;
+   //Merge with loadAssets
     this.hexgrid = new ClientHexgrid(new Hexgrid(this.scenario));
     this.gcUI.initGameUI();  // init game UI
 };
@@ -197,13 +198,13 @@ GameClient.prototype.onnetmessage = function(data){
 				this.hexgrid.matrix[parseInt(keywords[5])][parseInt(keywords[6])].piece.setcd(parseFloat(keywords[7]));
 				//Duplicate should be fine even when removed. 
 				//this.hexgrid.updateViewable(this.team,this.minimap);
-				//this.updateRA();
+				//this.updateReachableAndAttackable();
 				
 				// update minimap
 				var pointOnMap = this.hexgrid.toMap(new Coordinate(parseInt(keywords[5]), parseInt(keywords[6])));
 				this.minimap.addUnit(pointOnMap, parseInt(keywords[2]));
                 this.hexgrid.updateViewable(this.team,this.minimap);
-				this.updateRA();
+				this.updateReachableAndAttackable();
 				break;
 			case "resource":
 				this.resource = parseInt(keywords[2]);
@@ -217,15 +218,16 @@ GameClient.prototype.onnetmessage = function(data){
 				var newPointOnMap = this.hexgrid.toMap(new Coordinate(parseInt(keywords[4]), parseInt(keywords[5])));
 				this.minimap.moveUnit(oldPointOnMap, newPointOnMap);
 				this.hexgrid.updateViewable(this.team,this.minimap);
-				this.updateRA();
+				this.updateReachableAndAttackable();
 				break;
 			case "attack":
 				//Piece at ('2','3') attacks piece at ('5','6'). Piece at ('2','3') loses '4' hp, and piece at ('5','6') loses '7' hp.
-				this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece.minusHP(parseInt(keywords[4]));
-				this.hexgrid.matrix[parseInt(keywords[5])][parseInt(keywords[6])].piece.minusHP(parseInt(keywords[7]));
+				//updateHP also plays the correct attack sound.
+				this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece.updateHP(parseInt(keywords[4]),this);
+				this.hexgrid.matrix[parseInt(keywords[5])][parseInt(keywords[6])].piece.updateHP(parseInt(keywords[7]),this);
 				//Piece at ('2','3') has cd set.
 				this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece.setcd(CONSTANTS.cd);
-				this.updateRA();
+				this.updateReachableAndAttackable();
 				break;
 			case "die":
 				this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece.type = parseInt(keywords[4]);
@@ -237,13 +239,18 @@ GameClient.prototype.onnetmessage = function(data){
 					this.hexgrid.matrix[gc.guess.X][gc.guess.Y].guessing = false;
 					this.guess = null;
 				}
+				//Our unit was killed.
 				if(this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece.team == gc.team){
 					soundAssets.diesound.play();
+				//Enemy unit was killed.
 				}else{
 					if(!this.vampireKO){
 						soundAssets.killsound.play();
+					//If 
+					}else{
+						soundAssets.kosound.play(); 
+						this.vampireKO = false;
 					}
-					this.vampireKO = false;
 				}
 				this.hexgrid.matrix[parseInt(keywords[2])][parseInt(keywords[3])].piece = null;
 
@@ -260,7 +267,7 @@ GameClient.prototype.onnetmessage = function(data){
 					}
 				}
 				this.hexgrid.updateViewable(this.team,this.minimap);
-				this.updateRA();
+				this.updateReachableAndAttackable();
 				break;
 			}
 			break;
@@ -279,7 +286,7 @@ GameClient.prototype.onconnected = function(data){
 	//TODO
 };
 	
-GameClient.prototype.updateRA = function(){
+GameClient.prototype.updateReachableAndAttackable = function(){
     this.hexgrid.clientClearReachable();
     this.hexgrid.clientClearAttackable();
     if(this.lastClickCoord){

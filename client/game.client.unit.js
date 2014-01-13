@@ -2,39 +2,59 @@
  * Client unit methods.
  */
  
- //View
+/**
+ * Constructor for client unit.
+ */ 
+var ClientUnit = function(/*Unit*/ oldUnit){
+	//Inherit old properties
+	serverUnit.prototype = oldUnit;
+	//Add new properties
+	this.lastHitType = null;
+	this.lostHP = 0;
+	this.hitCounter = 21; //???? Determines which sprite to draw.
+}
+
+/**
+ * Change the unit's displaye type when player guesses.
+ */
 ClientUnit.prototype.guess = function(/*int*/ guess){
     this.type = guess;
 	this.image = gc.sprites[this.player][guess];
 	this.cdImage = gc.cooldown[this.player][guess];
 }
 
-//View
-ClientUnit.prototype.minusHP = function(/*int*/hp){
+/**
+ * When the unit attacks or is attacked, and the hp is updated.
+ */
+ClientUnit.prototype.updateHP = function(/*int*/hp,/*GameClient*/ gameClient){
 	this.lostHP = this.hp - hp;
 	this.hp = hp;
-	if(this.lostHP!=0){
-        this.hitCounter = 0; // show get hit animation
+	if(this.lostHP!=0){ 
+        this.hitCounter = 0; //Reset get hit animation counter.
+		//Set get hit animation type.
         if (this.lostHP == 1)
             this.lastHitType = "small";
         else
             this.lastHitType = "big";
-		if(this.team == gc.team && hp!= 0){
+		//If own unit loses hp but didn't die.
+		if(this.team == gameClient.team && hp!= 0){
 			if(this.lostHP == 1){
-				soundAssets.attack_1sound.play();
+				gameClient.gcSound.playAttack_1Sound();
 			}else{
-				soundAssets.attack_2sound.play();
+				gameClient.gcSound.playAttack_2Sound();
 			}
 		}
+		//If enemy unit loses hp but didn't die.
 		else{
 			if(this.lostHP == 1 && hp!= 0){
-				soundAssets.attack1sound.play();
+				gameClient.gcSound.playAttack1Sound();
+			//Special case: If we killed vampire.
 			}else if(this.type == 0){
-				soundAssets.kosound.play();
-				gc.vampireKO = true;
+				//Play vampire KO sound. (Only if killed by wizard when vampire has >= 2HP.)
+				gameClient.vampireKO = true;
 			}
 			else if(hp!= 0){
-				soundAssets.attack2sound.play();
+				gameClient.gcSound.playAttack2Sound();
 			}
 		}
 	}
