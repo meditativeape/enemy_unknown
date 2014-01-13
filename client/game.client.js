@@ -26,7 +26,7 @@ var GameClient = function() {
 	this.vampireKO = false;
 	this.gcUI = null;
 	this.gcSound = null;
-    this.scenario = null;
+    this.scenarioName = null;
     this.canBuildUnit = [false, false, false, false, false];
     this.guess = null;
 	
@@ -47,27 +47,21 @@ GameClient.prototype.newSocket = function (){
 	this.mainSocket.on('message', this.onnetmessage.bind(this));
 }
 
-/**
- * Load UI and sound assets.
- */
-GameClient.prototype.loadAssets = function(/*string*/ scenario,/*boolean*/ fogOn) {
-    this.scenario = scenario;
+GameClient.prototype.joinGame = function(/*string*/ scenarioName, /*int*/ type){  //Server connection functionality..
+	this.mainSocket.send('0 join '+ type + ' '+ scenarioName);
+};
+
+GameClient.prototype.initGame = function(/*string*/ scenarioName,/*boolean*/ fogOn){
+    this.scenarioName = scenarioName;
 	this.fogOn = fogOn;
-	this.gcUI = new GameClientUI(this, scenario);
-	gcUI.loadImage();
+	//Build Hexgrid.
+    this.hexgrid = new ClientHexgrid(new Hexgrid(this.scenarioName));
+	//Load UI and sound assets.
+	this.gcUI = new GameClientUI(this);
+	this.gcUI.loadImage();
+	this.gcUI.initGameUI();  // init game UI
 	this.gcSound = new GameClientSounds();
-	gcSound.loadSound();
-	//Do we really need hasLoaded? JavaScript is linear.
-};
-
-GameClient.prototype.joinGame = function(/*string*/ scenario, /*int*/ type){  //Server connection functionality..
-	this.mainSocket.send('0 join '+ type + ' '+ scenario);
-};
-
-GameClient.prototype.initGame = function(){
-   //Merge with loadAssets
-    this.hexgrid = new ClientHexgrid(new Hexgrid(this.scenario));
-    this.gcUI.initGameUI();  // init game UI
+	this.gcSound.loadSound();
 };
 
 /**

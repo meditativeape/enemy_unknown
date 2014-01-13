@@ -6,7 +6,6 @@ var waiting = function(){
 		var senSelection = sen.options[sen.selectedIndex].value;
 		var typSelection = "0";
 		// gc = new game_core_client();
-		gc.load_assets(senSelection,parseInt(typSelection));
 		started = true;
 		waitingScreen.style.visibility = "visible";
 		levelMenu.style.visibility = "hidden";
