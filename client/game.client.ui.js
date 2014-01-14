@@ -29,9 +29,9 @@ var msgLayer = new Kinetic.Layer({listening: false}); // layer for messages, suc
 /**
  * The GameClientUI class.
  */
-var GameClientUI = function(/*gameClient*/ gc, /*string*/ scenarioName) {
+var GameClientUI = function(/*gameClient*/ gc) {
     this.gc = gc;
-    this.scenario = Scenarios[scenarioName];
+    this.scenario = Scenarios[gc.scenarioName];
     
     // Initialize platform-dependent UI
     this.platformUI;

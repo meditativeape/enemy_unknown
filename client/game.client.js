@@ -2,7 +2,7 @@
  * Client-side code. 
  */
 
- /**
+/**
  * The GameClient constructor. 
  */
 var GameClient = function() {
@@ -52,11 +52,14 @@ GameClient.prototype.joinGame = function(/*string*/ scenarioName, /*int*/ type){
 };
 
 GameClient.prototype.initGame = function(/*string*/ scenarioName,/*boolean*/ fogOn){
+
     this.scenarioName = scenarioName;
 	this.fogOn = fogOn;
-	//Build Hexgrid.
+    
+	// Build Hexgrid.
     this.hexgrid = new ClientHexgrid(new Hexgrid(this.scenarioName));
-	//Load UI and sound assets.
+    
+	// Load UI and sound assets.
 	this.gcUI = new GameClientUI(this);
 	this.gcUI.loadImage();
 	this.gcUI.initGameUI();  // init game UI
@@ -66,6 +69,7 @@ GameClient.prototype.initGame = function(/*string*/ scenarioName,/*boolean*/ fog
 
 /**
  * Handle message from server.
+ * TODO: refactor this method!
  */
 GameClient.prototype.onnetmessage = function(data){
 	var keywords = data.split(" ");
@@ -268,12 +272,12 @@ GameClient.prototype.onconnected = function(data){
 };
 	
 GameClient.prototype.updateReachableAndAttackable = function(){
-    this.hexgrid.clientClearReachable();
-    this.hexgrid.clientClearAttackable();
+    this.hexgrid.clearReachable();
+    this.hexgrid.clearAttackable();
     if(this.lastClickCoord){
         if(this.hexgrid.getUnit(this.lastClickCoord)){
-            this.hexgrid.clientMarkReachable(this.lastClickCoord);
-            this.hexgrid.clientMarkAttackable(this.lastClickCoord);
+            this.hexgrid.markReachable(this.lastClickCoord);
+            this.hexgrid.markAttackable(this.lastClickCoord);
         }
     }
 }; 
