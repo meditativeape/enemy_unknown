@@ -6,25 +6,18 @@
  * Constructor for server hexgrid.
  */ 
 var ServerHexgrid = function(/*Hexgrid*/ hexgrid) {
+
 	//Inherit old properties
 	this.prototype = hexgrid;
+    
 	//Convert all units in server hexgrid to server units.
-	convertAllUnitsToServerUnits(this);
-};
-
-
-/**
- * Convert all units in server hexgrid to server units.
- */ 
-var convertAllUnitsToServerUnits = function(/*hexgrid*/ hexgrid){
-	for(var i in hexgrid.matrix){
-		for(var j in hexgrid.matrix[i]){
-			var oldUnit = hexgrid.matrix[i][j].unit;
-			hexgrid.matrix[i][j].unit = ServerUnit(oldUnit);
+	for(var i in this.matrix){
+		for(var j in this.matrix[i]){
+			var oldUnit = this.matrix[i][j].unit;
+			this.matrix[i][j].unit = ServerUnit(oldUnit);
 		}
 	}
 };
-
  
 /**
  * Check if the unit can move from coord1 to coord2.
