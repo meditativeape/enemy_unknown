@@ -6,6 +6,7 @@
  * Constructor for client hexgrid.
  */ 
 var ClientHexgrid = function(/*Hexgrid*/ hexgrid) {
+
 	//Inherit old properties
 	this.prototype = hexgrid;
     
@@ -16,7 +17,12 @@ var ClientHexgrid = function(/*Hexgrid*/ hexgrid) {
 	this.viewables = [];
     
 	//Convert all hexagons in client hexgrid to client hexagons
-	convertAllHexagonsToClientHexagon(this);
+    for(var i in this.matrix){
+		for(var j in this.matrix[i]){
+			var hexagon = this.matrix[i][j];
+			this.matrix[i][j] = ClientHexagon(hexagon);
+		}
+	}
 };
 
 
@@ -37,19 +43,6 @@ var ClientHexagon = function(/*Hexagon*/ oldHexagon){
 	this.pastViewable = false;
     this.guessing = false;
     this.selected = false;
-};
-
-/**
- * Convert all regular hexagons in hexgrid to client hexagons.
- */ 
-var convertAllHexagonsToClientHexagon = function(/*hexgrid*/ hexgrid){
-	for(var i in hexgrid.matrix){
-		for(var j in hexgrid.matrix[i]){
-			var hexagon = hexgrid.matrix[i][j];
-			hexgrid.matrix[i][j] = ClientHexagon(hexagon);
-		}
-	}
-
 };
 
 /**
@@ -166,7 +159,7 @@ ClientHexgrid.prototype.markViewable = function(/*int*/team){
 };
 
 /**
- * Check if coord is reachable accroding to current reachables.
+ * Check if coord is reachable according to current reachables.
  * Should only be used after markReachable.
  */
 ClientHexgrid.prototype.isReachable = function(/*Coordinate*/coord){
@@ -175,7 +168,7 @@ ClientHexgrid.prototype.isReachable = function(/*Coordinate*/coord){
 
 /**
  * Check if coord is attackable accroding to current attackables.
- * Should only be used after markReachable.
+ * Should only be used after markAttackable.
  */
 ClientHexgrid.prototype.isAttackable = function(/*Coordinate*/coord){
 	return this.matrix[coord.X][coord.Y].attackable;
