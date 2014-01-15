@@ -5,7 +5,7 @@
 /**
  * Server side we import shared classes and export game server.
  */
-require('../shared/game.shared.terrain.js');
+var Terrain = require('../shared/game.shared.terrain.js');
 var Helper = require('../shared/game.shared.helper.js');
 var Hexgrid = require('../shared/game.shared.hexgrid.js');
 var ServerHexgrid = require('../server/game.server.hexgrid.js');
