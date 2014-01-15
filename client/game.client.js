@@ -30,26 +30,12 @@ var GameClient = function() {
     this.canBuildUnit = [false, false, false, false, false];
     this.guess = null;
 	
-	this.newSocket();
+	
 }
 
-GameClient.prototype.newSocket = function (){
-	//Store a local reference to our connection to the server
-	this.mainSocket = io.connect();
-	//When we connect, we are not 'connected' until we have a server id
-	//and are placed in a game by the server. The server sends us a message for that.
-	this.mainSocket.on('connect', this.connecting.bind(this));
-	//Sent when we are disconnected (network, server down, etc)
-	this.mainSocket.on('disconnect', this.ondisconnect.bind(this));
-	//Handle when we connect to the server, showing state and storing id's.
-	this.mainSocket.on('onconnected', this.onconnected.bind(this));
-	//On message from the server, we parse the commands and send it to the handlers
-	this.mainSocket.on('message', this.onnetmessage.bind(this));
-}
 
-GameClient.prototype.joinGame = function(/*string*/ scenarioName, /*int*/ type){  //Server connection functionality..
-	this.mainSocket.send('0 join '+ type + ' '+ scenarioName);
-};
+
+
 
 GameClient.prototype.initGame = function(/*string*/ scenarioName,/*boolean*/ fogOn){
 

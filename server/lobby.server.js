@@ -9,12 +9,12 @@ var GameServer = require('./server/game.server.js');
 var io = require('socket.io');
 var UUID = require('node-uuid');
 //Export Lobby
-module.exports = Lobby;
+module.exports = LobbyServer;
  
 /**
  * Set up lobby.
  */
-var Lobby = function(/*ExpressServer*/ expressServer){
+var LobbyServer = function(/*ExpressServer*/ expressServer){
 	// List to store game instances
 	this.games = [];
 	//Number of game instances

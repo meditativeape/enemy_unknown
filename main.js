@@ -7,7 +7,7 @@
 //Import express server
 var express = require('express');
 //Import lobby setup.
-var Lobby  = require('./server/lobby.server.js');
+var LobbyServer  = require('./server/lobby.server.js');
 
 /**
  * Set up express server and lobby.. 
@@ -34,7 +34,7 @@ var Setup = function(){
         res.sendfile( __dirname + '/index.html' );
     }); 
 	//Setup lobby
-	Lobby(expressServer);
+	LobbyServer(expressServer);
 
 };
 
