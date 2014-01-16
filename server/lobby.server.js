@@ -12,7 +12,7 @@ var UUID = require('node-uuid');
 module.exports = LobbyServer;
  
 /**
- * Set up lobby.
+ * Set up LobbyServer.
  */
 var LobbyServer = function(/*ExpressServer*/ expressServer){
 	// List to store game instances
@@ -37,7 +37,7 @@ var LobbyServer = function(/*ExpressServer*/ expressServer){
  * Message Handler set up.
  * The message handler listens to messages from the client.
  */
-Lobby.prototype.messageHandler = function(/*ExpressServer*/ expressServer ){
+LobbyServer.prototype.messageHandler = function(/*ExpressServer*/ expressServer ){
     //Create a socket.io instance using our express server
 	var sio = io.listen(expressServer);
     //Configure the socket.io connection settings.
@@ -73,7 +73,7 @@ Lobby.prototype.messageHandler = function(/*ExpressServer*/ expressServer ){
 /**
  *A wrapper for logging.
  */
-Lobby.prototype.log = function() {
+LobbyServer.prototype.log = function() {
 	console.log.apply(this,arguments);
 }
 
@@ -82,7 +82,7 @@ Lobby.prototype.log = function() {
 /**
  * Handle messages from the client
  */
-Lobby.pototype.onMessage = function(client,message) {
+LobbyServer.prototype.onMessage = function(client,message) {
 	//If client isn't in a game, the lobby handles the message
 	if(client && !client.game){
 		this.handleMessage(client, message);
@@ -94,7 +94,7 @@ Lobby.pototype.onMessage = function(client,message) {
 };
 
 //Handles client disconection
-Lobby.pototype.onDisconnect = function(client) {		
+LobbyServer.prototype.onDisconnect = function(client) {		
 	//If player is in game.
 	if(client.game) {
 		//Log event
@@ -113,7 +113,7 @@ Lobby.pototype.onDisconnect = function(client) {
 /**
  * Handle message from client.
  */
-Lobby.pototype.handleMessage = function(client,message){
+LobbyServer.prototype.handleMessage = function(client,message){
 	console.log(":: server :: received a message: " + message);
 		var keywords = message.split(" ");
 		if(parseInt(keywords[0])==0){
@@ -135,7 +135,7 @@ Lobby.pototype.handleMessage = function(client,message){
 /**
  * Find a game for player to join.
  */
-Lobby.pototype.findGame = function(player,type,scenario) {
+LobbyServer.prototype.findGame = function(player,type,scenario) {
 	for(var playerNum in this.inMenu){
 		if(this.inMenu[playerNum] == player){
 			this.inMenu.splice(playerNum, playerNum+1);
@@ -223,7 +223,7 @@ Lobby.pototype.findGame = function(player,type,scenario) {
 
 
 // Define some required functions
-Lobby.pototype.createGame = function(player, type,scenario) {
+LobbyServer.prototype.createGame = function(player, type,scenario) {
 	// Create a new game instance
 	var thegame = new game_core_server([player], UUID(), type, scenario);
 	

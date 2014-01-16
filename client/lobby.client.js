@@ -3,7 +3,7 @@
  */
 
 /**
- * Setup client lobby.
+ * Setup client LobbyServer.
  */
 var LobbyClient = new function(/*Menu*/ menu){
 	this.mainSocket = null;
