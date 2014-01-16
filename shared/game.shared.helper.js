@@ -40,5 +40,4 @@ var CONSTANTS = {
 	unitViewRange: 3.0 //View range of all units.
 };
 
-console.log(CONSTANTS);
 
