@@ -4,7 +4,7 @@
  */
 
 //Import GameServer
-var GameServer = require('./server/game.server.js');
+var GameServer = require('./game.server.js');
 //Import socket io and UUID
 var io = require('socket.io');
 var UUID = require('node-uuid');

@@ -366,8 +366,8 @@ GameServer.prototype.startGame = function(){
 	for (var i = 0; i < terrain.length; i++)
 		for (var j = 0; j < terrain[i].length; j++) {
 			switch (terrain[i][j]) {
-			case "thron":
-				this.hexgrid.addTerrain(CONSTANTS.thronTerrain, new helper.Coordinate(i, j));
+			case "thorn":
+				this.hexgrid.addTerrain(CONSTANTS.thornTerrain, new helper.Coordinate(i, j));
 				break;
 			case "flag":
 				this.hexgrid.addTerrain(CONSTANTS.flagTerrain, new helper.Coordinate(i, j));
