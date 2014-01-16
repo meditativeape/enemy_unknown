@@ -7,7 +7,7 @@
  * Server side we import Point and Coordinate and export Unit.
  */
 if( 'undefined' != typeof global ) {
-    var helper = require("./helper.js");
+    var helper = require("./game.shared.helper.js");
 	var CONSTANTS = helper.CONSTANTS;
 	module.exports = Unit;
 }
