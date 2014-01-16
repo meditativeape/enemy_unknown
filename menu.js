@@ -1,24 +1,25 @@
-// JavaScript Document
-var waiting = function(){
-	if(!started){
-		var sen = document.getElementById('scenario');
-		var typ = document.getElementById('type');
-		var senSelection = sen.options[sen.selectedIndex].value;
-		var typSelection = "0";
-		// gc = new game_core_client();
-		started = true;
-		waitingScreen.style.visibility = "visible";
-		levelMenu.style.visibility = "hidden";
-		loseMenu.style.visibility = "hidden";
-		winMenu.style.visibility = "hidden";
-		
-	}
-}
+/**
+ * Menu controls for interfacting with the index.html HTML document.
+ */
+ 
+/**
+ * Setup menu controls
+ */
+var Menu = function(){
+	this.lobby = null;
+};
 
-var started = false;
 
-var selectLevel = function(){
-	gc.mainSocket.send('0 menu');
+
+
+/**
+ * Code to execute when player enters game lobby.
+ */
+Menu.prototype.enterLobby = function(){
+	//Setup lobby client.
+	this.lobby = new LobbyClient(this);
+	//Tell lobby to update return updated state.
+	this.lobby.update(); 
 	levelMenu.style.visibility = "visible";
 	mainMenu.style.visibility = "hidden";
 	howToMenu.style.visibility = "hidden";
@@ -27,9 +28,25 @@ var selectLevel = function(){
 }
 
 
-var gameEnded = function(/*boolean*/winner){
+Menu.prototype.waiting = function(){
+	var scenarioMenu = document.getElementById('scenario');
+	var typeMenu = document.getElementById('type');
+	var scenarioSelection = scenarioMenu.options[scenarioMenu.selectedIndex].value;
+	var typeSelection = "0";
+	this.lobby.joinGame(scenarioSelection,typeSelection);
+	waitingScreen.style.visibility = "visible";
+	levelMenu.style.visibility = "hidden";
+	loseMenu.style.visibility = "hidden";
+	winMenu.style.visibility = "hidden";
+}
+
+Menu.prototype.start = function(){
+	container.style.visibility = "visible";
+	waitingScreen.style.visibility = "hidden";
+}
+
+Menu.prototype.gameEnded = function(/*boolean*/winner){
 	container.style.visibility = "hidden";
-	started = false;
 	if(winner){
 		winMenu.style.visibility = "visible";
 	}else{
@@ -37,17 +54,21 @@ var gameEnded = function(/*boolean*/winner){
 	}
 }
 
-var start = function(){
-	container.style.visibility = "visible";
-	waitingScreen.style.visibility = "hidden";
-}
 
-var howTo = function(){
+Menu.prototype.howTo = function(){
 	howToMenu.style.visibility = "visible";
 	mainMenu.style.visibility = "hidden";
 }
 
-var menuBack = function(){
+Menu.prototype.highScore = function(){
+	//TODO
+}
+
+Menu.prototype.about = function(){
+	//TODO
+}
+
+Menu.prototype.menuBack = function(){
 	levelMenu.style.visibility = "hidden";
 	howToMenu.style.visibility = "hidden";
 	mainMenu.style.visibility = "visible";
@@ -55,7 +76,7 @@ var menuBack = function(){
 
 
 
-
+//TODO Handle by lobby
 var senarioList = [];
 var senarioCount = 0;
 
@@ -83,13 +104,17 @@ var updateMenu = function(/*string*/senario){
 	document.getElementById('lobby').value = 'Senarios created by players: ' + string + '.';
 	
 }
+//END TODO
+
+//Global instance of menu for document.
+var menu = new Menu();
 
 /**
  * Sound manager setup.
  */
  
- //Data structure for sound Assets.
- var soundAssets = {};
+//Data structure for sound Assets.
+var soundAssets = {};
  
 //Load sounds
 soundManager.setup({
@@ -131,3 +156,4 @@ var onFocus = function() {
 
 window.onfocus = onFocus;
 window.onblur = onBlur;
+

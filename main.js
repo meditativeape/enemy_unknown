@@ -1,20 +1,16 @@
 /**
  * Main file to run on server.
  * Starts express server to serve files to client.
- * Starts message handler 
+ * Sets up game lobby.
  */
 
-/**
- * Server side we import dependences.
- */
-var io = require('socket.io');
+//Import express server
 var express = require('express');
-var UUID = require('node-uuid');
-//Import message handler setup.
-var MessageHandler  = require('./server/messageHandler.server.js');
+//Import lobby setup.
+var LobbyServer  = require('./server/lobby.server.js');
 
 /**
- * Set up and Message Handler. 
+ * Set up express server and lobby.. 
  */
 var Setup = function(){
 	//The express server handles passing our content to the browser.
@@ -37,13 +33,12 @@ var Setup = function(){
         //Send the requesting client the homepage.
         res.sendfile( __dirname + '/index.html' );
     }); 
-	
-	//Express and socket.io can work together to serve the socket.io client files for you.
-	//This way, when the client requests '/socket.io/' files, socket.io determines what the client needs.
-	MessageHandler(expressServer);
+	//Setup lobby
+	LobbyServer(expressServer);
+
 };
 
-//Start express server and message handler setup.
+//Start express server and lobby setup.
 Setup();
 
 
