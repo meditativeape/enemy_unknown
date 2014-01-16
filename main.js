@@ -17,7 +17,7 @@ var Setup = function(){
 	// Set the gameport for express server.
 	var gameport = process.env.PORT || 4004;	
 	//Create the express server.
-	var expressServer = this.express.createServer();
+	var expressServer = express.createServer();
 	//Tell the server to listen for incoming connections
     expressServer.listen( gameport );
     //Something so we know that it succeeded.
