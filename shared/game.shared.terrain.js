@@ -11,10 +11,7 @@ if( 'undefined' != typeof global ) {
 	var Point = helper.Point;
 	var Coordinate = helper.Coordinate;
 	var CONSTANTS = helper.CONSTANTS;
-	console.log(helper);
-	
 }
-
 
 /**
  * Abstract terrain object.

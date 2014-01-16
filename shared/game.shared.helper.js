@@ -3,15 +3,6 @@
  */
 
 /**
- * Server side we export Point,Coordinate and constants.
- */
-if( 'undefined' !== typeof global ) {
-    exports.Point = Point;
-	exports.Coordinate = Coordinate;
-	exports.CONSTANTS = CONSTANTS;
-}
-
-/**
  * Constructs a point. This represents a position on the canvas. 
  * @constructor
  */
@@ -40,5 +31,11 @@ var CONSTANTS = {
 	unitViewRange: 3.0 //View range of all units.
 };
 
-console.log(CONSTANTS);
-
+/**
+ * Server side we export Point,Coordinate and constants.
+ */
+if( 'undefined' !== typeof global ) {
+    exports.Point = Point;
+	exports.Coordinate = Coordinate;
+	exports.CONSTANTS = CONSTANTS;
+}
