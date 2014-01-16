@@ -30,11 +30,12 @@ var Setup = function(){
     });
     //This handler will listen for requests on /*, any file from the root of our server.
     expressServer.get( '/*' , function( req, res, next ) {
-        //Send the requesting client the homepage.
-        res.sendfile( __dirname + '/index.html' );
+        //This is the current file they have requested
+        var file = req.params[0];    
+        //Send the requesting client the file.
+        res.sendfile( __dirname + '/' + file );
+
     }); 
-	//Setup lobby
-	LobbyServer(expressServer);
 
 };
 
