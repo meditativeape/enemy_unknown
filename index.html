@@ -15,6 +15,7 @@
 		<script type="text/javascript" src="/socket.io/socket.io.js"></script>
        	<!-- Menu code -->
 		<script type="text/javascript" src="menu.js"></script>
+        <script type="text/javascript" src="client/lobby.client.js"></script>
     	<script type="text/javascript">
 		var howToPlay = new Spry.Widget.Accordion("howToPlay");
 		 </script>
@@ -50,13 +51,13 @@
 		    	<td align="center">&nbsp;</td>
 	      	</tr>
 		  	<tr>
-				<td align="center"><button class="button" onclick="selectLevel()">Play</button></td>
+				<td align="center"><button class="button" onclick="menu.enterLobby()">Play</button></td>
 		 	</tr>
 		  	<tr>
 		    	<td align="center">&nbsp;</td>
 	      	</tr>
 		  	<tr>
-				<td align="center"><button class="button" onclick="howTo()">How to play</button></td>
+				<td align="center"><button class="button" onclick="menu.howTo()">How to play</button></td>
 		  	</tr>
 		  	<tr>
 		    	<td align="center">&nbsp;</td>
@@ -91,10 +92,10 @@
                </td>
             </tr>
             <tr>
-                <td align="center"><button class="button" onclick="selectLevel()">Play</button></td>
+                <td align="center"><button class="button" onclick="menu.selectLevel()">Play</button></td>
             </tr>
             <tr>
-                <td align="center"><button class="button" onclick="menuBack()">Back</button></td>
+                <td align="center"><button class="button" onclick="menu.menuBack()">Back</button></td>
             </tr>
 		</table>
     </div>
@@ -133,13 +134,13 @@
 		    <td align="center">&nbsp;</td>
 	      </tr>
 		  <tr>
-			<td align="center"><button class="button" onclick="waiting()">Start!</button></td>
+			<td align="center"><button class="button" onclick="menu.waiting()">Start!</button></td>
 			</tr>
             		  <tr>
 		    <td align="center">&nbsp;</td>
 	      </tr>
            <tr>
-			<td align="center"><button class="button" onclick="menuBack()">Back</button></td>
+			<td align="center"><button class="button" onclick="menu.menuBack()">Back</button></td>
 			</tr>
 		</table>
 </div>
@@ -149,10 +150,10 @@
 			<td><img src="sprites/youwin1.png" width="400" height="300" alt="You win"></td>
 			</tr>
 		  <tr>
-			<td align="center"><button class="button" onclick="waiting()">Play Again</button></td>
+			<td align="center"><button class="button" onclick="menu.waiting()">Play Again</button></td>
 		  </tr>
 		  <tr>
-			<td align="center"><button class="button" onclick="selectLevel()">Select Senario</button></td>
+			<td align="center"><button class="button" onclick="menu.selectLevel()">Select Senario</button></td>
 		  </tr>
 		  <tr>
 			<td align="center"><button class="button" onclick=" ">High Scores</button></td>
@@ -164,10 +165,10 @@
 			<td><img src="sprites/youlose.png" width="400" height="300" alt="You lose"></td>
 		  </tr>
 		  <tr>
-			<td align="center"><button class="button" onclick="waiting()">Play Again</button></td>
+			<td align="center"><button class="button" onclick="menu.waiting()">Play Again</button></td>
 		  </tr>
 		  <tr>
-			<td align="center"><button class="button" onclick="selectLevel()">Select Senario</button></td>
+			<td align="center"><button class="button" onclick="menu.selectLevel()">Select Senario</button></td>
 		  </tr>
 		  <tr>
 			<td align="center"><button class="button" onclick=" ">High Scores</button></td>

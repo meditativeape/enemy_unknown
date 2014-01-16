@@ -82,29 +82,14 @@ Lobby.prototype.log = function() {
 /**
  * Handle messages from the client
  */
-Lobby.onMessage = function(client,message) {
+Lobby.pototype.onMessage = function(client,message) {
 	//If client isn't in a game, the lobby handles the message
 	if(client && !client.game){
-		console.log(":: server :: received a message: " + message);
-		var keywords = message.split(" ");
-		if(parseInt(keywords[0])==0){
-			if(keywords[1] == "join"){
-				this.findGame(client,parseInt(keywords[2]),keywords[3]);
-			}
-			if(keywords[1] == "menu"){
-				this.inMenu[game_server.inMenu_count] = client;
-				this.inMenu_count++;
-				client.send('0 menuReset');
-				for(var gameid in this.games) {
-					client.send('0 menu ' + this.games[gameid].scenario);
-				}				
-			}
-			//Error handling?
-		}
+		this.handleMessage(client, message);
 	}
 	//If client is in a game, we relay the message to the game instance it is in.
 	else if (client && client.game) {
-    	client.game.handleClientInput(client, message);
+    	client.game.handleMessage(client, message);
     }
 };
 
@@ -124,6 +109,28 @@ Lobby.pototype.onDisconnect = function(client) {
 	}
 	//TODO Lobby
 };
+
+/**
+ * Handle message from client.
+ */
+Lobby.pototype.handleMessage = function(client,message){
+	console.log(":: server :: received a message: " + message);
+		var keywords = message.split(" ");
+		if(parseInt(keywords[0])==0){
+			if(keywords[1] == "join"){
+				this.findGame(client,parseInt(keywords[2]),keywords[3]);
+			}
+			if(keywords[1] == "menu"){
+				this.inMenu[game_server.inMenu_count] = client;
+				this.inMenu_count++;
+				client.send('0 menuReset');
+				for(var gameid in this.games) {
+					client.send('0 menu ' + this.games[gameid].scenario);
+				}				
+			}
+			//Error handling?
+		}
+}
 
 /**
  * Find a game for player to join.

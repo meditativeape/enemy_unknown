@@ -29,14 +29,11 @@ var GameClient = function() {
     this.scenarioName = null;
     this.canBuildUnit = [false, false, false, false, false];
     this.guess = null;
-	
-	
-}
+};
 
-
-
-
-
+/**
+ * Initialize the game.
+ */
 GameClient.prototype.initGame = function(/*string*/ scenarioName,/*boolean*/ fogOn){
 
     this.scenarioName = scenarioName;
@@ -57,7 +54,7 @@ GameClient.prototype.initGame = function(/*string*/ scenarioName,/*boolean*/ fog
  * Handle message from server.
  * TODO: refactor this method!
  */
-GameClient.prototype.onnetmessage = function(data){
+GameClient.prototype.handleMessage = function(data){
 	var keywords = data.split(" ");
 	var msgType = parseInt(keywords[0]);
 	switch (msgType) {	
@@ -245,17 +242,6 @@ GameClient.prototype.onnetmessage = function(data){
 		}
 	};
 
-GameClient.prototype.connecting = function(data){
-	//TODO
-};
-
-GameClient.prototype.ondisconnect = function(data){ 
-	//TODO
-};
-
-GameClient.prototype.onconnected = function(data){
-	//TODO
-};
 	
 GameClient.prototype.updateReachableAndAttackable = function(){
     this.hexgrid.clearReachable();

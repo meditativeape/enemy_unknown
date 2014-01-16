@@ -212,7 +212,7 @@ GameServer.prototype.scanObjectives = function(){
 /**
  * The function that handles client message.
  */
-GameServer.prototype.handleClientInput = function(client, message){
+GameServer.prototype.handleMessage = function(client, message){
 	
 	var keywords = message.split(" ");
 	var msgType = parseInt(keywords[0]);
