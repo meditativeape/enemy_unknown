@@ -7,31 +7,34 @@
  */ 
 var ServerHexgrid = function(/*Hexgrid*/ hexgrid) {
 
-	//Inherit old properties
+	// Inherit old properties
 	this.prototype = hexgrid;
     
-	//Convert all units in server hexgrid to server units.
-	for(var i in this.matrix){
-		for(var j in this.matrix[i]){
-			var oldUnit = this.matrix[i][j].unit;
-			this.matrix[i][j].unit = ServerUnit(oldUnit);
+	// Convert all units in server hexgrid to server units.
+    var unitCoord = new Coordinate(0, 0);
+	for (var i = 0; i < this.numRows; i++){
+        unitCoord.X = i;
+		for (var j = 0; j < this.numCols; j++){
+            unitCoord.Y = j;
+			var oldUnit = this.getUnit(unitCoord);
+            var newUnit = ServerUnit(oldUnit);
+            this.setUnit(newUnit, unitCoord);
 		}
 	}
 };
  
 /**
- * Check if the unit can move from coord1 to coord2.
+ * Check if the unit can move from one coordinate to another.
  */
 ServerHexgrid.prototype.canMove = function(/*Coord*/ coord1, /*Coord*/ coord2, /*int*/ player){	
+
 	var unit = this.getUnit(coord1);
-	if (unit && unit.player == player.player && !this.getUnit(coord2)){ // coord1 has player's unit and coord2 is empty
-		if (this.hexDist(this.matrix[coord1.X][coord1.Y], this.matrix[coord2.X][coord2.Y]) <= unit.range) {
-			if (!this.matrix[coord2.X][coord2.Y].terrain) {
+    
+	if (unit && unit.player == player.player && !this.getUnit(coord2)){ // coord1 has player's unit, and coord2 is empty
+		if (this.hexDistByCoord(coord1, coord2) <= unit.range) { // within moving range
+            var terrain = this.getTerrain(coord2);
+			if (!terrain || terrain.moveable) // no terrain or terrain is movable
 				return true;
-			} else {
-				if (this.matrix[coord2.X][coord2.Y].terrain.moveable)
-					return true;
-			}	
 		}
 	}
 	
@@ -39,26 +42,27 @@ ServerHexgrid.prototype.canMove = function(/*Coord*/ coord1, /*Coord*/ coord2, /
 };
 
 /**
- * Move the unit from coord1 to coord2.
+ * Move the unit from one coordinate to another.
  */
 ServerHexgrid.prototype.makeMove = function(/*Coord*/ coord1, /*Coord*/ coord2){
 	this.move(coord1, coord2);
 };
 	
 /**
- * Check it the unit at coord1 can attack a unit at to coord2.
+ * Check it the unit at a coordinate can attack the unit at another coordinate.
  */
 ServerHexgrid.prototype.canAttack = function(/*Coord*/ coord1, /*Coord*/ coord2, /*int*/ player){
 	var myUnit = this.getUnit(coord1);
 	var theirUnit = this.getUnit(coord2);
 	if (myUnit.player == player.player && theirUnit && theirUnit.team != player.team)
-		if (this.hexDist(this.matrix[coord1.X][coord1.Y], this.matrix[coord2.X][coord2.Y]) <= myUnit.range)
+		if (this.hexDistByCoord(coord1, coord2) <= myUnit.range)
 			return true;
 	return false;
 };
 
 /**
- * Make the unit at coord1 attack the unit at coord2.
+ * Make the unit at a coordinate attack the unit at another coordinate.
+ * TODO: move message sending
  */	
 ServerHexgrid.prototype.makeAttack = function(/*Coord*/ coord1, /*Coord*/ coord2){
 	var responses = [];
@@ -78,44 +82,55 @@ ServerHexgrid.prototype.makeAttack = function(/*Coord*/ coord1, /*Coord*/ coord2
 };
 
 /**
- * Update pieces visible to enemy based on piece coord [x][y]
+ * Update pieces visible to enemy based on the unit at given coordinate.
  */
-ServerHexgrid.prototype.updatePieceVisible = function(/*int*/ x, /*int*/ y) {
-	var myTeam = this.hexgrid.matrix[x][y].piece.team;
-	var vision = CONSTANTS.unitVision;
-	for (var i = -vision; i <= vision; i++)
+ServerHexgrid.prototype.updatePieceVisible = function(/*Coordinate*/ coord) {
+	var myTeam = this.getUnit(coord).team;
+	var vision = CONSTANTS.unitViewRange;
+    
+    var tempCoord = new Coordinate(0, 0);
+    var tempUnit = null;
+	for (var i = -vision; i <= vision; i++) {
+        tempCoord.X = coord.X + i;
 		for (var j = -vision; j <= vision; j++) {
-			if (this.hexgrid.matrix[x+i] && this.hexgrid.matrix[x+i][y+j] && 
-				(this.hexgrid.hexDist(this.hexgrid.matrix[x][y], this.hexgrid.matrix[x+i][y+j]) <= vision) && 
-				this.hexgrid.matrix[x+i][y+j].piece && 
-				(this.hexgrid.matrix[x+i][y+j].piece.team != myTeam))  { // there is an enemy piece within distance of 3
-				return this.hexgrid.matrix[x][y].piece.setIsVisibleToEnemy(true);
+            tempCoord.Y = coord.Y + j;
+			if (this.containsCoord(tempCoord) && this.hexDistByCoord(tempCoord) <= vision) {
+                tempUnit = this.getUnit(tempCoord);
+                if (tempUnit && tempUnit.team != myTeam) // there is an enemy piece within distance of 3
+                    return this.getUnit(coord).setIsVisibleToEnemy(true);
 			}
 		}
-	return this.hexgrid.matrix[x][y].piece.setIsVisibleToEnemy(false);
+    }
+	return this.getUnit(coord).setIsVisibleToEnemy(false);
 }
 
 /**
- * Update pieces visible to enemy. 
+ * Update pieces visible to enemy.
+ * TODO: move message sending
  */ 
 ServerHexgrid.prototype.updateVisible = function(){  // only works for 1v1
 	var piecesToAdd = [[], []];
-	for (var x in this.hexgrid.matrix){
-		for (var y in this.hexgrid.matrix[x]){
-			if (this.hexgrid.matrix[x][y].piece) {  // for each piece, check surrounding hexs
-				if (this.updatePieceVisible(parseInt(x), parseInt(y))) {  // if a piece becomes visible, add to the list
-					piecesToAdd[this.hexgrid.matrix[x][y].piece.team].push(new Coordinate(x, y));
-				}
-			}
+    var tempCoord = new Coordinate(0, 0);
+    var tempUnit = null;
+    
+	for (var x = 0; x < this.numRows; x++){
+        tempCoord.X = x;
+		for (var y = 0; y < this.numCols; y++){
+            tempCoord.Y = y;
+            var tempUnit = this.getUnit(tempCoord);
+			if (tempUnit) // for each existing piece, check surrounding hexs
+				if (this.updatePieceVisible(tempCoord)) // if a piece becomes visible, add to the list
+					piecesToAdd[tempUnit.team].push(new Coordinate(x, y));
 		}
 	}
+    
 	for (var i in piecesToAdd){
 		for (var j in piecesToAdd[i]) {
-			var piece = this.hexgrid.getUnit(piecesToAdd[i][j]);
-		    if (this.hexgrid.scenario.revealtype) {
-				this.sendMsg(this.players[1-i], "1 add {0} {1} {2} {3} {4} {5} {6}".format([piece.player, piece.team, piece.type, piece.x, piece.y, piece.cooldown, piece.hp]));
+			tempUnit = this.getUnit(piecesToAdd[i][j]);
+		    if (this.scenario.revealtype) {
+				this.sendMsg(this.players[1-i], "1 add {0} {1} {2} {3} {4} {5} {6}".format([tempUnit.player, tempUnit.team, tempUnit.type, tempUnit.x, tempUnit.y, tempUnit.cooldown, tempUnit.hp]));
 		  	} else {
-		    	this.sendMsg(this.players[1-i], "1 add {0} {1} {2} {3} {4} {5} {6}".format([piece.player, piece.team, 5, piece.x, piece.y, piece.cooldown, piece.hp]));
+		    	this.sendMsg(this.players[1-i], "1 add {0} {1} {2} {3} {4} {5} {6}".format([tempUnit.player, tempUnit.team, 5, tempUnit.x, tempUnit.y, tempUnit.cooldown, tempUnit.hp]));
 		  	}
 	  	}
 	}

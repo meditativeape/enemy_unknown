@@ -7,20 +7,24 @@
  */ 
 var ClientHexgrid = function(/*Hexgrid*/ hexgrid) {
 
-	//Inherit old properties
+	// Inherit old properties
 	this.prototype = hexgrid;
     
-	//Add new properties
+	// Add new properties
 	this.reachables = [];
 	this.attackables = [];
 	this.buildables = [];
 	this.viewables = [];
     
-	//Convert all hexagons in client hexgrid to client hexagons
-    for(var i in this.matrix){
-		for(var j in this.matrix[i]){
-			var hexagon = this.matrix[i][j];
-			this.matrix[i][j] = ClientHexagon(hexagon);
+	// Convert all hexagons in client hexgrid to client hexagons
+    var unitCoord = new Coordinate(0, 0);
+	for (var i = 0; i < this.numRows; i++){
+        unitCoord.X = i;
+		for (var j = 0; j < this.numCols; j++){
+            unitCoord.Y = j;
+			var oldUnit = this.getUnit(unitCoord);
+            var newUnit = ClientHexagon(oldUnit);
+            this.setUnit(newUnit, unitCoord);
 		}
 	}
 };
@@ -31,10 +35,10 @@ var ClientHexgrid = function(/*Hexgrid*/ hexgrid) {
  */
 var ClientHexagon = function(/*Hexagon*/ oldHexagon){
 
-	//Inherit old properties
+	// Inherit old properties
 	clientHexagon.prototype = oldHexagon;
     
-	//Add new properties
+	// Add new properties
 	this.reachable = false;
 	this.attackable = false;
 	this.buildable = false;
@@ -46,52 +50,56 @@ var ClientHexagon = function(/*Hexagon*/ oldHexagon){
 };
 
 /**
- * Mark reachable locations from coord.
+ * Mark reachable locations from the given coordinate.
  */
-ClientHexgrid.prototype.markReachable = function(/*Coordinate*/coord){
-	var selectedHex = this.matrix[coord.X][coord.Y];
+ClientHexgrid.prototype.markReachable = function(/*Coordinate*/ coord){
+
 	xs = [coord.X-1, coord.X, coord.X+1, coord.X-2, coord.X+2];
 	ys = [coord.Y, coord.Y+1, coord.Y-1, coord.Y-2,coord.Y+2];
+    var tempCoord = new Coordinate(0, 0);
+    var tempHexagon = null;
+    
 	for (var i = 0; i < 5; i++) {
-		for(var j = 0; j < 5; j++){
-			if(this.matrix[xs[i]]){				
-				if(this.matrix[xs[i]][ys[j]]){		
-					if(this.hexDist(this.matrix[xs[i]][ys[j]], selectedHex) <= CONSTANTS.unitMoveRange  && !this.matrix[xs[i]][ys[j]].piece){
-						if(this.matrix[xs[i]][ys[j]].terrain){
-							if(this.matrix[xs[i]][ys[j]].terrain.moveable){
-								this.matrix[xs[i]][ys[j]].reachable = true;
-								this.reachables.push(this.matrix[xs[i]][ys[j]]);
-							}
-						}else{
-							this.matrix[xs[i]][ys[j]].reachable = true;
-							this.reachables.push(this.matrix[xs[i]][ys[j]]);
-						}
-					}
-				}
-			}
-		}
-	}
+        tempCoord.X = xs[i];
+		for (var j = 0; j < 5; j++) {
+            tempCoord.Y = ys[j];
+            if (this.containsCoord(tempCoord) && // coord exists
+                this.hexDistByCoord(coord, tempCoord) <= CONSTANTS.unitMoveRange && // coord within move range
+                !this.getUnit(tempCoord) && // coord has no unit
+                (!this.getTerrain(tempCoord) || this.getTerrain(tempCoord).moveable)) // coord terrain moveable
+                {
+                    tempHexagon = this.getHexagon(tempCoord);
+                    tempHexagon.reachable = true;
+                    this.reachables.push(tempHexagon);
+                }
+        }
+    }
 };
 
 /**
- * Mark attachable locations from coord.
+ * Mark attackable locations from the given coordinate.
  */
-ClientHexgrid.prototype.markAttackable = function(/*Coordinate*/coord){
-	var selectedHex = this.matrix[coord.X][coord.Y];
+ClientHexgrid.prototype.markAttackable = function(/*Coordinate*/ coord){
+
+	var myUnit = this.getUnit(coord);
 	xs = [coord.X-1, coord.X, coord.X+1, coord.X-2, coord.X+2];
 	ys = [coord.Y, coord.Y+1, coord.Y-1, coord.Y-2,coord.Y+2];
-	for (var i = 0; i < 5; i++) {
-		for(var j = 0; j < 5; j++){
-			if(this.matrix[xs[i]]){				
-				if(this.matrix[xs[i]][ys[j]]){		
-					if(this.hexDist(this.matrix[xs[i]][ys[j]], selectedHex) <= CONSTANTS.unitMoveRange  && this.matrix[xs[i]][ys[j]].piece && (selectedHex !=this.matrix[xs[i]][ys[j]])){
-						if(this.matrix[xs[i]][ys[j]].piece.team != selectedHex.piece.team){
-							this.matrix[xs[i]][ys[j]].attackable = true;
-							this.attackables.push(this.matrix[xs[i]][ys[j]]);
-						}
-					}
-				}
-			}
+    var tempCoord = new Coordinate(0, 0);
+    var tempHexagon = null;
+    
+	for (var i = 0; i < 5; i++){
+        tempCoord.X = i;
+		for (var j = 0; j < 5; j++){
+            tempCoord.Y = j;
+			if (this.containsCoord(tempCoord) && // coord exists
+                this.hexDistByCoord(coord, tempCoord) <= CONSTANTS.unitMoveRange && // coord within move range
+                this.getUnit(tempCoord) && // coord has a unit
+                this.getUnit(tempCoord).team != myUnit.team) // two units are of different teams
+                {
+                    tempHexagon = this.getHexagon(tempCoord);
+					tempHexagon.attackable = true;
+					this.attackables.push(tempHexagon);
+                }
 		}
 	}
 };
@@ -100,22 +108,28 @@ ClientHexgrid.prototype.markAttackable = function(/*Coordinate*/coord){
  * Mark buildable locations for player.
  */
 ClientHexgrid.prototype.markBuildable = function(/*int*/ player){
-	for(var x in this.matrix){ // brute force!
-		for(var y in this.matrix[x]){
-			if(this.matrix[x][y].piece && this.matrix[x][y].piece.player == player){
-				xs = [x-1, x-1, x, x, parseInt(x)+1, parseInt(x)+1];
-				ys = [y, parseInt(y)+1, y-1, parseInt(y)+1, y-1, y];
+    
+    var tempCoord = new Coordinate(0, 0);
+    var tempCoord2 = new Coordinate(0, 0);
+    var tempHexagon;
+    
+	for (var x = 0; x < this.numRows; x++) {
+        tempCoord.X = x;
+		for (var y = 0; y < this.numCols; y++) {
+            tempCoord.Y = y;
+			if (this.getUnit(tempCoord) && this.getUnit(tempCoord).player === player) { // there is a player's unit
+				xs = [x-1, x-1, x, x, x+1, x+1];
+				ys = [y, y+1, y-1, y+1, y-1, y];
 				for (var i = 0; i < 6; i++) {
-					if(this.matrix[xs[i]] && this.matrix[xs[i]][ys[i]] && !this.matrix[xs[i]][ys[i]].piece){
-						if(this.matrix[xs[i]][ys[i]].terrain){
-							if(this.matrix[xs[i]][ys[i]].terrain.buildable){
-								this.matrix[xs[i]][ys[i]].buildable = true;
-								this.buildables.push(this.matrix[xs[i]][ys[i]]);
-							}
-						}else{
-							this.matrix[xs[i]][ys[i]].buildable = true;
-							this.buildables.push(this.matrix[xs[i]][ys[i]]);
-						}
+                    tempCoord2.X = xs[i];
+                    tempCoord2.Y = ys[i];
+					if (this.containsCoord(tempCoord2) && // coord exists
+                        !this.getUnit(tempCoord2) && // coord has no unit
+                        (!this.getTerrain(tempCoord2) || this.getTerrain(tempCoord2).moveable)) // coord terrain moveable
+                    {
+                        tempHexagon = this.getHexagon(tempCoord2);
+                        tempHexagon.buildable = true;
+                        this.buildables.push(tempHexagon);
 					}
 				}
 			}
@@ -126,32 +140,32 @@ ClientHexgrid.prototype.markBuildable = function(/*int*/ player){
 /**
  * Mark hexagons that should be displayed for team.
  */
-ClientHexgrid.prototype.markViewable = function(/*int*/team){
-	for(var x in this.matrix){ // brute force!
-		for(var y in this.matrix[x]){
-			if(this.matrix[x][y].piece){
-				if(this.matrix[x][y].piece.team == team){
-					x = parseInt(x);
-					y = parseInt(y);
-					xs = [x-3, x-2, x-1, x, x+1, x+2, x+3];
-					ys = [y-3, y-2, y-1, y, y+1, y+2, y+3];
-					for (var i = 0; i < 7; i++) {
-						for(var j = 0; j < 7; j++){
-							if(this.matrix[xs[i]]){				
-								if(this.matrix[xs[i]][ys[j]]){		
-									if(this.hexDist(this.matrix[xs[i]][ys[j]], this.matrix[x][y]) <= 3){
-										if(this.matrix[xs[i]][ys[j]].viewable == false){
-											//Do something that shows transition
-											//TODO
-											this.matrix[xs[i]][ys[j]].viewable = true;
-										}
-										this.matrix[xs[i]][ys[j]].viewable = true;
-										this.viewables.push(this.matrix[xs[i]][ys[j]]);
-									}
-								}
-							}
-						}
-					}
+ClientHexgrid.prototype.markViewable = function(/*int*/ team){
+    
+    var tempCoord = new Coordinate(0, 0);
+    var tempCoord2 = new Coordinate(0, 0);
+    var tempHexagon;
+    
+	for (var x = 0; x < this.numRows; x++) {
+        tempCoord.X = x;
+		for (var y = 0; y < this.numCols; y++) {
+            tempCoord.Y = y;
+			if (this.getUnit(tempCoord) && this.getUnit(tempCoord).team === team) { // there is a team's unit
+				xs = [x-3, x-2, x-1, x, x+1, x+2, x+3];
+				ys = [y-3, y-2, y-1, y, y+1, y+2, y+3];
+				for (var i = 0; i < 7; i++) {
+                    tempCoord2.X = xs[i];
+                    for (var j = 0; j < 7; j++) {
+                        tempCoord2.Y = ys[j];
+                        if (this.containsCoord(tempCoord2) && // coord exists
+                            this.hexDistByCoord(coord, tempCoord2) <= CONSTANTS.unitViewRange) // coord within view range
+                        {
+                            // TODO: Do something that shows transition
+                            tempHexagon = this.getHexagon(tempCoord2);
+                            tempHexagon.viewable = true;
+                            this.viewables.push(tempHexagon);
+                        }
+                    }
 				}
 			}
 		}
@@ -163,7 +177,7 @@ ClientHexgrid.prototype.markViewable = function(/*int*/team){
  * Should only be used after markReachable.
  */
 ClientHexgrid.prototype.isReachable = function(/*Coordinate*/coord){
-	return this.matrix[coord.X][coord.Y].reachable;
+	return this.getUnit(coord).reachable;
 };
 
 /**
@@ -171,17 +185,15 @@ ClientHexgrid.prototype.isReachable = function(/*Coordinate*/coord){
  * Should only be used after markAttackable.
  */
 ClientHexgrid.prototype.isAttackable = function(/*Coordinate*/coord){
-	return this.matrix[coord.X][coord.Y].attackable;
+	return this.getUnit(coord).attackable;
 };
 
 /**
  * Clear reachables.
  */
 ClientHexgrid.prototype.clearReachables = function(){
-	for (var i in this.reachables){
-		var check = this.reachables[i];
-		check.reachable = false;
-	}
+	for (var i in this.reachables)
+		this.reachables[i].reachable = false;
 	this.reachables = [];
 };
 
@@ -189,10 +201,8 @@ ClientHexgrid.prototype.clearReachables = function(){
  * Clear attackables.
  */
 ClientHexgrid.prototype.clearAttackables = function(){
-	for (var i in this.attackables){
-		var check = this.attackables[i];
-		check.attackable = false;
-	}
+	for (var i in this.attackables)
+		this.attackables[i].attackable = false;
 	this.attackables = [];
 };
 
@@ -200,10 +210,8 @@ ClientHexgrid.prototype.clearAttackables = function(){
  * Clear buildables.
  */
 ClientHexgrid.prototype.clearBuildables = function(){
-	for (var i in this.buildables){
-		var check = this.buildables[i];
-		check.buildable = false;
-	}
+	for (var i in this.buildables)
+		this.buildables[i].buildable = false;
 	this.buildables = [];
 };
 	
@@ -224,21 +232,24 @@ ClientHexgrid.prototype.clearViewables = function(){
  * Remove units that can't be seen.
  * Should only be used after markViewable.
  */
-ClientHexgrid.prototype.removeUnviewable = function(/*MiniMap*/miniMap){
-	for(var x in this.matrix){ // brute force!
-		for(var y in this.matrix[x]){
-			if(this.matrix[x][y].viewable == false){
-				if(this.matrix[x][y].piece){
-					miniMap.removeUnit(this.toMap(new Coordinate(x,y)));
-				}
-				if(this.matrix[x][y].pastViewable == true){
+ClientHexgrid.prototype.removeUnviewable = function(/*MiniMap*/ miniMap){
+    var tempCoord = new Coordinate(0, 0);
+    var tempUnit = null;
+	for (var x = 0; x < this.numRows; x++){ // brute force!
+        tempCoord.X = x;
+		for (var y = 0; y < this.numCols; y++){
+            tempCoord.Y = y;
+            tempUnit = this.getUnit(tempCoord);
+			if (!tempUnit.viewable){
+				if (tempUnit.piece)
+                    // where is tomap???
+					miniMap.removeUnit(this.toMap(tempCoord));
+				if (tempUnit.pastViewable){
 					// reset opacity to 0
-					this.matrix[x][y].opacity = 0;
-					this.matrix[x][y].piece = null;
-					this.matrix[x][y].pastViewable = false;
+					tempUnit.opacity = 0;
+					tempUnit.pastViewable = false;
 				}
-				this.matrix[x][y].piece = null;			
-				
+				tempUnit.piece = null;			
 			}
 		}
 	}
