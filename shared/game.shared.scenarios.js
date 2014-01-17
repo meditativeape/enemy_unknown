@@ -1,13 +1,6 @@
 /**
  * Game scenarios.
  */
- 
-/**
- * Server side we export Scenarios.
- */
-if( 'undefined' !== typeof global ) {
-    exports.Scenarios = Scenarios;
-}
 
 /**
  * A big JavaScript object that contains all scenarios.
@@ -306,3 +299,10 @@ var Scenarios = {
 		"revealtype": false
 	}
 };
+
+/**
+ * Server side we export Scenarios.
+ */
+if( 'undefined' !== typeof global ) {
+    exports.Scenarios = Scenarios;
+}

@@ -3,7 +3,7 @@
  */
 
 /**
- * Server side we import shared classes and export game server.
+ * Server side we import shared classes.
  */
 var Terrain = require('../shared/game.shared.terrain.js');
 var Helper = require('../shared/game.shared.helper.js');
@@ -11,7 +11,7 @@ var Hexgrid = require('../shared/game.shared.hexgrid.js');
 var ServerHexgrid = require('../server/game.server.hexgrid.js');
 var Unit = require('../shared/game.shared.unit.js');
 var CONSTANTS = Helper.CONSTANTS;
-module.exports = GameServer;
+
 
 /**
  * Helper function for string format.
@@ -468,3 +468,6 @@ GameServer.prototype.endGame = function(winningTeam){
 		this.players[i].game = null;
 	}
 };
+
+//Export GameServer
+module.exports = GameServer;

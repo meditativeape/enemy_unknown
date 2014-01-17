@@ -214,24 +214,24 @@ LobbyServer.prototype.findGame = function(player,type,scenario) {
 // Define some required functions
 LobbyServer.prototype.createGame = function(player, type,scenario) {
 	// Create a new game instance
-	var thegame = new GameServer([player], UUID(), type, scenario);
+	var theGame = new GameServer([player], UUID(), type, scenario);
 	
 	// Store it in the list of game
-	this.games.push(thegame);
+	this.games.push(theGame);
 
 	// Keep track of #games
 	this.game_count++;
 
 	// Tell the player that he joins the game
 	player.send('0 join 1 ' + player.userid);
-	player.game = thegame;
+	player.game = theGame;
 	
 	//Log the event
 	this.log(':: server :: Player ' + player.userid.substring(0,8) + ' created a game with id '
 	+ player.game.id.substring(0,8));
 
 	// return it
-	return thegame;
+	return theGame;
 }; 
 
 //Export Lobby

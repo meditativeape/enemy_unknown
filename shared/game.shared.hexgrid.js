@@ -3,7 +3,7 @@
  */
  
 /**
- * Server side we import helper objects and scenarios, and export Hexgrid.
+ * Server side we import helper objects and scenarios.
  */
 if( 'undefined' !== typeof global ) {
     var helper = require("./game.shared.helper.js");
@@ -11,7 +11,6 @@ if( 'undefined' !== typeof global ) {
 	var Coordinate = helper.Coordinate;
 	var CONSTANTS = helper.CONSTANTS;
 	var Scenarios = require("./game.shared.scenarios.js").Scenarios;
-    module.exports = Hexgrid;
 }
 
 /**
@@ -135,3 +134,10 @@ function Hexagon(/*Coordinate*/ coord) {
     this.terrain.null;
     this.coord = coord;
 };
+
+/**
+ * Server side we export Hexgrid.
+ */
+if( 'undefined' !== typeof global ) {
+    module.exports = Hexgrid;
+}
