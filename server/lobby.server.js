@@ -13,7 +13,7 @@ var UUID = require('node-uuid');
 /**
  * Set up LobbyServer.
  */
-var LobbyServer = function(/*ExpressServer*/ expressServer){
+var LobbyServer = function(){
 	// List to store game instances
 	this.games = [];
 	//Number of game instances
@@ -27,39 +27,7 @@ var LobbyServer = function(/*ExpressServer*/ expressServer){
     //are going to include some values to handle that.
     global.window = global.document = global;
 
-	//Express and socket.io can work together to serve the socket.io client files for you.
-	//This way, when the client requests '/socket.io/' files, socket.io determines what the client needs.
-	//Create a socket.io instance using our express server
-	var sio = io.listen(expressServer);
-	//Configure the socket.io connection settings.
-	//See http://socket.io/
-	sio.configure(function (){
-		sio.set('log level', 0);
-		sio.set('authorization', function (handshakeData, callback) {
-		  callback(null, true); // error first callback style
-		});
-	});
-	//Socket.io will call this function when a client connects
-	//Assign each client a unique ID to use so we can maintain the list of players.
-    var me = this;
-	sio.sockets.on('connection', function (client) {    
-		//Generate a new UUID, looks something like
-		//5b2ca132-64bd-4513-99da-90e838ca47d1
-		//and store this on their socket/connection
-		client.userid = UUID();
-		//Tell the player they connected, giving them their id to store on their socket/connection.
-		client.emit('onconnected', { id: client.userid } );
-		//Log player connections
-		console.log(':: socket.io :: player ' + client.userid.substring(0,8) + ' connected');
-		//Send messages to the lobby to handle
-		client.on('message', function(m){
-			me.onMessage(client, m);
-		}); 
-		//Let lobby handle player disconnection
-		client.on('disconnect', function(){    
-			me.onDisconnect(client);
-		}); 
-	});
+	
 }
 
 /**
@@ -149,7 +117,7 @@ LobbyServer.prototype.handleMessage = function(client,message){
 				this.findGame(client,parseInt(keywords[2]),keywords[3]);
 			}
 			if(keywords[1] == "menu"){
-				this.inMenu[game_server.inMenu_count] = client;
+				this.inMenu[this.inMenu_count] = client;
 				this.inMenu_count++;
 				client.send('0 menuReset');
 				for(var gameid in this.games) {
@@ -246,7 +214,7 @@ LobbyServer.prototype.findGame = function(player,type,scenario) {
 // Define some required functions
 LobbyServer.prototype.createGame = function(player, type,scenario) {
 	// Create a new game instance
-	var thegame = new game_core_server([player], UUID(), type, scenario);
+	var thegame = new GameServer([player], UUID(), type, scenario);
 	
 	// Store it in the list of game
 	this.games.push(thegame);

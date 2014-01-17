@@ -35,7 +35,8 @@ var Setup = function(){
         //Send the requesting client the file.
         res.sendfile( __dirname + '/' + file );
     }); 
-	LobbyServer(expressServer);
+	var lobbyServer = new LobbyServer();
+	lobbyServer.messageHandler(expressServer);
 };
 
 //Start express server and lobby setup.
