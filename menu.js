@@ -18,6 +18,8 @@ var Menu = function(){
 Menu.prototype.enterLobby = function(){
 	//Setup lobby client.
 	this.lobby = new LobbyClient(this);
+	//Setup lobby socket io.
+	this.lobby.newSocket();
 	//Tell lobby to update return updated state.
 	this.lobby.update(); 
 	levelMenu.style.visibility = "visible";

@@ -4,12 +4,11 @@
  */
  
 /**
- * Server side we import Point and Coordinate and export Unit.
+ * Server side we import Point and Coordinate.
  */
 if( 'undefined' != typeof global ) {
     var helper = require("./game.shared.helper.js");
 	var CONSTANTS = helper.CONSTANTS;
-	module.exports = Unit;
 }
 
 /**
@@ -88,3 +87,10 @@ Unit.prototype.gotHit = function(/*Unit*/enemy){
 		enemy.hp = 0;
 	}
 };
+
+/**
+ * Server side export Unit.
+ */
+if( 'undefined' != typeof global ) {
+	module.exports = Unit;
+}

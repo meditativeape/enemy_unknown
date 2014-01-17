@@ -35,6 +35,7 @@ var Setup = function(){
         //Send the requesting client the file.
         res.sendfile( __dirname + '/' + file );
     }); 
+	//Set up lobby server and socket io message handler.
 	var lobbyServer = new LobbyServer();
 	lobbyServer.messageHandler(expressServer);
 };
