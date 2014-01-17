@@ -14,26 +14,13 @@
         <script type="text/javascript" src="./lib/SpryAssets/SpryAccordion.js"></script>
         <!-- Notice the URL, this is handled by socket.io on the server automatically, via express -->
 		 <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+         
        	<!-- Menu code -->
 		<script type="text/javascript" src="./menu.js"></script>
         <script type="text/javascript" src="./client/lobby.client.js"></script>
     	<script type="text/javascript">
 		var howToPlay = new Spry.Widget.Accordion("howToPlay");
 		 </script>
-    	<!-- Game code -->
-        <script type="text/javascript" src="./shared/game.shared.helper.js"></script>
-		<script type="text/javascript" src="./shared/game.shared.scenarios.js"></script>
-        <script type="text/javascript" src="./shared/game.shared.hexgrid.js"></script>
-		<script type="text/javascript" src="./shared/game.shared.unit.js"></script>
-		<script type="text/javascript" src="./shared/game.shared.terrain.js"></script>
-        <script type="text/javascript" src="./client/game.client.js"></script>
-        <script type="text/javascript" src="./client/game.client.ui.js"></script>
-		<script type="text/javascript" src="./client/game.client.ui.minimap.js"></script>
-		<script type="text/javascript" src="./client/game.client.ui.camera.js"></script>
-        <script type="text/javascript" src="./client/game.client.hexgrid.js"></script>
-        <script type="text/javascript" src="./client/game.client.unit.js"></script>
-        <script type="text/javascript" src="./client/game.client.sound.js"></script>
-		
 	</head>
 
 	<body>
@@ -179,7 +166,19 @@
 		<embed name="sm2movie" id="sm2movie" src="/lib/soundmanager2_debug.swf" quality="high" allowscriptaccess="always" bgcolor="#ffffff" pluginspage="www.macromedia.com/go/getflashplayer" title="JS/Flash audio component (SoundManager 2)" type="application/x-shockwave-flash" haspriority="true">
     	</div>
 				
-			
+    <!-- Game code -->
+    <script type="text/javascript" src="./shared/game.shared.helper.js"></script>
+    <script type="text/javascript" src="./shared/game.shared.scenarios.js"></script>
+    <script type="text/javascript" src="./shared/game.shared.hexgrid.js"></script>
+    <script type="text/javascript" src="./shared/game.shared.unit.js"></script>
+    <script type="text/javascript" src="./shared/game.shared.terrain.js"></script>
+    <script type="text/javascript" src="./client/game.client.js"></script>
+    <script type="text/javascript" src="./client/game.client.ui.js"></script>
+    <script type="text/javascript" src="./client/game.client.ui.minimap.js"></script>
+    <script type="text/javascript" src="./client/game.client.ui.camera.js"></script>
+    <script type="text/javascript" src="./client/game.client.hexgrid.js"></script>
+    <script type="text/javascript" src="./client/game.client.unit.js"></script>
+    <script type="text/javascript" src="./client/game.client.sound.js"></script>
 	</body>
 
 </html>

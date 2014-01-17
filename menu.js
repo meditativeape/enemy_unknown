@@ -128,7 +128,7 @@ soundManager.setup({
     	soundAssets.menuSound = soundManager.createSound({
 			  id: 'menu',
 			  url: '/sounds/menu.mp3',
-			  onfinish: function(){soundAssets.menusound.play();},
+			  onfinish: function(){soundAssets.menuSound.play();},
 			  volume: 30
 		});
 		soundAssets.menuSound.play();
