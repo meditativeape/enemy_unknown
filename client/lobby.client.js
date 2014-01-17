@@ -7,7 +7,6 @@
  */
 var LobbyClient = function(/*Menu*/ menu){
 	this.mainSocket = null;
-	this.newSocket();
 }
 
 /**
@@ -16,7 +15,6 @@ var LobbyClient = function(/*Menu*/ menu){
 LobbyClient.prototype.newSocket = function (){
 	//Reference to the GameClient instance of the current game player is in.
 	this.game = null;
-
 	//Set up socket io connection.
 	//Store a local reference to our connection to the server
 	this.mainSocket = io.connect();
