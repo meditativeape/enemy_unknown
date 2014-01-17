@@ -3,13 +3,13 @@
  * Setups message handler, handles matchmaking, relays messages to correct game instance.
  */
 
-//Import GameServer
+// Import GameServer
 var GameServer = require('./game.server.js');
-//Import socket io and UUID
+
+// Import socket io and UUID
 var io = require('socket.io');
 var UUID = require('node-uuid');
 
- 
 /**
  * Set up LobbyServer.
  */
@@ -27,27 +27,8 @@ var LobbyServer = function(/*ExpressServer*/ expressServer){
     //are going to include some values to handle that.
     global.window = global.document = global;
 
-	
-
 	//Express and socket.io can work together to serve the socket.io client files for you.
 	//This way, when the client requests '/socket.io/' files, socket.io determines what the client needs.
-	this.messageHandler(expressServer);
-}
-
-
-
-/**
- *A wrapper for logging.
- */
-LobbyServer.prototype.log = function() {
-	console.log.apply(this,arguments);
-}
-
-/**
- * Message Handler set up.
- * The message handler listens to messages from the client.
- */
-LobbyServer.prototype.messageHandler = function(/*ExpressServer*/ expressServer ){
 	//Create a socket.io instance using our express server
 	var sio = io.listen(expressServer);
 	//Configure the socket.io connection settings.
@@ -60,6 +41,52 @@ LobbyServer.prototype.messageHandler = function(/*ExpressServer*/ expressServer 
 	});
 	//Socket.io will call this function when a client connects
 	//Assign each client a unique ID to use so we can maintain the list of players.
+    var me = this;
+	sio.sockets.on('connection', function (client) {    
+		//Generate a new UUID, looks something like
+		//5b2ca132-64bd-4513-99da-90e838ca47d1
+		//and store this on their socket/connection
+		client.userid = UUID();
+		//Tell the player they connected, giving them their id to store on their socket/connection.
+		client.emit('onconnected', { id: client.userid } );
+		//Log player connections
+		console.log(':: socket.io :: player ' + client.userid.substring(0,8) + ' connected');
+		//Send messages to the lobby to handle
+		client.on('message', function(m){
+			me.onMessage(client, m);
+		}); 
+		//Let lobby handle player disconnection
+		client.on('disconnect', function(){    
+			me.onDisconnect(client);
+		}); 
+	});
+}
+
+/**
+ *A wrapper for logging.
+ */
+LobbyServer.prototype.log = function() {
+	console.log.apply(this,arguments);
+}
+
+/**
+ * Message Handler set up.
+ * The message handler listens to messages from the client.
+ */
+LobbyServer.prototype.messageHandler = function(/*ExpressServer*/ expressServer){
+	//Create a socket.io instance using our express server
+	var sio = io.listen(expressServer);
+	//Configure the socket.io connection settings.
+	//See http://socket.io/
+	sio.configure(function (){
+		sio.set('log level', 0);
+		sio.set('authorization', function (handshakeData, callback) {
+		  callback(null, true); // error first callback style
+		});
+	});
+	//Socket.io will call this function when a client connects
+	//Assign each client a unique ID to use so we can maintain the list of players.
+    var me = this;
 	sio.sockets.on('connection', function (client) {    
 		//Generate a new UUID, looks something like
 		//5b2ca132-64bd-4513-99da-90e838ca47d1
@@ -71,15 +98,14 @@ LobbyServer.prototype.messageHandler = function(/*ExpressServer*/ expressServer 
 		console.log(':: socket.io :: player ' + client.userid.substring(0,8) + ' connected');
 		//Send messages to the lobby to handle
 		client.on('message', function(m) {
-			this.onMessage(client, m);
+			me.onMessage(client, m);
 		}); 
 		//Let lobby handle player disconnection
 		client.on('disconnect', function () {    
-			this.onDisconnect(client);
+			me.onDisconnect(client);
 		}); 
 	}); 
 };
-
 
 /**
  * Handle messages from the client
@@ -216,13 +242,6 @@ LobbyServer.prototype.findGame = function(player,type,scenario) {
 		}
 	}
 };    
-
-
-
-
-
-
-
 
 // Define some required functions
 LobbyServer.prototype.createGame = function(player, type,scenario) {
