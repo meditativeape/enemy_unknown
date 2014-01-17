@@ -27,42 +27,7 @@ var LobbyServer = function(/*ExpressServer*/ expressServer){
     //are going to include some values to handle that.
     global.window = global.document = global;
 
-	/**
-	 * Message Handler set up.
-	 * The message handler listens to messages from the client.
-	 */
-	this.messageHandler = function(/*ExpressServer*/ expressServer ){
-		//Create a socket.io instance using our express server
-		var sio = io.listen(expressServer);
-		//Configure the socket.io connection settings.
-		//See http://socket.io/
-		sio.configure(function (){
-			sio.set('log level', 0);
-			sio.set('authorization', function (handshakeData, callback) {
-			  callback(null, true); // error first callback style
-			});
-		});
-		//Socket.io will call this function when a client connects
-		//Assign each client a unique ID to use so we can maintain the list of players.
-		sio.sockets.on('connection', function (client) {    
-			//Generate a new UUID, looks something like
-			//5b2ca132-64bd-4513-99da-90e838ca47d1
-			//and store this on their socket/connection
-			client.userid = UUID();
-			//Tell the player they connected, giving them their id to store on their socket/connection.
-			client.emit('onconnected', { id: client.userid } );
-			//Log player connections
-			console.log(':: socket.io :: player ' + client.userid.substring(0,8) + ' connected');
-			//Send messages to the lobby to handle
-			client.on('message', function(m) {
-				this.onMessage(client, m);
-			}); 
-			//Let lobby handle player disconnection
-			client.on('disconnect', function () {    
-				this.onDisconnect(client);
-			}); 
-		}); 
-	};
+	
 
 	//Express and socket.io can work together to serve the socket.io client files for you.
 	//This way, when the client requests '/socket.io/' files, socket.io determines what the client needs.
@@ -78,6 +43,42 @@ LobbyServer.prototype.log = function() {
 	console.log.apply(this,arguments);
 }
 
+/**
+ * Message Handler set up.
+ * The message handler listens to messages from the client.
+ */
+LobbyServer.prototype.messageHandler = function(/*ExpressServer*/ expressServer ){
+	//Create a socket.io instance using our express server
+	var sio = io.listen(expressServer);
+	//Configure the socket.io connection settings.
+	//See http://socket.io/
+	sio.configure(function (){
+		sio.set('log level', 0);
+		sio.set('authorization', function (handshakeData, callback) {
+		  callback(null, true); // error first callback style
+		});
+	});
+	//Socket.io will call this function when a client connects
+	//Assign each client a unique ID to use so we can maintain the list of players.
+	sio.sockets.on('connection', function (client) {    
+		//Generate a new UUID, looks something like
+		//5b2ca132-64bd-4513-99da-90e838ca47d1
+		//and store this on their socket/connection
+		client.userid = UUID();
+		//Tell the player they connected, giving them their id to store on their socket/connection.
+		client.emit('onconnected', { id: client.userid } );
+		//Log player connections
+		console.log(':: socket.io :: player ' + client.userid.substring(0,8) + ' connected');
+		//Send messages to the lobby to handle
+		client.on('message', function(m) {
+			this.onMessage(client, m);
+		}); 
+		//Let lobby handle player disconnection
+		client.on('disconnect', function () {    
+			this.onDisconnect(client);
+		}); 
+	}); 
+};
 
 
 /**

@@ -34,9 +34,8 @@ var Setup = function(){
         var file = req.params[0];    
         //Send the requesting client the file.
         res.sendfile( __dirname + '/' + file );
-
     }); 
-
+	LobbyServer(expressServer);
 };
 
 //Start express server and lobby setup.

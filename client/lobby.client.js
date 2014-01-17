@@ -3,36 +3,33 @@
  */
 
 /**
- * Setup client LobbyServer.
+ * Setup client lobby.
  */
-var LobbyClient = new function(/*Menu*/ menu){
+var LobbyClient = function(/*Menu*/ menu){
 	this.mainSocket = null;
-	
-	/**
-	 * Create a new socket io connection and register methods.
-	 */
-	this.newSocket = function (){
-		//Reference to the GameClient instance of the current game player is in.
-		this.game = null;
-		
-		//Set up socket io connection.
-		//Store a local reference to our connection to the server
-		this.mainSocket = io.connect();
-		//When we connect, we are not 'connected' until we have a server id
-		//and are placed in a game by the server. The server sends us a message for that.
-		this.mainSocket.on('connect', this.connecting.bind(this));
-		//Sent when we are disconnected (network, server down, etc)
-		this.mainSocket.on('disconnect', this.onDisconnect.bind(this));
-		//Handle when we connect to the server, showing state and storing id's.
-		this.mainSocket.on('onconnected', this.onConnected.bind(this));
-		//On message from the server, we parse the commands and send it to the handlers
-		this.mainSocket.on('message', this.onMessage.bind(this));
-	}
-
 	this.newSocket();
 }
 
+/**
+ * Create a new socket io connection and register methods.
+ */
+LobbyClient.prototype.newSocket = function (){
+	//Reference to the GameClient instance of the current game player is in.
+	this.game = null;
 
+	//Set up socket io connection.
+	//Store a local reference to our connection to the server
+	this.mainSocket = io.connect();
+	//When we connect, we are not 'connected' until we have a server id
+	//and are placed in a game by the server. The server sends us a message for that.
+	this.mainSocket.on('connect', this.connecting.bind(this));
+	//Sent when we are disconnected (network, server down, etc)
+	this.mainSocket.on('disconnect', this.onDisconnect.bind(this));
+	//Handle when we connect to the server, showing state and storing id's.
+	this.mainSocket.on('onconnected', this.onConnected.bind(this));
+	//On message from the server, we parse the commands and send it to the handlers
+	this.mainSocket.on('message', this.onMessage.bind(this));
+}
 
 /**
  * Handle messages sent from the server.
@@ -65,7 +62,7 @@ LobbyClient.prototype.onDisconnect = function(message){
 /**
  * When the client is connected to the server
  */
-LobbysClient.prototype.onConnected = function(message){
+LobbyClient.prototype.onConnected = function(message){
 	//TODO
 };
 
