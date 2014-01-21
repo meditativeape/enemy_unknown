@@ -18,7 +18,7 @@ if( 'undefined' !== typeof global ) {
  * Automatically builds a matrix of hexagons based on the given scenario.
  */
 var Hexgrid = function(/*string*/ scenarioName, /*boolean*/ fogOn){
-
+   
 	this.scenario = Scenarios[scenarioName];
     this.fogOn = fogOn;
     this.numRows = this.scenario.size.numRows;

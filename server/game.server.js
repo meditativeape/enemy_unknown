@@ -39,7 +39,7 @@ String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");
 /**
  * The main game server object.
  */
-var GameServer = function(/*int[]*/ playerList, /*int*/ gameid, /*int*/ type, /*String*/ scenario){
+var GameServer = function(/*int[]*/ playerList, /*int*/ gameid, /*int*/ type, /*String*/ scenarioName){
 	// Store the players
 	this.players = playerList;
 	// Store the number of units for each team;
@@ -50,7 +50,8 @@ var GameServer = function(/*int[]*/ playerList, /*int*/ gameid, /*int*/ type, /*
 	// Store the type of the game. One of 0, 1, 2, 3.
 	this.type = type;
 	// Store the map name of the game
-	this.scenario = scenario;
+	console.log(scenarioName);
+	this.scenarioName = scenarioName;
 	// Game has not started yet
 	this.started = false;
 	// Our local game
