@@ -3,6 +3,17 @@
  */ 
  
 /**
+ * Server side we import helper objects and scenarios.
+ */
+if( 'undefined' !== typeof global ) {
+    var helper = require("../shared/game.shared.helper.js");
+	var Point = helper.Point;
+	var Coordinate = helper.Coordinate;
+	var CONSTANTS = helper.CONSTANTS;
+	var Scenarios = require("../shared/game.shared.scenarios.js").Scenarios;
+}
+
+/**
  * Constructor for server hexgrid.
  */ 
 var ServerHexgrid = function(/*Hexgrid*/ hexgrid) {
@@ -134,4 +145,11 @@ ServerHexgrid.prototype.updateVisible = function(){  // only works for 1v1
 		  	}
 	  	}
 	}
+}
+
+/**
+ * Server side we export Hexgrid.
+ */
+if( 'undefined' !== typeof global ) {
+    module.exports = ServerHexgrid;
 }
