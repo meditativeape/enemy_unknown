@@ -5,7 +5,7 @@
 /**
  * Server side we import helper objects and scenarios.
  */
-if( 'undefined' !== typeof global ) {
+if( 'undefined' !== typeof global ){
     var helper = require("../shared/game.shared.helper.js");
 	var Point = helper.Point;
 	var Coordinate = helper.Coordinate;
@@ -16,11 +16,9 @@ if( 'undefined' !== typeof global ) {
 /**
  * Constructor for server hexgrid.
  */ 
-var ServerHexgrid = function(/*Hexgrid*/ hexgrid) {
-
+var ServerHexgrid = function(/*Hexgrid*/ hexgrid){
 	// Inherit old properties
 	this.prototype = hexgrid;
-    
 	// Convert all units in server hexgrid to server units.
     var unitCoord = new Coordinate(0, 0);
 	for (var i = 0; i < this.numRows; i++){

@@ -357,7 +357,7 @@ GameServer.prototype.startGame = function(){
 	
 	// TODO!!! hardcoded game instance for demo!
 	var pieces = [];
-	this.hexgrid = new ServerHexgrid(new Hexgrid(this.scenario));
+	this.hexgrid = new ServerHexgrid(new Hexgrid(/*String*/this.scenarioName),/*boolean*/this.fogOn);
 	this.fogOn = this.hexgrid.scenario.fog;
 	this.revealType = this.hexgrid.scenario.revealtype;
 	
