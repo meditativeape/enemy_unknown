@@ -131,7 +131,7 @@ Hexgrid.prototype.attack = function(/*Coordinate*/ attacker, /*Coordinate*/ enem
  */
 function Hexagon(/*Coordinate*/ coord) {
 	this.piece = null;
-    this.terrain.null;
+    this.terrain = null;
     this.coord = coord;
 };
 
