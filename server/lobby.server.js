@@ -132,12 +132,12 @@ LobbyServer.prototype.handleMessage = function(client,message){
  * Find a game for player to join.
  */
 LobbyServer.prototype.findGame = function(player,type,scenario) {
-	for(var playerNum in this.inMenu){
-		if(this.inMenu[playerNum] == player){
-			this.inMenu.splice(playerNum, playerNum+1);
-			this.game_count--;
-		}
-	}
+//	for(var playerNum in this.inMenu){
+//		if(this.inMenu[playerNum] == player){
+//			this.inMenu.splice(playerNum, playerNum+1);
+//			this.game_count--;
+//		}
+//	}
 	var needed;
 	 if(type == 0){
 		 needed = 2;
@@ -151,7 +151,8 @@ LobbyServer.prototype.findGame = function(player,type,scenario) {
 	 if(type == 3){
 		 needed = 4;
 	 }
-	this.log(':: server :: Looking for a game. We have : ' + this.game_count);
+	 
+	this.log(':: server :: Looking for a game. Number of games: ' + this.game_count);
 
 		//so there are games active,
 		//lets see if one needs another player
