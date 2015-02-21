@@ -9,14 +9,11 @@
 */
 
     var
-        gameport        = process.env.PORT || 4004,
-
-        io              = require('socket.io'),
-        express         = require('express'),
+        gameport        = process.env.PORT || 4004,	        		   
+		app       = require('express.io')(),
         UUID            = require('node-uuid'),
 
-        verbose         = false,
-        app             = express.createServer();
+        verbose         = false;
 
 /* Express server set up. */
 
@@ -26,6 +23,7 @@
 //so keep this in mind - this is not a production script but a development teaching tool.
 
         //Tell the server to listen for incoming connections
+	app.http().io();
     app.listen( gameport );
 
         // something so we know that it succeeded.
@@ -58,22 +56,19 @@
 
 //Express and socket.io can work together to serve the socket.io client files for you.
 //This way, when the client requests '/socket.io/' files, socket.io determines what the client needs.
-        
-        //Create a socket.io instance using our express server
-    var sio = io.listen(app);
 
         //Configure the socket.io connection settings.
         //See http://socket.io/
-    sio.configure(function (){
+    app.io.configure(function (){
 
-        sio.set('log level', 0);
+        app.io.set('log level', 0);
 
-        sio.set('authorization', function (handshakeData, callback) {
+        app.io.set('authorization', function (handshakeData, callback) {
           callback(null, true); // error first callback style
         });
 
     });
-
+ 
         //Enter the game server code. The game server handles
         //client connections looking for a game, creating games,
         //leaving games, joining games and ending games when they leave.
@@ -83,7 +78,7 @@
         //So we can send that client looking for a game to play,
         //as well as give that client a unique ID to use so we can
         //maintain the list if players.
-    sio.sockets.on('connection', function (client) {
+    app.io.sockets.on('connection', function (client) {
         
             //Generate a new UUID, looks something like
             //5b2ca132-64bd-4513-99da-90e838ca47d1
